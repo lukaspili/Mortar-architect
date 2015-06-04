@@ -37,8 +37,8 @@ public class Navigator implements Dispatcher.NavigationCallback {
             return false;
         }
 
-        Screen screen = history.pop();
-        dispatcher.enqueue(screen);
+        history.pop();
+        dispatcher.enqueue(history.peek());
 
         return true;
     }

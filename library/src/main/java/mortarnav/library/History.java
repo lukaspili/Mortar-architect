@@ -26,19 +26,22 @@ public class History {
     }
 
     public void push(Screen screen) {
-        entries.add(new Entry(screen));
+        entries.addFirst(new Entry(screen));
     }
 
+    /**
+     * At least 2 entries
+     */
     public boolean canPop() {
         return entries.size() > 1;
     }
 
     public Screen pop() {
-        return entries.pop().screen;
+        return entries.removeFirst().screen;
     }
 
     public Screen peek() {
-        return entries.peek().screen;
+        return entries.peekFirst().screen;
     }
 
     public static class Entry {

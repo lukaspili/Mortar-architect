@@ -9,6 +9,7 @@ import mortar.MortarScope;
 import mortar.ViewPresenter;
 import mortarnav.library.Navigator;
 import mortarnav.library.Screen;
+import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -43,7 +44,7 @@ public class ScreenA extends Screen<ViewA> {
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
-
+            Timber.d("Presenter A onLoad %s", this);
         }
 
         public void click() {
