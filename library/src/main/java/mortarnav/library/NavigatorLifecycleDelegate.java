@@ -8,15 +8,21 @@ package mortarnav.library;
 public class NavigatorLifecycleDelegate {
 
     private final Navigator navigator;
-    private NavigatorContainerView containerView;
 
     public NavigatorLifecycleDelegate(Navigator navigator) {
         this.navigator = navigator;
     }
 
     public void onCreate(NavigatorContainerView containerView, Screen defaultScreen) {
-        this.containerView = containerView;
+        navigator.dispatcher().configureContainerView(containerView);
+        navigator.init(History.create(defaultScreen));
+    }
 
-        navigator.set(defaultScreen);
+    public void onDestroy() {
+        navigator.dispatcher().removeContainerView();
+    }
+
+    public boolean onBackPressed() {
+        return navigator.back();
     }
 }

@@ -7,22 +7,21 @@ import javax.inject.Inject;
 
 import mortar.MortarScope;
 import mortar.ViewPresenter;
-import mortarnav.library.Navigator;
 import mortarnav.library.Screen;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScreenA extends Screen<ViewA> {
+public class ScreenB extends Screen<ViewB> {
 
     @Override
-    public ViewA createView(Context context) {
-        return new ViewA(context);
+    public ViewB createView(Context context) {
+        return new ViewB(context);
     }
 
     @Override
     public void configureScope(MortarScope parentScope, MortarScope.Builder builder) {
-        builder.withService(DaggerService.SERVICE_NAME, DaggerScreenA_Component.builder()
+        builder.withService(DaggerService.SERVICE_NAME, DaggerScreenB_Component.builder()
                 .component((MainActivity.Component) parentScope.getService(DaggerService.SERVICE_NAME))
                 .build());
     }
@@ -31,11 +30,11 @@ public class ScreenA extends Screen<ViewA> {
     @DaggerScope(Component.class)
     public interface Component {
 
-        void inject(ViewA view);
+        void inject(ViewB view);
     }
 
     @DaggerScope(Component.class)
-    public static class Presenter extends ViewPresenter<ViewA> {
+    public static class Presenter extends ViewPresenter<ViewB> {
 
         @Inject
         public Presenter() {
@@ -47,7 +46,7 @@ public class ScreenA extends Screen<ViewA> {
         }
 
         public void click() {
-            Navigator.get(getView().getContext()).push(new ScreenB());
+
         }
     }
 }

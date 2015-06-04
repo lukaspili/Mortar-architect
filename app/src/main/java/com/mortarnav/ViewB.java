@@ -7,29 +7,28 @@ import android.widget.LinearLayout;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ViewA extends LinearLayout {
+public class ViewB extends LinearLayout {
 
     @Inject
-    protected ScreenA.Presenter presenter;
+    protected ScreenB.Presenter presenter;
 
-    public ViewA(Context context) {
+    public ViewB(Context context) {
         super(context);
 
-        ((ScreenA.Component) context.getSystemService(DaggerService.SERVICE_NAME)).inject(this);
+        ((ScreenB.Component) context.getSystemService(DaggerService.SERVICE_NAME)).inject(this);
 
-        View view = View.inflate(context, R.layout.screen_a, this);
+        View view = View.inflate(context, R.layout.screen_b, this);
         ButterKnife.inject(view);
     }
 
-    @OnClick(R.id.button)
-    void buttonClick() {
-        presenter.click();
-    }
+//    @OnClick(R.id.button)
+//    void buttonClick() {
+//        presenter.click();
+//    }
 
     @Override
     protected void onAttachedToWindow() {
