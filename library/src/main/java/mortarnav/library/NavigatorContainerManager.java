@@ -49,14 +49,14 @@ public class NavigatorContainerManager {
         return containerView.getCurrentView().getContext();
     }
 
-    public void saveViewState(History.Entry entry) {
+    public SparseArray<Parcelable> getCurrentViewState() {
         checkPreconditions();
         Preconditions.checkArgument(containerView.hasCurrentView(), "Save view state requires current view");
 
         View view = containerView.getCurrentView();
         SparseArray<Parcelable> state = new SparseArray<>();
         view.saveHierarchyState(state);
-        entry.setState(state);
+        return state;
     }
 
     public void show(View view, final Callback callback) {

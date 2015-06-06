@@ -71,7 +71,6 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
 
     public void dispatch() {
         System.out.println("DISPATCH!");
-//        Preconditions.checkNotNull(pendingNavigation, "pendingNavigation null");
 
         if (!containerManager.isReady()) {
             System.out.println("container view not set, dispatcher is waiting");
@@ -93,7 +92,6 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
         if (currentContext != null) {
             MortarScope currentScope = MortarScope.getScope(currentContext);
             if (currentScope != null) {
-
                 if (currentScope.getName().equals(last.getScreen().getScopeName())) {
                     // history in sync with current element, work is done
                     System.out.println("history in sync with current element, dispatch stop");
@@ -106,6 +104,10 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
                     // destroy it
                     System.out.println("destroy scope " + currentScope.getName());
                     currentScope.destroy();
+                } else {
+                    // scope still exists in history, save view state
+                    System.out.println("save current view state");
+                    existingEntry.setState(containerManager.getCurrentViewState());
                 }
             }
         }
@@ -114,6 +116,7 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
 
         View view = last.getScreen().createView(context);
         if (last.getState() != null) {
+            System.out.println("restore state for " + view);
             view.restoreHierarchyState(last.getState());
         }
 
@@ -125,19 +128,6 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
                 dispatch();
             }
         });
-
-//        History.Entry current = history.current();
-//        if (current != null) {
-//            containerManager.saveViewState(current);
-//        }
-
-
-//        if (history.hasNext()) {
-//            System.out.println("has another next, don't update view");
-//            return;
-//        }
-
-
     }
 
 
@@ -147,18 +137,4 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
     public void onContainerReady() {
         System.out.println("onContainerReady");
     }
-
-//    public static class PendingNavigation {
-//
-//        private final boolean saveHistory;
-//
-//        public PendingNavigation(boolean saveHistory) {
-//            this.saveHistory = saveHistory;
-//        }
-//    }
-//
-//    public interface Callback {
-//
-//        void onDispatched(PendingNavigation pendingNavigation);
-//    }
 }
