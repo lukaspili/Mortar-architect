@@ -3,16 +3,14 @@ package mortarnav.library;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
-
-import mortar.MortarScope;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class NavigatorContainerView extends FrameLayout {
 
-    private Dispatcher dispatcher;
     private boolean interactionsDisabled;
 
     public NavigatorContainerView(Context context) {
@@ -32,32 +30,32 @@ public class NavigatorContainerView extends FrameLayout {
         return !interactionsDisabled && super.dispatchTouchEvent(ev);
     }
 
-    public void makeTransition(Dispatcher.PendingNavigation pendingNavigation) {
-        Preconditions.checkNotNull(dispatcher, "Dispatcher null");
+    public boolean hasCurrentView() {
+        return getChildCount() > 0;
+    }
 
-        if (getChildCount() > 0) {
+    public View getCurrentView() {
+        return hasCurrentView() ? getChildAt(0) : null;
+    }
+
+    public void transitionView(View newView, Callback callback) {
+        interactionsDisabled = true;
+
+        addView(newView);
+
+        // transition
+        // todo
+
+        if (getChildCount() > 1) {
+            // remove old view if exists
             removeViewAt(0);
         }
 
-        Screen screen = pendingNavigation.getDestination();
-
-        MortarScope scope = MortarScope.findChild(getContext(), screen.getScopeName());
-
-        if (scope == null) {
-            MortarScope.Builder builder = MortarScope.buildChild(getContext());
-            screen.configureScope(MortarScope.getScope(getContext()), builder);
-            scope = builder.build(screen.getClass().getName());
-        }
-
-        Context context = scope.createContext(getContext());
-        addView(screen.createView(context));
-
-        dispatcher.onTransitionEnd();
+        interactionsDisabled = false;
+        callback.onTransitionEnd();
     }
 
-    public void setDispatcher(Dispatcher dispatcher) {
-        Preconditions.checkNull(this.dispatcher, "Dispatcher not null");
-        Preconditions.checkNotNull(dispatcher, "Provided dispatcher null");
-        this.dispatcher = dispatcher;
+    public interface Callback {
+        void onTransitionEnd();
     }
 }

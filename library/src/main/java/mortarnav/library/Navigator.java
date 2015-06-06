@@ -7,7 +7,7 @@ import mortar.MortarScope;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class Navigator implements Dispatcher.NavigationCallback {
+public class Navigator {
 
     public static final String SERVICE_NAME = Navigator.class.getName();
 
@@ -15,20 +15,23 @@ public class Navigator implements Dispatcher.NavigationCallback {
         return MortarScope.getScope(context).getService(SERVICE_NAME);
     }
 
+    final NavigatorContainerManager containerManager;
     private final NavigatorLifecycleDelegate delegate;
+    private final History history;
     private final Dispatcher dispatcher;
-    private History history;
 
     public Navigator() {
+        containerManager = new NavigatorContainerManager();
         delegate = new NavigatorLifecycleDelegate(this);
-        dispatcher = new Dispatcher(this);
+        history = new History();
+        dispatcher = new Dispatcher(history, containerManager);
     }
 
     public void push(Screen screen) {
         checkInit();
 
         history.push(screen);
-        dispatcher.enqueue(screen);
+        dispatcher.dispatch();
     }
 
     public boolean back() {
@@ -38,7 +41,7 @@ public class Navigator implements Dispatcher.NavigationCallback {
         }
 
         history.pop();
-        dispatcher.enqueue(history.peek());
+        dispatcher.dispatch();
 
         return true;
     }
@@ -51,29 +54,8 @@ public class Navigator implements Dispatcher.NavigationCallback {
         return delegate;
     }
 
-    Dispatcher dispatcher() {
-        return dispatcher;
-    }
-
-    void init(History history) {
-        this.history = history;
-        dispatcher.enqueue(history.peek());
-    }
-
-
-    // Dispatcher.NavigationCallback
-
-    @Override
-    public void onDispatched(Dispatcher.PendingNavigation pendingNavigation) {
-//        switch (pendingNavigation.getDirection()) {
-//            case FORWARD:
-//                history.push(pendingNavigation.getDestination());
-//                break;
-//            case BACKWARD:
-//                history.pop();
-//                break;
-//            case REPLACE:
-//
-//        }
+    void init(History defaultHistory) {
+        history.from(defaultHistory);
+        dispatcher.dispatch();
     }
 }

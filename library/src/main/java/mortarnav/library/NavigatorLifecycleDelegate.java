@@ -14,12 +14,13 @@ public class NavigatorLifecycleDelegate {
     }
 
     public void onCreate(NavigatorContainerView containerView, Screen defaultScreen) {
-        navigator.dispatcher().configureContainerView(containerView);
+        navigator.containerManager.setContainerView(containerView);
         navigator.init(History.create(defaultScreen));
     }
 
     public void onDestroy() {
-        navigator.dispatcher().removeContainerView();
+
+
     }
 
     public boolean onBackPressed() {
