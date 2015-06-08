@@ -1,9 +1,11 @@
 package mortarnav.library;
 
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.SparseArray;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 
 /**
@@ -22,6 +24,28 @@ public class History {
         return new History(entries);
     }
 
+    public static History fromBundle(Bundle bundle) {
+        ArrayList<Bundle> entryBundles = bundle.getParcelableArrayList("ENTRIES");
+        Deque<Entry> entries = new ArrayDeque<>(entryBundles.size());
+        for (Bundle entryBundle : entryBundles) {
+            Screen screen = (Screen) entryBundle.get("SCREEN");
+            Entry entry = new Entry(screen);
+            entry.state = entryBundle.getSparseParcelableArray("VIEW_STATE");
+            entries.add(entry);
+        }
+        return new History(entries);
+    }
+
+    public Bundle toBundle() {
+        Bundle historyBundle = new Bundle();
+        ArrayList<Bundle> entryBundles = new ArrayList<>(entries.size());
+        for (Entry entry : entries) {
+            entryBundles.add(entry.toBundle());
+        }
+        historyBundle.putParcelableArrayList("ENTRIES", entryBundles);
+        return historyBundle;
+    }
+
     private final Deque<Entry> entries;
 
     History() {
@@ -32,39 +56,10 @@ public class History {
         this.entries = entries;
     }
 
-    public void from(History history) {
+    public void replaceBy(History history) {
         entries.clear();
         entries.addAll(history.entries);
     }
-
-//    public Entry next() {
-//        Entry next = null;
-//        for (Entry entry : entries) {
-//            if (entry.isCommitted()) {
-//                // exit loop once we hit last to-be committed
-//                break;
-//            }
-//
-//            next = entry;
-//        }
-//
-//        return next;
-//    }
-
-//    public boolean hasNext() {
-//        return next() != null;
-//    }
-
-//    public Entry current() {
-//        for (Entry entry : entries) {
-//            if (entry.isCommitted()) {
-//                // return last committed
-//                return entry;
-//            }
-//        }
-//
-//        return null;
-//    }
 
     public History.Entry findScreen(String scopeName) {
         for (History.Entry entry : entries) {
@@ -103,6 +98,13 @@ public class History {
             Preconditions.checkNotNull(screen, "Screen cannot be null");
             Preconditions.checkNotNull(screen.getScopeName(), "Screen scope name cannot be null");
             this.screen = screen;
+        }
+
+        Bundle toBundle() {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("SCREEN", screen);
+            bundle.putSparseParcelableArray("VIEW_STATE", state);
+            return bundle;
         }
 
         public Screen getScreen() {

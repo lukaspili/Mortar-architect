@@ -1,4 +1,4 @@
-package mortarnav.library.context;
+package mortarnav.library;
 
 import android.content.Context;
 
@@ -17,10 +17,8 @@ public class ScreenContextFactory {
             MortarScope parentScope = MortarScope.getScope(parentContext);
             MortarScope.Builder scopeBuilder = parentScope.buildChild();
 
-            if (screen instanceof ScreenContextBuilder) {
-                Builder builder = new Builder(parentContext, parentScope, scopeBuilder);
-                ((ScreenContextBuilder) screen).buildScreenScope(builder);
-            }
+            BuilderContext builderContext = new BuilderContext(parentContext, parentScope, scopeBuilder);
+            screen.buildMortarScope(builderContext);
 
             scope = scopeBuilder.build(screen.getScopeName());
         }
@@ -28,12 +26,12 @@ public class ScreenContextFactory {
         return scope.createContext(parentContext);
     }
 
-    public static class Builder {
+    public static class BuilderContext {
         private final Context parentContext;
         private final MortarScope parentScope;
         private final MortarScope.Builder scopeBuilder;
 
-        public Builder(Context parentContext, MortarScope parentScope, MortarScope.Builder scopeBuilder) {
+        public BuilderContext(Context parentContext, MortarScope parentScope, MortarScope.Builder scopeBuilder) {
             this.parentContext = parentContext;
             this.parentScope = parentScope;
             this.scopeBuilder = scopeBuilder;

@@ -10,7 +10,7 @@ import mortar.ViewPresenter;
 import mortarnav.library.Navigator;
 import mortarnav.library.Screen;
 import mortarnav.library.context.ScreenContextBuilder;
-import mortarnav.library.context.ScreenContextFactory;
+import mortarnav.library.ScreenContextFactory;
 import timber.log.Timber;
 
 /**
@@ -24,9 +24,9 @@ public class ScreenA extends Screen implements ScreenContextBuilder {
     }
 
     @Override
-    public void buildScreenScope(ScreenContextFactory.Builder builder) {
-        builder.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenA_Component.builder()
-                .component((MainActivity.Component) builder.getParentScope().getService(DaggerService.SERVICE_NAME))
+    public void buildScreenScope(ScreenContextFactory.BuilderContext builderContext) {
+        builderContext.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenA_Component.builder()
+                .component((MainActivity.Component) builderContext.getParentScope().getService(DaggerService.SERVICE_NAME))
                 .build());
     }
 

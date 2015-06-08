@@ -8,8 +8,6 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
-import mortarnav.library.context.ScreenContextFactory;
-
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
@@ -17,7 +15,6 @@ public class NavigatorContainerManager {
 
     private NavigatorContainerView containerView;
     private final List<Listener> listeners;
-    private final ScreenContextFactory screenContextFactory = new ScreenContextFactory();
 
     public NavigatorContainerManager() {
         listeners = new ArrayList<>();

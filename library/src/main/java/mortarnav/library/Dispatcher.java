@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.View;
 
 import mortar.MortarScope;
-import mortarnav.library.context.ScreenContextFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -22,53 +21,6 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
         containerManager.addListener(this);
     }
 
-//    public Dispatcher(NavigatorContainerManager containerManager) {
-////        this.pendingNavigations = new ArrayDeque<>();
-//        this.containerManager = containerManager;
-//        containerManager.addListener(this);
-//    }
-
-//    public void configureContainerView(NavigatorContainerView containerView) {
-//        Preconditions.checkNull(this.containerView, "Container view not null");
-//        Preconditions.checkNotNull(containerView, "Param container view null");
-//
-//        this.containerView = containerView;
-//        containerView.setDispatcher(this);
-//
-//        if (pendingNavigation != null) {
-//            dispatch();
-//        }
-//    }
-//
-//    public void removeContainerView() {
-//        Preconditions.checkNotNull(containerView, "Container view null");
-//        containerView = null;
-//
-//        if (pendingNavigation != null) {
-//            // navigation in process
-//            // go directly to end state
-//            //TODO
-//        }
-//    }
-
-//    public void enqueue() {
-//        PendingNavigation pendingNav = new PendingNavigation();
-//        pendingNavigations.add(pendingNav);
-//
-//        if (pendingNavigation == null) {
-//            // idle, dispatch now
-//            pendingNavigation = pendingNav;
-//            dispatch();
-//        }
-//
-//
-////        else {
-////            // enqueue for next
-////            // if there was another next already set, replace it
-////            nextPendingNavigation = pendingNav;
-////        }
-//    }
-
     public void dispatch() {
         System.out.println("DISPATCH!");
 
@@ -82,6 +34,7 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
             System.out.println("already dispatching, stop and wait");
             return;
         }
+        dispatching = true;
 
         History.Entry last = history.peek();
         Preconditions.checkNotNull(last, "Cannot dispatch empty history");
@@ -95,6 +48,7 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
                 if (currentScope.getName().equals(last.getScreen().getScopeName())) {
                     // history in sync with current element, work is done
                     System.out.println("history in sync with current element, dispatch stop");
+                    endDispatch();
                     return;
                 }
 
@@ -124,10 +78,15 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
         containerManager.show(view, new NavigatorContainerManager.Callback() {
             @Override
             public void onShowEnd() {
-                dispatching = false;
+                endDispatch();
                 dispatch();
             }
         });
+    }
+
+    private void endDispatch() {
+        Preconditions.checkArgument(dispatching, "Calling endDispatch while not dispatching");
+        dispatching = false;
     }
 
 

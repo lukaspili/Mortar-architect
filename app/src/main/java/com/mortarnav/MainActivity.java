@@ -1,6 +1,7 @@
 package com.mortarnav;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import butterknife.ButterKnife;
@@ -9,7 +10,6 @@ import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 import mortarnav.library.Navigator;
 import mortarnav.library.NavigatorContainerView;
-import timber.log.Timber;
 
 
 public class MainActivity extends Activity {
@@ -32,7 +32,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        scope = MortarScope.getScope(this);
+        scope = MortarScope.findChild(getApplicationContext(), getClass().getName());
 
         if (scope == null) {
             Component component = DaggerMainActivity_Component.builder()
@@ -54,25 +54,29 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
-        Navigator.get(this).delegate().onCreate(containerView, new ScreenA());
+        Navigator.get(this).delegate().onCreate(getIntent(), savedInstanceState, containerView, new ScreenA());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Navigator.get(this).delegate().onNewIntent(intent);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         BundleServiceRunner.getBundleServiceRunner(this).onSaveInstanceState(outState);
+        Navigator.get(this).delegate().onSaveInstanceState(outState);
     }
 
     @Override
     protected void onDestroy() {
         Navigator.get(this).delegate().onDestroy();
 
-        if (isFinishing()) {
-            MortarScope activityScope = MortarScope.getScope(this);
-            if (activityScope != null) {
-                Timber.d("Destroy activity scope");
-                activityScope.destroy();
-            }
+        if (isFinishing() && scope != null) {
+            scope.destroy();
+            scope = null;
         }
 
         super.onDestroy();

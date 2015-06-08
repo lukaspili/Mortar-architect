@@ -6,11 +6,10 @@ import android.view.View;
 
 import javax.inject.Inject;
 
-import mortar.MortarScope;
 import mortar.ViewPresenter;
 import mortarnav.library.Screen;
 import mortarnav.library.context.ScreenContextBuilder;
-import mortarnav.library.context.ScreenContextFactory;
+import mortarnav.library.ScreenContextFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -23,9 +22,9 @@ public class ScreenB extends Screen implements ScreenContextBuilder {
     }
 
     @Override
-    public void buildScreenScope(ScreenContextFactory.Builder builder) {
-        builder.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenB_Component.builder()
-                .component((MainActivity.Component) builder.getParentScope().getService(DaggerService.SERVICE_NAME))
+    public void buildScreenScope(ScreenContextFactory.BuilderContext builderContext) {
+        builderContext.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenB_Component.builder()
+                .component((MainActivity.Component) builderContext.getParentScope().getService(DaggerService.SERVICE_NAME))
                 .build());
     }
 

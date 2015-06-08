@@ -15,7 +15,7 @@ public class Navigator {
         return MortarScope.getScope(context).getService(SERVICE_NAME);
     }
 
-    final NavigatorContainerManager containerManager;
+    private final NavigatorContainerManager containerManager;
     private final NavigatorLifecycleDelegate delegate;
     private final History history;
     private final Dispatcher dispatcher;
@@ -54,8 +54,16 @@ public class Navigator {
         return delegate;
     }
 
-    void init(History defaultHistory) {
-        history.from(defaultHistory);
+    void setHistory(History newHistory) {
+        history.replaceBy(newHistory);
         dispatcher.dispatch();
+    }
+
+    History getHistory() {
+        return history;
+    }
+
+    NavigatorContainerManager getContainerManager() {
+        return containerManager;
     }
 }
