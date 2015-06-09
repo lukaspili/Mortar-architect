@@ -12,7 +12,7 @@ import android.widget.FrameLayout;
  */
 public class NavigatorContainerView extends FrameLayout implements HandlesBack {
 
-    private final NavigatorContainerTransitionner navigatorContainerTransitionner = new NavigatorContainerTransitionner();
+    private NavigatorContainerTransitionner navigatorContainerTransitionner;
     private boolean interactionsDisabled;
 
     public NavigatorContainerView(Context context) {
@@ -21,10 +21,6 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
 
     public NavigatorContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    private void init(Context context) {
-
     }
 
     @Override
@@ -44,6 +40,8 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
     }
 
     public void performTransition(final View newView, final Dispatcher.Direction direction, final Dispatcher.TraversalCallback callback) {
+        Preconditions.checkArgument(!interactionsDisabled, "Perform transition but previous one is still running");
+        Preconditions.checkNotNull(navigatorContainerTransitionner, "Cannot perform transition without transitionner set");
         interactionsDisabled = true;
 
         final View currentView = getCurrentView();
@@ -99,6 +97,9 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
         return false;
     }
 
+    public void setNavigatorContainerTransitionner(NavigatorContainerTransitionner navigatorContainerTransitionner) {
+        this.navigatorContainerTransitionner = navigatorContainerTransitionner;
+    }
 
     protected static class Util {
 

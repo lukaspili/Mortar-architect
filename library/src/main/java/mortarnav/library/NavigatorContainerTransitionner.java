@@ -5,9 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.view.View;
 
-import mortarnav.library.transition.BottomAppearTransition;
-import mortarnav.library.transition.HorizontalScreenTransition;
-import mortarnav.library.transition.ModalTransition;
 import mortarnav.library.transition.ScreenTransition;
 
 /**
@@ -17,7 +14,22 @@ public class NavigatorContainerTransitionner {
 
     private static final int DURATION = 400;
 
+    private final NavigatorTransitions transitions;
+
+    public NavigatorContainerTransitionner(NavigatorTransitions transitions) {
+        this.transitions = transitions;
+    }
+
     public void transition(View originView, View destinationView, Dispatcher.Direction direction, final Dispatcher.TraversalCallback callback) {
+        View target = direction == Dispatcher.Direction.FORWARD ? destinationView : originView;
+        View from = direction == Dispatcher.Direction.FORWARD ? originView : destinationView;
+        ScreenTransition transition = transitions.findTransition(target, from);
+        if (transition == null) {
+            System.out.println("Cannot find transition for " + destinationView);
+            callback.onTraversalCompleted();
+            return;
+        }
+
         AnimatorSet set = new AnimatorSet();
         set.setDuration(DURATION);
         set.addListener(new AnimatorListenerAdapter() {
@@ -27,7 +39,6 @@ public class NavigatorContainerTransitionner {
             }
         });
 
-        ScreenTransition transition = new BottomAppearTransition();
         transition.configure(set);
 
         if (direction == Dispatcher.Direction.FORWARD) {

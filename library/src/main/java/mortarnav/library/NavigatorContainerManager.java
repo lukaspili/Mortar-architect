@@ -14,9 +14,11 @@ import java.util.List;
 public class NavigatorContainerManager {
 
     private NavigatorContainerView containerView;
+    private final NavigatorContainerTransitionner containerTransitionner;
     private final List<Listener> listeners;
 
-    NavigatorContainerManager() {
+    NavigatorContainerManager(NavigatorTransitions transitions) {
+        containerTransitionner = new NavigatorContainerTransitionner(transitions);
         listeners = new ArrayList<>();
     }
 
@@ -28,6 +30,7 @@ public class NavigatorContainerManager {
         Preconditions.checkNotNull(view, "New containerView null");
         Preconditions.checkNull(containerView, "Current containerView not null");
         containerView = view;
+        containerView.setNavigatorContainerTransitionner(containerTransitionner);
         for (Listener listener : listeners) {
             listener.onContainerReady();
         }
@@ -39,7 +42,7 @@ public class NavigatorContainerManager {
     }
 
     boolean containerViewOnBackPressed() {
-        return containerView != null ? containerView.onBackPressed() : false;
+        return containerView != null && containerView.onBackPressed();
     }
 
     Context getCurrentViewContext() {

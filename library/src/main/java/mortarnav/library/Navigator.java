@@ -15,15 +15,17 @@ public class Navigator {
         return MortarScope.getScope(context).getService(SERVICE_NAME);
     }
 
-    private final NavigatorContainerManager containerManager;
     private final NavigatorLifecycleDelegate delegate;
     private final History history;
+    private final NavigatorTransitions transitions;
+    private final NavigatorContainerManager containerManager;
     private final Dispatcher dispatcher;
 
     public Navigator() {
-        containerManager = new NavigatorContainerManager();
         delegate = new NavigatorLifecycleDelegate(this);
         history = new History();
+        transitions = new NavigatorTransitions();
+        containerManager = new NavigatorContainerManager(transitions);
         dispatcher = new Dispatcher(history, containerManager);
     }
 
@@ -65,5 +67,9 @@ public class Navigator {
 
     NavigatorContainerManager getContainerManager() {
         return containerManager;
+    }
+
+    public NavigatorTransitions transitions() {
+        return transitions;
     }
 }
