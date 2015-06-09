@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import mortar.MortarScope;
+import mortarnav.library.screen.ScreenContextFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

@@ -3,6 +3,8 @@ package mortarnav.library;
 import android.content.Intent;
 import android.os.Bundle;
 
+import mortarnav.library.screen.Screen;
+
 /**
  * Bridge between a navigator and Android
  *

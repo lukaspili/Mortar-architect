@@ -1,35 +1,34 @@
 package com.mortarnav;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import mortarnav.library.screen.ScreenContextFactory;
 import mortarnav.library.screen.ScreenUtil;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ViewA extends LinearLayout {
+public class ViewOne extends LinearLayout {
 
     @Inject
-    protected ScreenA.Presenter presenter;
+    protected SubscreenOne.Presenter presenter;
 
-    public ViewA(Context context) {
-        super(context);
+    protected ScreenContextFactory contextFactory = new ScreenContextFactory();
 
-        ScreenUtil.<ScreenA.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
+    public ViewOne(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
-        View view = View.inflate(context, R.layout.screen_a, this);
+        Context newContext = contextFactory.setUp(context, new SubscreenOne());
+        ScreenUtil.<SubscreenOne.Component>getService(newContext, DaggerService.SERVICE_NAME).inject(this);
+
+        View view = View.inflate(newContext, R.layout.subscreen_one, this);
         ButterKnife.inject(view);
-    }
-
-    @OnClick(R.id.button)
-    void buttonClick() {
-        presenter.click();
     }
 
     @Override

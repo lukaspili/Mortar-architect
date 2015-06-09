@@ -12,7 +12,7 @@ import mortarnav.library.transition.ScreenTransition;
  */
 public class NavigatorContainerTransitionner {
 
-    private static final int DURATION = 400;
+    private static final int DURATION = 300;
 
     private final NavigatorTransitions transitions;
 

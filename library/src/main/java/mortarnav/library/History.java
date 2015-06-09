@@ -8,6 +8,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 
+import mortarnav.library.screen.Screen;
+
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */

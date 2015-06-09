@@ -7,8 +7,8 @@ import android.view.View;
 import javax.inject.Inject;
 
 import mortar.ViewPresenter;
-import mortarnav.library.Screen;
-import mortarnav.library.ScreenContextFactory;
+import mortarnav.library.screen.Screen;
+import mortarnav.library.screen.ScreenContextFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

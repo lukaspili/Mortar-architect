@@ -3,6 +3,7 @@ package mortarnav.library;
 import android.content.Context;
 
 import mortar.MortarScope;
+import mortarnav.library.screen.Screen;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
