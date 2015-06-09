@@ -27,13 +27,7 @@ public class NavigatorContainerTransitionner {
             }
         });
 
-        modalTransition(originView, destinationView, direction, set);
-
-        set.start();
-    }
-
-    private void screenTransition(View originView, View destinationView, Dispatcher.Direction direction, AnimatorSet set) {
-        ScreenTransition transition = new HorizontalScreenTransition();
+        ScreenTransition transition = new BottomAppearTransition();
         transition.configure(set);
 
         if (direction == Dispatcher.Direction.FORWARD) {
@@ -41,31 +35,37 @@ public class NavigatorContainerTransitionner {
         } else {
             transition.backward(destinationView, originView, set);
         }
+
+        set.start();
     }
 
-    private void modalTransition(final View originView, final View destinationView, final Dispatcher.Direction direction, AnimatorSet set) {
-        final ModalTransition transition = new BottomAppearTransition();
-        transition.configure(set);
-        set.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                if (direction == Dispatcher.Direction.BACKWARD && transition.hideViewBelow()) {
-                    destinationView.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (direction == Dispatcher.Direction.FORWARD && transition.hideViewBelow()) {
-                    originView.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        if (direction == Dispatcher.Direction.FORWARD) {
-            transition.show(destinationView, set);
-        } else {
-            transition.hide(originView, set);
-        }
-    }
+//    private void screenTransition(View originView, View destinationView, Dispatcher.Direction direction, AnimatorSet set) {
+//
+//    }
+//
+//    private void modalTransition(final View originView, final View destinationView, final Dispatcher.Direction direction, AnimatorSet set) {
+//        final ModalTransition transition = new BottomAppearTransition();
+//        transition.configure(set);
+//        set.addListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//                if (direction == Dispatcher.Direction.BACKWARD && transition.hideViewBelow()) {
+//                    destinationView.setVisibility(View.VISIBLE);
+//                }
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                if (direction == Dispatcher.Direction.FORWARD && transition.hideViewBelow()) {
+//                    originView.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+//
+//        if (direction == Dispatcher.Direction.FORWARD) {
+//            transition.show(destinationView, set);
+//        } else {
+//            transition.hide(originView, set);
+//        }
+//    }
 }

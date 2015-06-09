@@ -8,7 +8,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class BottomAppearTransition implements ModalTransition<View> {
+public class BottomAppearTransition extends ModalTransition<View> {
 
     @Override
     public void show(View view, AnimatorSet set) {

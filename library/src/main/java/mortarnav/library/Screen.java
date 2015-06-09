@@ -15,6 +15,6 @@ public abstract class Screen implements Serializable {
     public abstract void configureMortarScope(ScreenContextFactory.BuilderContext builderContext);
 
     public String getScopeName() {
-        return getClass().getName();
+        return String.format("%s_%d", getClass().getName(), System.identityHashCode(this));
     }
 }
