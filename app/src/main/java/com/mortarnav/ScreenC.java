@@ -7,24 +7,22 @@ import android.view.View;
 import javax.inject.Inject;
 
 import mortar.ViewPresenter;
-import mortarnav.library.Navigator;
 import mortarnav.library.Screen;
 import mortarnav.library.ScreenContextFactory;
-import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScreenA extends Screen {
+public class ScreenC extends Screen {
 
     @Override
     public View createView(Context context) {
-        return new ViewA(context);
+        return new ViewC(context);
     }
 
     @Override
     public void configureMortarScope(ScreenContextFactory.BuilderContext builderContext) {
-        builderContext.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenA_Component.builder()
+        builderContext.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenC_Component.builder()
                 .component((MainActivity.Component) builderContext.getParentScope().getService(DaggerService.SERVICE_NAME))
                 .build());
     }
@@ -33,11 +31,11 @@ public class ScreenA extends Screen {
     @DaggerScope(Component.class)
     public interface Component {
 
-        void inject(ViewA view);
+        void inject(ViewC view);
     }
 
     @DaggerScope(Component.class)
-    public static class Presenter extends ViewPresenter<ViewA> {
+    public static class Presenter extends ViewPresenter<ViewC> {
 
         @Inject
         public Presenter() {
@@ -45,11 +43,11 @@ public class ScreenA extends Screen {
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
-            Timber.d("Presenter A onLoad %s", this);
+
         }
 
         public void click() {
-            Navigator.get(getView().getContext()).push(new ScreenB("Hello Lukasz"));
+
         }
     }
 }

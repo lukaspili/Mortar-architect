@@ -11,9 +11,16 @@
         android:layout_gravity="center"
         android:text="SCREEN B"/>
 
-    <!--<Button-->
-    <!--android:id="@+id/button"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="Got to View B"/>-->
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text=""/>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Got to View C"/>
 </LinearLayout>

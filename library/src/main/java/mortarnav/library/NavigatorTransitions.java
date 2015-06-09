@@ -55,7 +55,7 @@ public class NavigatorTransitions {
         return this;
     }
 
-    public ScreenTransition findTransition(View targetView, View fromView) {
+    ScreenTransition findTransition(View targetView, View fromView) {
         Key targetKey = getBestMatchKey(targetView.getClass(), transitions.keySet());
         if (targetKey == null) {
             return null;

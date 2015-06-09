@@ -3,10 +3,13 @@ package com.mortarnav;
 import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -15,6 +18,9 @@ public class ViewB extends LinearLayout {
 
     @Inject
     protected ScreenB.Presenter presenter;
+
+    @InjectView(R.id.name)
+    public TextView nameTextView;
 
     public ViewB(Context context) {
         super(context);
@@ -25,10 +31,10 @@ public class ViewB extends LinearLayout {
         ButterKnife.inject(view);
     }
 
-//    @OnClick(R.id.button)
-//    void buttonClick() {
-//        presenter.click();
-//    }
+    @OnClick(R.id.button)
+    void buttonClick() {
+        presenter.click();
+    }
 
     @Override
     protected void onAttachedToWindow() {
@@ -40,5 +46,9 @@ public class ViewB extends LinearLayout {
     protected void onDetachedFromWindow() {
         presenter.dropView(this);
         super.onDetachedFromWindow();
+    }
+
+    public void configure(String name) {
+        nameTextView.setText(name);
     }
 }

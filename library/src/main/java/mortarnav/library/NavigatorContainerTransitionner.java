@@ -21,6 +21,7 @@ public class NavigatorContainerTransitionner {
     }
 
     public void transition(View originView, View destinationView, Dispatcher.Direction direction, final Dispatcher.TraversalCallback callback) {
+        // depending on transition direction, the target view is either the origin or destination
         View target = direction == Dispatcher.Direction.FORWARD ? destinationView : originView;
         View from = direction == Dispatcher.Direction.FORWARD ? originView : destinationView;
         ScreenTransition transition = transitions.findTransition(target, from);
@@ -49,34 +50,4 @@ public class NavigatorContainerTransitionner {
 
         set.start();
     }
-
-//    private void screenTransition(View originView, View destinationView, Dispatcher.Direction direction, AnimatorSet set) {
-//
-//    }
-//
-//    private void modalTransition(final View originView, final View destinationView, final Dispatcher.Direction direction, AnimatorSet set) {
-//        final ModalTransition transition = new BottomAppearTransition();
-//        transition.configure(set);
-//        set.addListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//                if (direction == Dispatcher.Direction.BACKWARD && transition.hideViewBelow()) {
-//                    destinationView.setVisibility(View.VISIBLE);
-//                }
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                if (direction == Dispatcher.Direction.FORWARD && transition.hideViewBelow()) {
-//                    originView.setVisibility(View.GONE);
-//                }
-//            }
-//        });
-//
-//        if (direction == Dispatcher.Direction.FORWARD) {
-//            transition.show(destinationView, set);
-//        } else {
-//            transition.hide(originView, set);
-//        }
-//    }
 }
