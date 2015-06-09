@@ -12,7 +12,7 @@ public abstract class Screen implements Serializable {
 
     public abstract View createView(Context context);
 
-    public abstract void buildMortarScope(ScreenContextFactory.BuilderContext builderContext);
+    public abstract void configureMortarScope(ScreenContextFactory.BuilderContext builderContext);
 
     public String getScopeName() {
         return getClass().getName();

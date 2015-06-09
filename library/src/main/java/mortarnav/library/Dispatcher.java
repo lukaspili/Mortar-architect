@@ -41,6 +41,8 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
 
         System.out.println("last screen history is " + last.getScreen());
 
+        Direction direction = Direction.FORWARD;
+
         Context currentContext = containerManager.getCurrentViewContext();
         if (currentContext != null) {
             MortarScope currentScope = MortarScope.getScope(currentContext);
@@ -56,12 +58,16 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
                 if (existingEntry == null) {
                     // a scope already exists for the current view, but not anymore in history
                     // destroy it
-                    System.out.println("destroy scope " + currentScope.getName());
+                    // => backward navigation
+                    System.out.println("Backward -> destroy scope " + currentScope.getName());
                     currentScope.destroy();
+                    direction = Direction.BACKWARD;
                 } else {
                     // scope still exists in history, save view state
-                    System.out.println("save current view state");
+                    // => forward navigation
+                    System.out.println("Forward -> save current view state");
                     existingEntry.setState(containerManager.getCurrentViewState());
+                    direction = Direction.FORWARD;
                 }
             }
         }
@@ -70,14 +76,15 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
 
         View view = last.getScreen().createView(context);
         if (last.getState() != null) {
+            // restore state for the new view, if exists
             System.out.println("restore state for " + view);
             view.restoreHierarchyState(last.getState());
         }
 
         System.out.println("show view " + view);
-        containerManager.show(view, new NavigatorContainerManager.Callback() {
+        containerManager.performTransition(view, direction, new TraversalCallback() {
             @Override
-            public void onShowEnd() {
+            public void onTraversalCompleted() {
                 endDispatch();
                 dispatch();
             }
@@ -95,5 +102,13 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
     @Override
     public void onContainerReady() {
         System.out.println("onContainerReady");
+    }
+
+    public enum Direction {
+        FORWARD, BACKWARD
+    }
+
+    public interface TraversalCallback {
+        void onTraversalCompleted();
     }
 }

@@ -57,6 +57,10 @@ public class NavigatorLifecycleDelegate {
     }
 
     public boolean onBackPressed() {
+        if (navigator.getContainerManager().containerViewOnBackPressed()) {
+            return true;
+        }
+
         return navigator.back();
     }
 }

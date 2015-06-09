@@ -3,7 +3,6 @@ package mortarnav.library;
 import android.content.Context;
 
 import mortar.MortarScope;
-import mortarnav.library.Screen;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -18,7 +17,7 @@ public class ScreenContextFactory {
             MortarScope.Builder scopeBuilder = parentScope.buildChild();
 
             BuilderContext builderContext = new BuilderContext(parentContext, parentScope, scopeBuilder);
-            screen.buildMortarScope(builderContext);
+            screen.configureMortarScope(builderContext);
 
             scope = scopeBuilder.build(screen.getScopeName());
         }

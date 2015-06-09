@@ -16,15 +16,15 @@ public class NavigatorContainerManager {
     private NavigatorContainerView containerView;
     private final List<Listener> listeners;
 
-    public NavigatorContainerManager() {
+    NavigatorContainerManager() {
         listeners = new ArrayList<>();
     }
 
-    public void addListener(Listener listener) {
+    void addListener(Listener listener) {
         listeners.add(listener);
     }
 
-    public void setContainerView(NavigatorContainerView view) {
+    void setContainerView(NavigatorContainerView view) {
         Preconditions.checkNotNull(view, "New containerView null");
         Preconditions.checkNull(containerView, "Current containerView not null");
         containerView = view;
@@ -33,12 +33,16 @@ public class NavigatorContainerManager {
         }
     }
 
-    public void removeContainerView() {
+    void removeContainerView() {
         Preconditions.checkNotNull(containerView, "Current containerView null");
         containerView = null;
     }
 
-    public Context getCurrentViewContext() {
+    boolean containerViewOnBackPressed() {
+        return containerView != null ? containerView.onBackPressed() : false;
+    }
+
+    Context getCurrentViewContext() {
         if (!containerView.hasCurrentView()) {
             return null;
         }
@@ -46,7 +50,7 @@ public class NavigatorContainerManager {
         return containerView.getCurrentView().getContext();
     }
 
-    public SparseArray<Parcelable> getCurrentViewState() {
+    SparseArray<Parcelable> getCurrentViewState() {
         checkPreconditions();
         Preconditions.checkArgument(containerView.hasCurrentView(), "Save view state requires current view");
 
@@ -56,35 +60,25 @@ public class NavigatorContainerManager {
         return state;
     }
 
-    public void show(View view, final Callback callback) {
+    void performTransition(final View view, final Dispatcher.Direction direction, final Dispatcher.TraversalCallback callback) {
         checkPreconditions();
-
-        containerView.transitionView(view, new NavigatorContainerView.Callback() {
-            @Override
-            public void onTransitionEnd() {
-                callback.onShowEnd();
-            }
-        });
+        containerView.performTransition(view, direction, callback);
     }
 
     private void checkPreconditions() {
         Preconditions.checkNotNull(containerView, "Container view null");
     }
 
-    public boolean isReady() {
+    boolean isReady() {
         return containerView != null;
     }
 
-    public Context getContainerContext() {
+    Context getContainerContext() {
         Preconditions.checkNotNull(containerView, "containerView null, cannot provide its context");
         return containerView.getContext();
     }
 
     public interface Listener {
         void onContainerReady();
-    }
-
-    public interface Callback {
-        void onShowEnd();
     }
 }

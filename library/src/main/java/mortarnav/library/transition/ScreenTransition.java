@@ -6,9 +6,11 @@ import android.view.View;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public interface ScreenTransition<T> {
+public interface ScreenTransition<T_Origin extends View, T_Destination extends View> {
 
-    void enterTransition(T enterView, View exitView, AnimatorSet set);
+    void forward(T_Destination enterView, T_Origin exitView, AnimatorSet set);
 
-    void exitTransition(T exitView, View enterView, AnimatorSet set);
+    void backward(T_Origin enterView, T_Destination exitView, AnimatorSet set);
+
+    void configure(AnimatorSet set);
 }

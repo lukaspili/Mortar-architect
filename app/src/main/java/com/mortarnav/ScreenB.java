@@ -8,13 +8,12 @@ import javax.inject.Inject;
 
 import mortar.ViewPresenter;
 import mortarnav.library.Screen;
-import mortarnav.library.context.ScreenContextBuilder;
 import mortarnav.library.ScreenContextFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScreenB extends Screen implements ScreenContextBuilder {
+public class ScreenB extends Screen {
 
     @Override
     public View createView(Context context) {
@@ -22,7 +21,7 @@ public class ScreenB extends Screen implements ScreenContextBuilder {
     }
 
     @Override
-    public void buildScreenScope(ScreenContextFactory.BuilderContext builderContext) {
+    public void configureMortarScope(ScreenContextFactory.BuilderContext builderContext) {
         builderContext.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenB_Component.builder()
                 .component((MainActivity.Component) builderContext.getParentScope().getService(DaggerService.SERVICE_NAME))
                 .build());
