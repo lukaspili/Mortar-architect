@@ -6,11 +6,14 @@ import mortar.MortarScope;
 import mortarnav.library.screen.ScreenContextFactory;
 
 /**
+ * Mortar scope helper
+ *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class NavigatorServices {
 
     public static final String CONTEXTFACTORY_SERVICE_NAME = NavigatorServices.class.getName() + "_ContextFactoryService";
+    public static final String DAGGER_CONTAINER_SERVICE_NAME = NavigatorServices.class.getName() + "_ContextFactoryService";
 
     public static <T> T getService(Context context, String service) {
         //noinspection unchecked
@@ -26,5 +29,4 @@ public class NavigatorServices {
                 .withService(Navigator.SERVICE_NAME, navigator)
                 .withService(CONTEXTFACTORY_SERVICE_NAME, navigator.getContextFactory());
     }
-
 }

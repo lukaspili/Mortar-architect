@@ -6,8 +6,8 @@ import android.view.View;
 
 import javax.inject.Inject;
 
+import mortar.MortarScope;
 import mortar.ViewPresenter;
-import mortarnav.library.Navigator;
 import mortarnav.library.screen.Screen;
 import mortarnav.library.screen.ScreenContextFactory;
 import timber.log.Timber;
@@ -15,17 +15,21 @@ import timber.log.Timber;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScreenA extends Screen {
+public class LoginScreen extends Screen {
 
     @Override
     public View createView(Context context) {
-        return new ViewA(context);
+        return new LoginView(context);
     }
 
     @Override
     public void configureMortarScope(ScreenContextFactory.BuilderContext builderContext) {
-        builderContext.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenA_Component.builder()
-                .component((MainActivity.Component) builderContext.getParentScope().getService(DaggerService.SERVICE_NAME))
+        // get main activity scope
+        // which is not the parent scope
+        MortarScope activityScope = MortarScope.findChild(builderContext.getParentContext().getApplicationContext(), MainActivity.class.getName());
+
+        builderContext.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerLoginScreen_Component.builder()
+                .component(activityScope.<MainActivity.Component>getService(DaggerService.SERVICE_NAME))
                 .build());
     }
 
@@ -33,13 +37,11 @@ public class ScreenA extends Screen {
     @DaggerScope(Component.class)
     public interface Component {
 
-        void inject(ViewA view);
-
-        void inject(CustomViewA view);
+        void inject(LoginView view);
     }
 
     @DaggerScope(Component.class)
-    public static class Presenter extends ViewPresenter<ViewA> {
+    public static class Presenter extends ViewPresenter<LoginView> {
 
         @Inject
         public Presenter() {
@@ -47,15 +49,11 @@ public class ScreenA extends Screen {
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
-            Timber.d("Presenter A onLoad %s", this);
+            Timber.d("Presenter LoginView onLoad %s", this);
         }
 
         public void click() {
-            Navigator.get(getView().getContext()).push(new ScreenB("Hello Lukasz"));
-        }
-
-        public void customViewClick() {
-            System.out.println("Click from custom view A");
+            System.out.println("Login click");
         }
     }
 }
