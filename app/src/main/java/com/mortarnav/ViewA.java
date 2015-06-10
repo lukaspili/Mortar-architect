@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import mortarnav.library.screen.ScreenUtil;
+import mortarnav.library.NavigatorServices;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -21,7 +21,7 @@ public class ViewA extends LinearLayout {
     public ViewA(Context context) {
         super(context);
 
-        ScreenUtil.<ScreenA.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
+        NavigatorServices.<ScreenA.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
 
         View view = View.inflate(context, R.layout.screen_a, this);
         ButterKnife.inject(view);

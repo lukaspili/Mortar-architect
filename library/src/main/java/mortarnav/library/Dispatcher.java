@@ -13,12 +13,14 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
 
     private final History history;
     private final NavigatorContainerManager containerManager;
-    private final ScreenContextFactory screenContextFactory = new ScreenContextFactory();
+    private final ScreenContextFactory contextFactory;
     private boolean dispatching;
 
-    public Dispatcher(History history, NavigatorContainerManager containerManager) {
+    public Dispatcher(History history, NavigatorContainerManager containerManager, ScreenContextFactory contextFactory) {
         this.history = history;
         this.containerManager = containerManager;
+        this.contextFactory = contextFactory;
+
         containerManager.addListener(this);
     }
 
@@ -73,7 +75,7 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
             }
         }
 
-        Context context = screenContextFactory.setUp(containerManager.getContainerContext(), last.getScreen());
+        Context context = contextFactory.setUp(containerManager.getContainerContext(), last.getScreen());
 
         View view = last.getScreen().createView(context);
         if (last.getState() != null) {

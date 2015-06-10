@@ -1,15 +1,13 @@
 package com.mortarnav;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import mortarnav.library.screen.ScreenContextFactory;
-import mortarnav.library.screen.ScreenUtil;
+import mortarnav.library.NavigatorServices;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -19,15 +17,11 @@ public class ViewOne extends LinearLayout {
     @Inject
     protected SubscreenOne.Presenter presenter;
 
-    protected ScreenContextFactory contextFactory = new ScreenContextFactory();
+    public ViewOne(Context context) {
+        super(context);
 
-    public ViewOne(Context context, AttributeSet attrs) {
-        super(context, attrs);
-
-        Context newContext = contextFactory.setUp(context, new SubscreenOne());
-        ScreenUtil.<SubscreenOne.Component>getService(newContext, DaggerService.SERVICE_NAME).inject(this);
-
-        View view = View.inflate(newContext, R.layout.subscreen_one, this);
+        NavigatorServices.<SubscreenOne.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
+        View view = View.inflate(context, R.layout.subscreen_one, this);
         ButterKnife.inject(view);
     }
 

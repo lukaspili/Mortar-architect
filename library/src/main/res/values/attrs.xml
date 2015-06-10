@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--<declare-styleable name="SubscreenView">-->
-        <!--<attr name="viewCls"/>-->
-    <!--</declare-styleable>-->
+    <declare-styleable name="SubscreenContainer">
+        <attr name="screenClass" format="string"/>
+    </declare-styleable>
 </resources>

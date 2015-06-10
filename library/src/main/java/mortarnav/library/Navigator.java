@@ -4,6 +4,7 @@ import android.content.Context;
 
 import mortar.MortarScope;
 import mortarnav.library.screen.Screen;
+import mortarnav.library.screen.ScreenContextFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -18,6 +19,7 @@ public class Navigator {
 
     private final NavigatorLifecycleDelegate delegate;
     private final History history;
+    private final ScreenContextFactory contextFactory;
     private final NavigatorTransitions transitions;
     private final NavigatorContainerManager containerManager;
     private final Dispatcher dispatcher;
@@ -25,9 +27,10 @@ public class Navigator {
     public Navigator() {
         delegate = new NavigatorLifecycleDelegate(this);
         history = new History();
+        contextFactory = new ScreenContextFactory();
         transitions = new NavigatorTransitions();
         containerManager = new NavigatorContainerManager(transitions);
-        dispatcher = new Dispatcher(history, containerManager);
+        dispatcher = new Dispatcher(history, containerManager, contextFactory);
     }
 
     public void push(Screen screen) {
@@ -64,6 +67,10 @@ public class Navigator {
 
     History getHistory() {
         return history;
+    }
+
+    ScreenContextFactory getContextFactory() {
+        return contextFactory;
     }
 
     NavigatorContainerManager getContainerManager() {

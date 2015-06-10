@@ -1,18 +1,28 @@
 package com.mortarnav;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 
 import javax.inject.Inject;
 
 import mortar.ViewPresenter;
+import mortarnav.library.screen.Screen;
 import mortarnav.library.screen.ScreenContextFactory;
-import mortarnav.library.screen.Subscreen;
 import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class SubscreenOne extends Subscreen {
+public class SubscreenOne extends Screen {
+
+    public SubscreenOne() {
+    }
+
+    @Override
+    public View createView(Context context) {
+        return new ViewOne(context);
+    }
 
     @Override
     public void configureMortarScope(ScreenContextFactory.BuilderContext builderContext) {

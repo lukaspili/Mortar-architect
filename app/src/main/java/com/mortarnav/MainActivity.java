@@ -10,6 +10,7 @@ import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 import mortarnav.library.Navigator;
 import mortarnav.library.NavigatorContainerView;
+import mortarnav.library.NavigatorServices;
 import mortarnav.library.NavigatorTransition;
 import mortarnav.library.transition.BottomAppearTransition;
 import mortarnav.library.transition.HorizontalScreenTransition;
@@ -48,10 +49,9 @@ public class MainActivity extends Activity {
                     .register(NavigatorTransition.defaultTransition(new HorizontalScreenTransition()))
                     .register(NavigatorTransition.forView(ViewB.class).fromAny().withTransition(new BottomAppearTransition()));
 
-            scope = MortarScope.buildChild(getApplicationContext())
+            scope = NavigatorServices.buildNavigatorContainerScope(getApplicationContext(), navigator)
                     .withService(BundleServiceRunner.SERVICE_NAME, new BundleServiceRunner())
                     .withService(DaggerService.SERVICE_NAME, component)
-                    .withService(Navigator.SERVICE_NAME, navigator)
                     .build(getClass().getName());
         }
 
