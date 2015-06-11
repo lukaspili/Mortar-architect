@@ -23,4 +23,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Got to View C"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Below, the container with another Navigator"/>
+
+    <mortarnav.library.NavigatorContainerView
+        android:id="@+id/screen_b_navigatorcontainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>

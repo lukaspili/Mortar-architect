@@ -1,8 +1,9 @@
-package mortarnav.library.screen;
+package mortarnav.library;
 
 import android.content.Context;
 
 import mortar.MortarScope;
+import mortarnav.library.screen.Screen;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -10,16 +11,23 @@ import mortar.MortarScope;
 public class ScreenContextFactory {
 
     public Context setUp(Context parentContext, Screen screen) {
-        MortarScope scope = MortarScope.findChild(parentContext, screen.getScopeName());
+        return setUp(MortarScope.getScope(parentContext), parentContext, screen);
+    }
 
+    public Context setUp(MortarScope parentScope, Context parentContext, Screen screen) {
+        Preconditions.checkNotNull(parentScope, "Parent scope cannot be null");
+        Preconditions.checkNotNull(parentContext, "Parent context cannot be null");
+        Preconditions.checkNotNull(screen, "Screen cannot be null");
+
+        MortarScope scope = parentScope.findChild(screen.getMortarScopeName());
         if (scope == null) {
-            MortarScope parentScope = MortarScope.getScope(parentContext);
             MortarScope.Builder scopeBuilder = parentScope.buildChild();
 
+            // allow screen to configure its mortar scope
             BuilderContext builderContext = new BuilderContext(parentContext, parentScope, scopeBuilder);
             screen.configureMortarScope(builderContext);
 
-            scope = scopeBuilder.build(screen.getScopeName());
+            scope = scopeBuilder.build(screen.getMortarScopeName());
         }
 
         return scope.createContext(parentContext);

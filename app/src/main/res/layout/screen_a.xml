@@ -21,14 +21,14 @@
     <mortarnav.library.screen.view.SubscreenContainer
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:screenClass="com.mortarnav.SubscreenOne"/>
+        app:screenClass="com.mortarnav.screen.SubscreenOne"/>
 
-    <com.mortarnav.CustomViewA
+    <com.mortarnav.view.CustomViewA
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <mortarnav.library.screen.view.SubscreenContainer
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:screenClass="com.mortarnav.LoginScreen"/>
+        app:screenClass="com.mortarnav.screen.LoginScreen"/>
 </LinearLayout>

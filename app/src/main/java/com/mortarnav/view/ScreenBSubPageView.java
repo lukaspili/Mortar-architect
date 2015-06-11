@@ -1,37 +1,42 @@
-package com.mortarnav;
+package com.mortarnav.view;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import com.mortarnav.DaggerService;
+import com.mortarnav.R;
+import com.mortarnav.screen.ScreenBSubPageScreen;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import mortarnav.library.NavigatorServices;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ViewB extends LinearLayout {
+public class ScreenBSubPageView extends FrameLayout {
 
     @Inject
-    protected ScreenB.Presenter presenter;
+    protected ScreenBSubPageScreen.Presenter presenter;
 
-    @InjectView(R.id.name)
-    public TextView nameTextView;
+    @InjectView(R.id.screen_b_sub_title)
+    public TextView textView;
 
-    public ViewB(Context context) {
+    public ScreenBSubPageView(Context context) {
         super(context);
 
-        ((ScreenB.Component) context.getSystemService(DaggerService.SERVICE_NAME)).inject(this);
+        NavigatorServices.<ScreenBSubPageScreen.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
 
-        View view = View.inflate(context, R.layout.screen_b, this);
+        View view = View.inflate(context, R.layout.screen_b_sub_page, this);
         ButterKnife.inject(view);
     }
 
-    @OnClick(R.id.button)
+    @OnClick()
     void buttonClick() {
         presenter.click();
     }
@@ -46,9 +51,5 @@ public class ViewB extends LinearLayout {
     protected void onDetachedFromWindow() {
         presenter.dropView(this);
         super.onDetachedFromWindow();
-    }
-
-    public void configure(String name) {
-        nameTextView.setText(name);
     }
 }

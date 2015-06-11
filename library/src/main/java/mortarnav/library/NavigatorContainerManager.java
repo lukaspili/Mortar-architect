@@ -69,7 +69,7 @@ public class NavigatorContainerManager {
     }
 
     private void checkPreconditions() {
-        Preconditions.checkNotNull(containerView, "Container view null");
+        Preconditions.checkNotNull(containerView, "Container view cannot be null");
     }
 
     boolean isReady() {
@@ -77,7 +77,7 @@ public class NavigatorContainerManager {
     }
 
     Context getContainerContext() {
-        Preconditions.checkNotNull(containerView, "containerView null, cannot provide its context");
+        Preconditions.checkNotNull(containerView, "Container view for its context cannot be null");
         return containerView.getContext();
     }
 

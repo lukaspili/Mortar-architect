@@ -5,6 +5,8 @@ import android.view.View;
 
 import java.io.Serializable;
 
+import mortarnav.library.ScreenContextFactory;
+
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
@@ -14,7 +16,7 @@ public abstract class Screen implements Serializable {
 
     public abstract void configureMortarScope(ScreenContextFactory.BuilderContext builderContext);
 
-    public String getScopeName() {
+    public String getMortarScopeName() {
         return String.format("%s_%d", getClass().getName(), System.identityHashCode(this));
     }
 }

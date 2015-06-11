@@ -1,9 +1,13 @@
-package com.mortarnav;
+package com.mortarnav.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import com.mortarnav.DaggerService;
+import com.mortarnav.R;
+import com.mortarnav.screen.ScreenA;
 
 import javax.inject.Inject;
 

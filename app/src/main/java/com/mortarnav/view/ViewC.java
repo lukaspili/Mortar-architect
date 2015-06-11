@@ -1,8 +1,12 @@
-package com.mortarnav;
+package com.mortarnav.view;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import com.mortarnav.DaggerService;
+import com.mortarnav.R;
+import com.mortarnav.screen.ScreenC;
 
 import javax.inject.Inject;
 

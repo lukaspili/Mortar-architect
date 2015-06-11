@@ -1,41 +1,47 @@
-package com.mortarnav;
+package com.mortarnav.screen;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
+import com.mortarnav.DaggerScope;
+import com.mortarnav.DaggerService;
+import com.mortarnav.view.ScreenBSubPageView;
+import com.mortarnav.view.ViewA;
+
 import dagger.Provides;
 import mortar.ViewPresenter;
 import mortarnav.library.Navigator;
+import mortarnav.library.ScreenContextFactory;
 import mortarnav.library.screen.Screen;
-import mortarnav.library.screen.ScreenContextFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScreenB extends Screen {
+public class ScreenBSubPageScreen extends Screen {
 
     private String name;
 
-    public ScreenB(String name) {
+    public ScreenBSubPageScreen(String name) {
         this.name = name;
     }
 
     @Override
     public View createView(Context context) {
-        return new ViewB(context);
+        return new ScreenBSubPageView(context);
     }
 
     @Override
     public void configureMortarScope(ScreenContextFactory.BuilderContext builderContext) {
-        builderContext.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenB_Component.builder()
-                .component((MainActivity.Component) builderContext.getParentScope().getService(DaggerService.SERVICE_NAME))
+        builderContext.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenBSubPageScreen_Component.builder()
+                .component(builderContext.getParentScope().<ScreenB.Component>getService(DaggerService.SERVICE_NAME))
                 .module(new Module())
                 .build());
     }
 
     @dagger.Module
     public class Module {
+
         @Provides
         @DaggerScope(Component.class)
         public Presenter providesPresenter() {
@@ -43,16 +49,16 @@ public class ScreenB extends Screen {
         }
     }
 
-    @dagger.Component(modules = Module.class, dependencies = MainActivity.Component.class)
+    @dagger.Component(modules = Module.class, dependencies = ScreenB.Component.class)
     @DaggerScope(Component.class)
     public interface Component {
 
-        void inject(ViewB view);
+        void inject(ScreenBSubPageView view);
     }
 
-    public static class Presenter extends ViewPresenter<ViewB> {
+    public static class Presenter extends ViewPresenter<ScreenBSubPageView> {
 
-        private String name;
+        private final String name;
 
         public Presenter(String name) {
             this.name = name;
@@ -60,11 +66,11 @@ public class ScreenB extends Screen {
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
-            getView().configure(name);
+            getView().textView.setText("SCREEN B - " + name);
         }
 
         public void click() {
-            Navigator.get(getView().getContext()).push(new ScreenC());
+            Navigator.get(getView()).push(new ScreenBSubPageScreen("Page TWO!"));
         }
     }
 }

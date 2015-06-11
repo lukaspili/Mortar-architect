@@ -1,36 +1,61 @@
 package mortarnav.library;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
+import android.view.View;
 
 import mortar.MortarScope;
+import mortar.Scoped;
 import mortarnav.library.screen.Screen;
-import mortarnav.library.screen.ScreenContextFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class Navigator {
+public class Navigator implements Scoped {
 
+    public static final String SCOPE_NAME = Navigator.class.getName();
     public static final String SERVICE_NAME = Navigator.class.getName();
 
     public static Navigator get(Context context) {
-        return MortarScope.getScope(context).getService(SERVICE_NAME);
+        //noinspection ResourceType
+        return (Navigator) context.getSystemService(SERVICE_NAME);
     }
 
-    private final NavigatorLifecycleDelegate delegate;
-    private final History history;
-    private final ScreenContextFactory contextFactory;
-    private final NavigatorTransitions transitions;
-    private final NavigatorContainerManager containerManager;
-    private final Dispatcher dispatcher;
+    public static Navigator get(View view) {
+        return get(view.getContext());
+    }
 
-    public Navigator() {
-        delegate = new NavigatorLifecycleDelegate(this);
+    public static Navigator find(Context context) {
+        MortarScope scope = MortarScope.findChild(context, SCOPE_NAME);
+        return scope != null ? scope.<Navigator>getService(SERVICE_NAME) : null;
+    }
+
+    public static Navigator create(MortarScope parentScope) {
+        Navigator navigator = new Navigator();
+
+        MortarScope scope = parentScope.buildChild()
+                .withService(SERVICE_NAME, navigator)
+                .build(SCOPE_NAME);
+        scope.register(navigator);
+
+        return navigator;
+    }
+
+    final History history;
+    final ScreenContextFactory contextFactory;
+    final NavigatorTransitions transitions;
+    final NavigatorContainerManager containerManager;
+    final NavigatorLifecycleDelegate delegate;
+    final Dispatcher dispatcher;
+    private MortarScope scope;
+
+    private Navigator() {
         history = new History();
         contextFactory = new ScreenContextFactory();
         transitions = new NavigatorTransitions();
         containerManager = new NavigatorContainerManager(transitions);
-        dispatcher = new Dispatcher(history, containerManager, contextFactory);
+        delegate = new NavigatorLifecycleDelegate(this);
+        dispatcher = new Dispatcher(this);
     }
 
     public void push(Screen screen) {
@@ -60,24 +85,31 @@ public class Navigator {
         return delegate;
     }
 
-    void setHistory(History newHistory) {
+    void setNewHistory(History newHistory) {
         history.replaceBy(newHistory);
         dispatcher.dispatch();
     }
 
-    History getHistory() {
-        return history;
-    }
-
-    ScreenContextFactory getContextFactory() {
-        return contextFactory;
-    }
-
-    NavigatorContainerManager getContainerManager() {
-        return containerManager;
+    @Nullable
+    MortarScope getScope() {
+        return scope;
     }
 
     public NavigatorTransitions transitions() {
         return transitions;
+    }
+
+
+    // Scoped
+
+    @Override
+    public void onEnterScope(MortarScope scope) {
+        this.scope = scope;
+    }
+
+    @Override
+    public void onExitScope() {
+        this.scope = null;
+        dispatcher.stop();
     }
 }

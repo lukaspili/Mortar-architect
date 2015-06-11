@@ -65,7 +65,7 @@ public class History {
 
     public History.Entry findScreen(String scopeName) {
         for (History.Entry entry : entries) {
-            if (entry.getScreen().getScopeName().equals(scopeName)) {
+            if (entry.getScreen().getMortarScopeName().equals(scopeName)) {
                 return entry;
             }
         }
@@ -98,7 +98,7 @@ public class History {
 
         public Entry(Screen screen) {
             Preconditions.checkNotNull(screen, "Screen cannot be null");
-            Preconditions.checkNotNull(screen.getScopeName(), "Screen scope name cannot be null");
+            Preconditions.checkNotNull(screen.getMortarScopeName(), "Screen scope name cannot be null");
             this.screen = screen;
         }
 

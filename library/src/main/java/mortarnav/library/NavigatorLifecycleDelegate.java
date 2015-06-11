@@ -34,32 +34,32 @@ public class NavigatorLifecycleDelegate {
             history = History.create(defaultScreen);
         }
 
-        navigator.getContainerManager().setContainerView(containerView);
-        navigator.setHistory(history);
+        navigator.containerManager.setContainerView(containerView);
+        navigator.setNewHistory(history);
     }
 
     public void onNewIntent(Intent intent) {
         Preconditions.checkNotNull(intent, "Intent may not be null");
         if (intent.hasExtra(HISTORY_KEY)) {
             History history = History.fromBundle(intent.getBundleExtra(HISTORY_KEY));
-            navigator.setHistory(history);
+            navigator.setNewHistory(history);
         }
     }
 
     public void onSaveInstanceState(Bundle outState) {
         Preconditions.checkNotNull(outState, "SaveInstanceState bundle may not be null");
-        Bundle bundle = navigator.getHistory().toBundle();
+        Bundle bundle = navigator.history.toBundle();
         if (bundle != null) {
             outState.putBundle(HISTORY_KEY, bundle);
         }
     }
 
     public void onDestroy() {
-        navigator.getContainerManager().removeContainerView();
+        navigator.containerManager.removeContainerView();
     }
 
     public boolean onBackPressed() {
-        if (navigator.getContainerManager().containerViewOnBackPressed()) {
+        if (navigator.containerManager.containerViewOnBackPressed()) {
             return true;
         }
 

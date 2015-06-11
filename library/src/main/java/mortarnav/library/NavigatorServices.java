@@ -2,18 +2,12 @@ package mortarnav.library;
 
 import android.content.Context;
 
-import mortar.MortarScope;
-import mortarnav.library.screen.ScreenContextFactory;
-
 /**
- * Mortar scope helper
+ * Mortar services related to Navigator
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class NavigatorServices {
-
-    public static final String CONTEXTFACTORY_SERVICE_NAME = NavigatorServices.class.getName() + "_ContextFactoryService";
-    public static final String DAGGER_CONTAINER_SERVICE_NAME = NavigatorServices.class.getName() + "_ContextFactoryService";
 
     public static <T> T getService(Context context, String service) {
         //noinspection unchecked
@@ -21,12 +15,6 @@ public class NavigatorServices {
     }
 
     public static ScreenContextFactory getContextFactoryService(Context context) {
-        return getService(context, CONTEXTFACTORY_SERVICE_NAME);
-    }
-
-    public static MortarScope.Builder buildNavigatorContainerScope(Context parentContext, Navigator navigator) {
-        return MortarScope.buildChild(parentContext)
-                .withService(Navigator.SERVICE_NAME, navigator)
-                .withService(CONTEXTFACTORY_SERVICE_NAME, navigator.getContextFactory());
+        return Navigator.get(context).contextFactory;
     }
 }

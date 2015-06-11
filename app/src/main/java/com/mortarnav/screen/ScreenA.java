@@ -1,15 +1,21 @@
-package com.mortarnav;
+package com.mortarnav.screen;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
+import com.mortarnav.DaggerScope;
+import com.mortarnav.DaggerService;
+import com.mortarnav.MainActivity;
+import com.mortarnav.view.CustomViewA;
+import com.mortarnav.view.ViewA;
+
 import javax.inject.Inject;
 
 import mortar.ViewPresenter;
 import mortarnav.library.Navigator;
+import mortarnav.library.ScreenContextFactory;
 import mortarnav.library.screen.Screen;
-import mortarnav.library.screen.ScreenContextFactory;
 import timber.log.Timber;
 
 /**
@@ -25,7 +31,7 @@ public class ScreenA extends Screen {
     @Override
     public void configureMortarScope(ScreenContextFactory.BuilderContext builderContext) {
         builderContext.getScopeBuilder().withService(DaggerService.SERVICE_NAME, DaggerScreenA_Component.builder()
-                .component((MainActivity.Component) builderContext.getParentScope().getService(DaggerService.SERVICE_NAME))
+                .component(builderContext.getParentScope().<MainActivity.Component>getService(DaggerService.SERVICE_NAME))
                 .build());
     }
 

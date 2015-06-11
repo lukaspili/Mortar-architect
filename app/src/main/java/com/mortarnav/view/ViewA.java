@@ -1,8 +1,12 @@
-package com.mortarnav;
+package com.mortarnav.view;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import com.mortarnav.DaggerService;
+import com.mortarnav.R;
+import com.mortarnav.screen.ScreenA;
 
 import javax.inject.Inject;
 
@@ -13,21 +17,21 @@ import mortarnav.library.NavigatorServices;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class LoginView extends LinearLayout {
+public class ViewA extends LinearLayout {
 
     @Inject
-    protected LoginScreen.Presenter presenter;
+    protected ScreenA.Presenter presenter;
 
-    public LoginView(Context context) {
+    public ViewA(Context context) {
         super(context);
 
-        NavigatorServices.<LoginScreen.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
+        NavigatorServices.<ScreenA.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
 
-        View view = View.inflate(context, R.layout.screen_login, this);
+        View view = View.inflate(context, R.layout.screen_a, this);
         ButterKnife.inject(view);
     }
 
-    @OnClick(R.id.login_button)
+    @OnClick(R.id.button)
     void buttonClick() {
         presenter.click();
     }
