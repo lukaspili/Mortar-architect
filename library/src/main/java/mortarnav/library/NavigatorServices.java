@@ -9,11 +9,6 @@ import android.content.Context;
  */
 public class NavigatorServices {
 
-    public static <T> T getService(Context context, String service) {
-        //noinspection unchecked
-        return (T) context.getSystemService(service);
-    }
-
     public static ScreenContextFactory getContextFactoryService(Context context) {
         return Navigator.get(context).contextFactory;
     }

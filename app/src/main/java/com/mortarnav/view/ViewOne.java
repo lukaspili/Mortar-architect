@@ -11,7 +11,6 @@ import com.mortarnav.screen.SubscreenOne;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import mortarnav.library.NavigatorServices;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -24,7 +23,8 @@ public class ViewOne extends LinearLayout {
     public ViewOne(Context context) {
         super(context);
 
-        NavigatorServices.<SubscreenOne.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
+        DaggerService.<SubscreenOne.Component>get(context).inject(this);
+
         View view = View.inflate(context, R.layout.subscreen_one, this);
         ButterKnife.inject(view);
     }

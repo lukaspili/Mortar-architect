@@ -25,17 +25,19 @@ public class NavigatorLifecycleDelegate {
         Preconditions.checkNotNull(containerView, "Container view may not be null");
         Preconditions.checkNotNull(defaultScreen, "Default screen may not be null");
 
-        History history;
-        if (intent != null && intent.hasExtra(HISTORY_KEY)) {
-            history = History.fromBundle(intent.getBundleExtra(HISTORY_KEY));
-        } else if (savedInstanceState != null && savedInstanceState.containsKey(HISTORY_KEY)) {
-            history = History.fromBundle(savedInstanceState.getBundle(HISTORY_KEY));
-        } else {
-            history = History.create(defaultScreen);
+        if (navigator.history.isEmpty()) {
+            History history;
+            if (intent != null && intent.hasExtra(HISTORY_KEY)) {
+                history = History.fromBundle(intent.getBundleExtra(HISTORY_KEY));
+            } else if (savedInstanceState != null && savedInstanceState.containsKey(HISTORY_KEY)) {
+                history = History.fromBundle(savedInstanceState.getBundle(HISTORY_KEY));
+            } else {
+                history = History.create(defaultScreen);
+            }
+            navigator.setNewHistory(history);
         }
 
         navigator.containerManager.setContainerView(containerView);
-        navigator.setNewHistory(history);
     }
 
     public void onNewIntent(Intent intent) {

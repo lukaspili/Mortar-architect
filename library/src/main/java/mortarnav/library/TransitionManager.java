@@ -10,13 +10,13 @@ import mortarnav.library.transition.ScreenTransition;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class NavigatorContainerTransitionner {
+public class TransitionManager {
 
     private static final int DURATION = 300;
 
-    private final NavigatorTransitions transitions;
+    private final ContainerTransitions transitions;
 
-    public NavigatorContainerTransitionner(NavigatorTransitions transitions) {
+    public TransitionManager(ContainerTransitions transitions) {
         this.transitions = transitions;
     }
 

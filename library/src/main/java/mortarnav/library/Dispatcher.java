@@ -8,17 +8,14 @@ import mortar.MortarScope;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class Dispatcher implements NavigatorContainerManager.Listener {
+class Dispatcher {
 
     private final Navigator navigator;
     private boolean dispatching;
     private boolean stop;
 
-    public Dispatcher(Navigator navigator) {
+    Dispatcher(Navigator navigator) {
         this.navigator = navigator;
-
-        //TODO delete?
-        navigator.containerManager.addListener(this);
     }
 
     public void stop() {
@@ -27,12 +24,11 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
 
     public void dispatch() {
         if (stop || dispatching || !navigator.containerManager.isReady()) return;
-        Preconditions.checkNotNull(navigator.getScope(), "Dispatcher navigator scope cannot be null");
         dispatching = true;
+        Preconditions.checkNotNull(navigator.getScope(), "Dispatcher navigator scope cannot be null");
+        Preconditions.checkArgument(!navigator.history.isEmpty(), "Cannot dispatch empty history");
 
         History.Entry last = navigator.history.peek();
-        Preconditions.checkNotNull(last, "Cannot dispatch empty history");
-
         System.out.println("last screen history is " + last.getScreen());
 
         // default direction is FORWARD, unless we find previous scope in history
@@ -91,15 +87,15 @@ public class Dispatcher implements NavigatorContainerManager.Listener {
         dispatching = false;
     }
 
-
-    // NavigatorContainerManager.Listener
-
-    @Override
-    public void onContainerReady() {
+    /**
+     * Notified by the container manager when its ready
+     */
+    void onContainerReady() {
         System.out.println("onContainerReady");
+        dispatch();
     }
 
-    public enum Direction {
+    enum Direction {
         FORWARD, BACKWARD
     }
 

@@ -25,7 +25,7 @@ public class LoginView extends LinearLayout {
     public LoginView(Context context) {
         super(context);
 
-        NavigatorServices.<LoginScreen.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
+        DaggerService.<LoginScreen.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.screen_login, this);
         ButterKnife.inject(view);

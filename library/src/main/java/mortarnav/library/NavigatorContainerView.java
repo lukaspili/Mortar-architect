@@ -14,7 +14,7 @@ import mortarnav.library.view.HandlesBack;
  */
 public class NavigatorContainerView extends FrameLayout implements HandlesBack {
 
-    private NavigatorContainerTransitionner navigatorContainerTransitionner;
+    private TransitionManager transitionManager;
     private boolean interactionsDisabled;
 
     public NavigatorContainerView(Context context) {
@@ -43,7 +43,7 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
 
     public void performTransition(final View newView, final Dispatcher.Direction direction, final Dispatcher.TraversalCallback callback) {
         Preconditions.checkArgument(!interactionsDisabled, "Perform transition but previous one is still running");
-        Preconditions.checkNotNull(navigatorContainerTransitionner, "Cannot perform transition without transitionner set");
+        Preconditions.checkNotNull(transitionManager, "Cannot perform transition without transitionner set");
         interactionsDisabled = true;
 
         final View currentView = getCurrentView();
@@ -65,7 +65,7 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
         Util.waitForMeasure(newView, new Util.OnMeasuredCallback() {
             @Override
             public void onMeasured(View view, int width, int height) {
-                navigatorContainerTransitionner.transition(currentView, view, direction, new Dispatcher.TraversalCallback() {
+                transitionManager.transition(currentView, view, direction, new Dispatcher.TraversalCallback() {
                     @Override
                     public void onTraversalCompleted() {
                         removeView(currentView);
@@ -99,8 +99,8 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
         return false;
     }
 
-    public void setNavigatorContainerTransitionner(NavigatorContainerTransitionner navigatorContainerTransitionner) {
-        this.navigatorContainerTransitionner = navigatorContainerTransitionner;
+    public void setTransitionManager(TransitionManager transitionManager) {
+        this.transitionManager = transitionManager;
     }
 
     protected static class Util {

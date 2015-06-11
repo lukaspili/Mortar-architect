@@ -6,6 +6,7 @@ import android.widget.LinearLayout;
 
 import com.mortarnav.DaggerService;
 import com.mortarnav.R;
+import com.mortarnav.screen.LoginScreen;
 import com.mortarnav.screen.ScreenA;
 
 import javax.inject.Inject;
@@ -25,7 +26,7 @@ public class ViewA extends LinearLayout {
     public ViewA(Context context) {
         super(context);
 
-        NavigatorServices.<ScreenA.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
+        DaggerService.<ScreenA.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.screen_a, this);
         ButterKnife.inject(view);

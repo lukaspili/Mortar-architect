@@ -58,6 +58,10 @@ public class History {
         this.entries = entries;
     }
 
+    public boolean isEmpty() {
+        return entries.isEmpty();
+    }
+
     public void replaceBy(History history) {
         entries.clear();
         entries.addAll(history.entries);

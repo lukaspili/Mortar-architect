@@ -5,35 +5,27 @@ import android.os.Parcelable;
 import android.util.SparseArray;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class NavigatorContainerManager {
+class ContainerManager {
 
+    private final Dispatcher dispatcher;
+    private final TransitionManager containerTransitionner;
     private NavigatorContainerView containerView;
-    private final NavigatorContainerTransitionner containerTransitionner;
-    private final List<Listener> listeners;
 
-    NavigatorContainerManager(NavigatorTransitions transitions) {
-        containerTransitionner = new NavigatorContainerTransitionner(transitions);
-        listeners = new ArrayList<>();
-    }
-
-    void addListener(Listener listener) {
-        listeners.add(listener);
+    ContainerManager(Dispatcher dispatcher, ContainerTransitions transitions) {
+        this.dispatcher = dispatcher;
+        containerTransitionner = new TransitionManager(transitions);
     }
 
     void setContainerView(NavigatorContainerView view) {
         Preconditions.checkNotNull(view, "New containerView null");
         Preconditions.checkNull(containerView, "Current containerView not null");
         containerView = view;
-        containerView.setNavigatorContainerTransitionner(containerTransitionner);
-        for (Listener listener : listeners) {
-            listener.onContainerReady();
-        }
+        containerView.setTransitionManager(containerTransitionner);
+
+        dispatcher.onContainerReady();
     }
 
     void removeContainerView() {

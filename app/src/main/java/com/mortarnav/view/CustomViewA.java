@@ -7,6 +7,7 @@ import android.widget.FrameLayout;
 
 import com.mortarnav.DaggerService;
 import com.mortarnav.R;
+import com.mortarnav.screen.LoginScreen;
 import com.mortarnav.screen.ScreenA;
 
 import javax.inject.Inject;
@@ -26,7 +27,7 @@ public class CustomViewA extends FrameLayout {
     public CustomViewA(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        NavigatorServices.<ScreenA.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
+        DaggerService.<ScreenA.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.customview_a, this);
         ButterKnife.inject(view);

@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.mortarnav.DaggerService;
 import com.mortarnav.R;
+import com.mortarnav.screen.LoginScreen;
 import com.mortarnav.screen.ScreenBSubPageScreen;
 
 import javax.inject.Inject;
@@ -30,7 +31,7 @@ public class ScreenBSubPageView extends FrameLayout {
     public ScreenBSubPageView(Context context) {
         super(context);
 
-        NavigatorServices.<ScreenBSubPageScreen.Component>getService(context, DaggerService.SERVICE_NAME).inject(this);
+        DaggerService.<ScreenBSubPageScreen.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.screen_b_sub_page, this);
         ButterKnife.inject(view);

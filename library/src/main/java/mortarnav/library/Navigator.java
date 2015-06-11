@@ -43,8 +43,8 @@ public class Navigator implements Scoped {
 
     final History history;
     final ScreenContextFactory contextFactory;
-    final NavigatorTransitions transitions;
-    final NavigatorContainerManager containerManager;
+    final ContainerTransitions transitions;
+    final ContainerManager containerManager;
     final NavigatorLifecycleDelegate delegate;
     final Dispatcher dispatcher;
     private MortarScope scope;
@@ -52,10 +52,10 @@ public class Navigator implements Scoped {
     private Navigator() {
         history = new History();
         contextFactory = new ScreenContextFactory();
-        transitions = new NavigatorTransitions();
-        containerManager = new NavigatorContainerManager(transitions);
+        transitions = new ContainerTransitions();
         delegate = new NavigatorLifecycleDelegate(this);
         dispatcher = new Dispatcher(this);
+        containerManager = new ContainerManager(dispatcher, transitions);
     }
 
     public void push(Screen screen) {
@@ -95,7 +95,7 @@ public class Navigator implements Scoped {
         return scope;
     }
 
-    public NavigatorTransitions transitions() {
+    public ContainerTransitions transitions() {
         return transitions;
     }
 
