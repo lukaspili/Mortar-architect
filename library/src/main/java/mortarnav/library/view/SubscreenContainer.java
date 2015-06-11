@@ -1,4 +1,4 @@
-package mortarnav.library.screen.view;
+package mortarnav.library.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -8,7 +8,7 @@ import android.widget.FrameLayout;
 
 import mortarnav.library.NavigatorServices;
 import mortarnav.library.R;
-import mortarnav.library.screen.Screen;
+import mortarnav.library.Screen;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

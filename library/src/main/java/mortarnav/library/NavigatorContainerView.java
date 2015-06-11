@@ -14,7 +14,7 @@ import mortarnav.library.view.HandlesBack;
  */
 public class NavigatorContainerView extends FrameLayout implements HandlesBack {
 
-    private TransitionManager transitionManager;
+    private TransitionExecutor transitionExecutor;
     private boolean interactionsDisabled;
 
     public NavigatorContainerView(Context context) {
@@ -43,7 +43,7 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
 
     public void performTransition(final View newView, final Dispatcher.Direction direction, final Dispatcher.TraversalCallback callback) {
         Preconditions.checkArgument(!interactionsDisabled, "Perform transition but previous one is still running");
-        Preconditions.checkNotNull(transitionManager, "Cannot perform transition without transitionner set");
+        Preconditions.checkNotNull(transitionExecutor, "Cannot perform transition without transitionner set");
         interactionsDisabled = true;
 
         final View currentView = getCurrentView();
@@ -65,7 +65,7 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
         Util.waitForMeasure(newView, new Util.OnMeasuredCallback() {
             @Override
             public void onMeasured(View view, int width, int height) {
-                transitionManager.transition(currentView, view, direction, new Dispatcher.TraversalCallback() {
+                transitionExecutor.makeTransition(currentView, view, direction, new Dispatcher.TraversalCallback() {
                     @Override
                     public void onTraversalCompleted() {
                         removeView(currentView);
@@ -99,8 +99,8 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
         return false;
     }
 
-    public void setTransitionManager(TransitionManager transitionManager) {
-        this.transitionManager = transitionManager;
+    public void setTransitionExecutor(TransitionExecutor transitionExecutor) {
+        this.transitionExecutor = transitionExecutor;
     }
 
     protected static class Util {

@@ -11,19 +11,19 @@ import android.view.View;
 class ContainerManager {
 
     private final Dispatcher dispatcher;
-    private final TransitionManager containerTransitionner;
+    private final TransitionExecutor containerTransitionner;
     private NavigatorContainerView containerView;
 
-    ContainerManager(Dispatcher dispatcher, ContainerTransitions transitions) {
+    ContainerManager(Dispatcher dispatcher, Transitions transitions) {
         this.dispatcher = dispatcher;
-        containerTransitionner = new TransitionManager(transitions);
+        containerTransitionner = new TransitionExecutor(transitions);
     }
 
     void setContainerView(NavigatorContainerView view) {
         Preconditions.checkNotNull(view, "New containerView null");
         Preconditions.checkNull(containerView, "Current containerView not null");
         containerView = view;
-        containerView.setTransitionManager(containerTransitionner);
+        containerView.setTransitionExecutor(containerTransitionner);
 
         dispatcher.onContainerReady();
     }

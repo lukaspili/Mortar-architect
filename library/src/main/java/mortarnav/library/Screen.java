@@ -1,4 +1,4 @@
-package mortarnav.library.screen;
+package mortarnav.library;
 
 import android.content.Context;
 import android.view.View;

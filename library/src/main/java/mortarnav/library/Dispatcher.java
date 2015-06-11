@@ -91,7 +91,6 @@ class Dispatcher {
      * Notified by the container manager when its ready
      */
     void onContainerReady() {
-        System.out.println("onContainerReady");
         dispatch();
     }
 

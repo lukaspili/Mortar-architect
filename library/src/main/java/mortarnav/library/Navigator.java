@@ -6,7 +6,6 @@ import android.view.View;
 
 import mortar.MortarScope;
 import mortar.Scoped;
-import mortarnav.library.screen.Screen;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -25,6 +24,10 @@ public class Navigator implements Scoped {
         return get(view.getContext());
     }
 
+    /**
+     * Retreive the navigator from the nearest child of the current context
+     * Use this method from the host of a navigator container view to retrieve the associated navigator
+     */
     public static Navigator find(Context context) {
         MortarScope scope = MortarScope.findChild(context, SCOPE_NAME);
         return scope != null ? scope.<Navigator>getService(SERVICE_NAME) : null;
@@ -43,7 +46,7 @@ public class Navigator implements Scoped {
 
     final History history;
     final ScreenContextFactory contextFactory;
-    final ContainerTransitions transitions;
+    final Transitions transitions;
     final ContainerManager containerManager;
     final NavigatorLifecycleDelegate delegate;
     final Dispatcher dispatcher;
@@ -52,7 +55,7 @@ public class Navigator implements Scoped {
     private Navigator() {
         history = new History();
         contextFactory = new ScreenContextFactory();
-        transitions = new ContainerTransitions();
+        transitions = new Transitions();
         delegate = new NavigatorLifecycleDelegate(this);
         dispatcher = new Dispatcher(this);
         containerManager = new ContainerManager(dispatcher, transitions);
@@ -85,17 +88,15 @@ public class Navigator implements Scoped {
         return delegate;
     }
 
-    void setNewHistory(History newHistory) {
-        history.replaceBy(newHistory);
-        dispatcher.dispatch();
-    }
-
+    /**
+     * Scope can be null if the method is called after the navigator scope was destroyed
+     */
     @Nullable
     MortarScope getScope() {
         return scope;
     }
 
-    public ContainerTransitions transitions() {
+    public Transitions transitions() {
         return transitions;
     }
 
@@ -109,7 +110,7 @@ public class Navigator implements Scoped {
 
     @Override
     public void onExitScope() {
-        this.scope = null;
         dispatcher.stop();
+        this.scope = null;
     }
 }

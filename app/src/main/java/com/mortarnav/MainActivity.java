@@ -13,7 +13,7 @@ import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 import mortarnav.library.Navigator;
 import mortarnav.library.NavigatorContainerView;
-import mortarnav.library.NavigatorTransition;
+import mortarnav.library.Transition;
 import mortarnav.library.transition.BottomAppearTransition;
 import mortarnav.library.transition.HorizontalScreenTransition;
 
@@ -53,8 +53,8 @@ public class MainActivity extends Activity {
 
             Navigator navigator = Navigator.create(scope);
             navigator.transitions()
-                    .register(NavigatorTransition.defaultTransition(new HorizontalScreenTransition()))
-                    .register(NavigatorTransition.forView(ViewB.class).fromAny().withTransition(new BottomAppearTransition()));
+                    .register(Transition.defaultTransition(new HorizontalScreenTransition()))
+                    .register(Transition.forView(ViewB.class).fromAny().withTransition(new BottomAppearTransition()));
         }
 
         BundleServiceRunner.getBundleServiceRunner(this).onCreate(savedInstanceState);

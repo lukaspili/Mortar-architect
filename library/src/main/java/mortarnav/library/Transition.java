@@ -10,7 +10,7 @@ import mortarnav.library.transition.ScreenTransition;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class NavigatorTransition {
+public class Transition {
 
     private Class<? extends View> target;
     private Set<Class<? extends View>> from;
@@ -25,8 +25,8 @@ public class NavigatorTransition {
         return new TargetsBuilder(views);
     }
 
-    public static NavigatorTransition defaultTransition(ScreenTransition transition) {
-        NavigatorTransition navigatorTransition = new NavigatorTransition();
+    public static Transition defaultTransition(ScreenTransition transition) {
+        Transition navigatorTransition = new Transition();
         navigatorTransition.transition = transition;
         navigatorTransition.fromAny = true;
         return navigatorTransition;
@@ -50,11 +50,11 @@ public class NavigatorTransition {
 
     public static class TargetBuilder {
 
-        private NavigatorTransition transition;
+        private Transition transition;
 
         private TargetBuilder(Class<? extends View> target) {
             Preconditions.checkNotNull(target, "Target cannot be null");
-            transition = new NavigatorTransition();
+            transition = new Transition();
             transition.target = target;
         }
 
@@ -76,16 +76,16 @@ public class NavigatorTransition {
             return this;
         }
 
-        public NavigatorTransition withTransition(ScreenTransition transition) {
+        public Transition withTransition(ScreenTransition transition) {
             this.transition.transition = transition;
             return build();
         }
 
-        public NavigatorTransition withoutTransition() {
+        public Transition withoutTransition() {
             return build();
         }
 
-        private NavigatorTransition build() {
+        private Transition build() {
             Preconditions.checkArgument(transition.from != null || transition.fromAny, "Must call from() or fromAny()");
             return this.transition;
         }
@@ -106,8 +106,8 @@ public class NavigatorTransition {
             }
         }
 
-        public Set<NavigatorTransition> withTransition(ScreenTransition transition) {
-            Set<NavigatorTransition> transitions = new HashSet<>(builders.size());
+        public Set<Transition> withTransition(ScreenTransition transition) {
+            Set<Transition> transitions = new HashSet<>(builders.size());
             for (TargetBuilder builder : builders) {
                 transitions.add(builder.withTransition(transition));
             }
@@ -115,16 +115,14 @@ public class NavigatorTransition {
             return transitions;
         }
 
-        public Set<NavigatorTransition> withoutTransition() {
-            Set<NavigatorTransition> transitions = new HashSet<>(builders.size());
+        public Set<Transition> withoutTransition() {
+            Set<Transition> transitions = new HashSet<>(builders.size());
             for (TargetBuilder builder : builders) {
                 transitions.add(builder.withoutTransition());
             }
 
             return transitions;
         }
-
-
     }
 
 }

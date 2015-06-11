@@ -3,8 +3,6 @@ package mortarnav.library;
 import android.content.Intent;
 import android.os.Bundle;
 
-import mortarnav.library.screen.Screen;
-
 /**
  * Bridge between a navigator and Android
  *
@@ -34,17 +32,19 @@ public class NavigatorLifecycleDelegate {
             } else {
                 history = History.create(defaultScreen);
             }
-            navigator.setNewHistory(history);
+            navigator.history.replaceBy(history);
         }
 
+        // set the container, which triggers a dispatch
         navigator.containerManager.setContainerView(containerView);
     }
 
+    //TODO: copy past from Flow, but not tested
     public void onNewIntent(Intent intent) {
         Preconditions.checkNotNull(intent, "Intent may not be null");
         if (intent.hasExtra(HISTORY_KEY)) {
             History history = History.fromBundle(intent.getBundleExtra(HISTORY_KEY));
-            navigator.setNewHistory(history);
+            navigator.history.replaceBy(history);
         }
     }
 

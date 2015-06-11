@@ -10,17 +10,17 @@ import mortarnav.library.transition.ScreenTransition;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class TransitionManager {
+public class TransitionExecutor {
 
     private static final int DURATION = 300;
 
-    private final ContainerTransitions transitions;
+    private final Transitions transitions;
 
-    public TransitionManager(ContainerTransitions transitions) {
+    public TransitionExecutor(Transitions transitions) {
         this.transitions = transitions;
     }
 
-    public void transition(View originView, View destinationView, Dispatcher.Direction direction, final Dispatcher.TraversalCallback callback) {
+    public void makeTransition(View originView, View destinationView, Dispatcher.Direction direction, final Dispatcher.TraversalCallback callback) {
         // depending on transition direction, the target view is either the origin or destination
         View target = direction == Dispatcher.Direction.FORWARD ? destinationView : originView;
         View from = direction == Dispatcher.Direction.FORWARD ? originView : destinationView;

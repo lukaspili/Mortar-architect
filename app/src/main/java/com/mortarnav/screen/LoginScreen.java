@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import mortar.MortarScope;
 import mortar.ViewPresenter;
 import mortarnav.library.ScreenContextFactory;
-import mortarnav.library.screen.Screen;
+import mortarnav.library.Screen;
 import timber.log.Timber;
 
 /**

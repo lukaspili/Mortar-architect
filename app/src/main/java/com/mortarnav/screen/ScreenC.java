@@ -13,7 +13,7 @@ import javax.inject.Inject;
 
 import mortar.ViewPresenter;
 import mortarnav.library.ScreenContextFactory;
-import mortarnav.library.screen.Screen;
+import mortarnav.library.Screen;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

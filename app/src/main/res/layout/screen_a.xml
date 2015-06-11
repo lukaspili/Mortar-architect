@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:text="Got to View B"/>
 
-    <mortarnav.library.screen.view.SubscreenContainer
+    <mortarnav.library.view.SubscreenContainer
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:screenClass="com.mortarnav.screen.SubscreenOne"/>
@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <mortarnav.library.screen.view.SubscreenContainer
+    <mortarnav.library.view.SubscreenContainer
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:screenClass="com.mortarnav.screen.LoginScreen"/>

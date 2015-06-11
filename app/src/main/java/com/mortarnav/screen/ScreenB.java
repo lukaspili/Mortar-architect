@@ -13,9 +13,9 @@ import dagger.Provides;
 import mortar.MortarScope;
 import mortar.ViewPresenter;
 import mortarnav.library.Navigator;
-import mortarnav.library.NavigatorTransition;
+import mortarnav.library.Transition;
 import mortarnav.library.ScreenContextFactory;
-import mortarnav.library.screen.Screen;
+import mortarnav.library.Screen;
 import mortarnav.library.transition.HorizontalScreenTransition;
 import timber.log.Timber;
 
@@ -76,7 +76,7 @@ public class ScreenB extends Screen {
             Timber.d("Find navigator: %s", navigator);
             if (navigator == null) {
                 navigator = Navigator.create(MortarScope.getScope(getView().getContext()));
-                navigator.transitions().register(NavigatorTransition.defaultTransition(new HorizontalScreenTransition()));
+                navigator.transitions().register(Transition.defaultTransition(new HorizontalScreenTransition()));
             }
 
             navigator.delegate().onCreate(null, savedInstanceState, getView().containerView, new ScreenBSubPageScreen("One!"));

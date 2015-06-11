@@ -12,28 +12,28 @@ import mortarnav.library.transition.ScreenTransition;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ContainerTransitions {
+public class Transitions {
 
     /**
      * Mapping of target -> from -> transition
      */
     private final Map<Key, Map<Key, ScreenTransition>> transitions;
 
-    public ContainerTransitions() {
+    public Transitions() {
         transitions = new HashMap<>();
     }
 
-    public ContainerTransitions register(List<NavigatorTransition> transitions) {
+    public Transitions register(List<Transition> transitions) {
         Preconditions.checkNotNull(transitions, "Transitions cannot be null");
 
-        for (NavigatorTransition transition : transitions) {
+        for (Transition transition : transitions) {
             register(transition);
         }
 
         return this;
     }
 
-    public ContainerTransitions register(NavigatorTransition transition) {
+    public Transitions register(Transition transition) {
         Preconditions.checkNotNull(transition, "Transition cannot be null");
 
         Key target = new Key(transition.getTarget());

@@ -7,13 +7,12 @@ import android.view.View;
 import com.mortarnav.DaggerScope;
 import com.mortarnav.DaggerService;
 import com.mortarnav.view.ScreenBSubPageView;
-import com.mortarnav.view.ViewA;
 
 import dagger.Provides;
 import mortar.ViewPresenter;
 import mortarnav.library.Navigator;
 import mortarnav.library.ScreenContextFactory;
-import mortarnav.library.screen.Screen;
+import mortarnav.library.Screen;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
