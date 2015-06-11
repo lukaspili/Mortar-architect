@@ -12,8 +12,6 @@ import mortarnav.library.transition.ScreenTransition;
  */
 public class TransitionExecutor {
 
-    private static final int DURATION = 300;
-
     private final Transitions transitions;
 
     public TransitionExecutor(Transitions transitions) {
@@ -32,7 +30,6 @@ public class TransitionExecutor {
         }
 
         AnimatorSet set = new AnimatorSet();
-        set.setDuration(DURATION);
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
