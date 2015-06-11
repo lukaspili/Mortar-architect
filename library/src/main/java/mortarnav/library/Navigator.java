@@ -33,10 +33,10 @@ public class Navigator implements Scoped {
         return scope != null ? scope.<Navigator>getService(SERVICE_NAME) : null;
     }
 
-    public static Navigator create(MortarScope parentScope) {
+    public static Navigator create(MortarScope containerScope) {
         Navigator navigator = new Navigator();
 
-        MortarScope scope = parentScope.buildChild()
+        MortarScope scope = containerScope.buildChild()
                 .withService(SERVICE_NAME, navigator)
                 .build(SCOPE_NAME);
         scope.register(navigator);

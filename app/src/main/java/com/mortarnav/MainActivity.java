@@ -5,15 +5,20 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.mortarnav.screen.ScreenA;
-import com.mortarnav.view.ViewB;
+import com.mortarnav.view.ViewC;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import dagger.Provides;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 import mortarnav.library.Navigator;
 import mortarnav.library.NavigatorContainerView;
 import mortarnav.library.Transition;
+import mortarnav.library.dagger.NavigatorInjector;
 import mortarnav.library.transition.BottomAppearTransition;
 import mortarnav.library.transition.HorizontalScreenTransition;
 
@@ -43,6 +48,7 @@ public class MainActivity extends Activity {
         if (scope == null) {
             Component component = DaggerMainActivity_Component.builder()
                     .component(App.getComponent(getApplication()))
+                    .navigatorModule(new NavigatorModule())
                     .build();
             component.inject(this);
 
@@ -52,9 +58,14 @@ public class MainActivity extends Activity {
                     .build(getClass().getName());
 
             Navigator navigator = Navigator.create(scope);
-            navigator.transitions()
-                    .register(Transition.defaultTransition(new HorizontalScreenTransition()))
-                    .register(Transition.forView(ViewB.class).fromAny().withTransition(new BottomAppearTransition()));
+
+            // option1: inject navigator transitions
+            component.inject(navigator.transitions());
+
+            // option2: register them directly
+//            navigator.transitions()
+//                    .register(Transition.defaultTransition(new HorizontalScreenTransition()))
+//                    .register(Transition.forView(ViewB.class).fromAny().withTransition(new BottomAppearTransition()));
         }
 
         BundleServiceRunner.getBundleServiceRunner(this).onCreate(savedInstanceState);
@@ -102,10 +113,24 @@ public class MainActivity extends Activity {
         super.onBackPressed();
     }
 
-    @dagger.Component(dependencies = App.Component.class)
+    @dagger.Component(dependencies = App.Component.class, modules = NavigatorModule.class)
     @DaggerScope(Component.class)
-    public interface Component {
+    public interface Component extends NavigatorInjector {
 
         void inject(MainActivity activity);
+    }
+
+    @dagger.Module
+    public static class NavigatorModule {
+
+        @Provides
+        @DaggerScope(Component.class)
+        public List<Transition> providesTransitions() {
+            List<Transition> transitions = new ArrayList<>();
+            transitions.add(Transition.defaultTransition(new HorizontalScreenTransition()));
+            transitions.add(Transition.forView(ViewC.class).fromAny().withTransition(new BottomAppearTransition()));
+
+            return transitions;
+        }
     }
 }

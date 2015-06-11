@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import mortarnav.library.transition.ScreenTransition;
 
 /**
@@ -21,6 +23,14 @@ public class Transitions {
 
     public Transitions() {
         transitions = new HashMap<>();
+    }
+
+    /**
+     * Allows to register transitions by injection
+     */
+    @Inject
+    public void setTransitions(List<Transition> transitions) {
+        register(transitions);
     }
 
     public Transitions register(List<Transition> transitions) {
