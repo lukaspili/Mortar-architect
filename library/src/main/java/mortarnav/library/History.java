@@ -1,13 +1,15 @@
 package mortarnav.library;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.SparseArray;
+import android.view.View;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Deque;
+import java.util.Iterator;
 
 /**
  * An history of scopes...
@@ -38,12 +40,6 @@ public class History {
         ScopeNamer scopeNamer = bundle.getParcelable(SCOPES_NAMER_KEY);
 
         return new History(entries, scopeNamer);
-    }
-
-    static History create(NavigationPath path) {
-        History history = new History();
-        history.push(path);
-        return history;
     }
 
     Bundle toBundle() {
@@ -78,29 +74,9 @@ public class History {
         return entries.isEmpty();
     }
 
-    /**
-     * Filter should return true to stop the loop
-     */
-    void filterFromTop(Filter filter) {
-        for (Entry entry : entries) {
-            if (filter.filter(entry)) {
-                return;
-            }
-        }
-    }
-
-    void removeAll(Collection<Entry> entries) {
-        this.entries.removeAll(entries);
-    }
-
     void copy(History history) {
         Preconditions.checkArgument(entries.isEmpty(), "Cannot copy new history if previous one is not empty");
         entries.addAll(history.entries);
-
-        Logger.d("New history");
-        for (Entry entry : entries) {
-            Logger.d("Entry scope = %s", entry.scopeName);
-        }
     }
 
     History.Entry find(String scope) {
@@ -122,14 +98,29 @@ public class History {
     }
 
     /**
-     * At least 2 entries
+     * At least 2 alive entries
      */
     boolean canKill() {
-        return entries.size() > 1;
+        int notdead = 0;
+        for (Entry entry : entries) {
+            if (!entry.dead) {
+                notdead++;
+            }
+        }
+
+        return notdead > 1;
     }
 
+    /**
+     * Kill the most top entry
+     */
     void killTop() {
-        entries.getFirst().dead = true;
+        for (Entry entry : entries) {
+            if (!entry.dead) {
+                entry.dead = true;
+                return;
+            }
+        }
     }
 
     /**
@@ -145,20 +136,43 @@ public class History {
         return null;
     }
 
+    /**
+     * Iterate from top, until it reach "until"
+     * Remove all dead entries between top and until
+     *
+     * @throws IllegalStateException if it never reaches "until", meaning "until" is not present in history
+     */
+    void removeDeadUntil(Entry until, Processor processor) {
+        Iterator<Entry> it = entries.iterator();
+        while (it.hasNext()) {
+            Entry entry = it.next();
+            if (entry == until) {
+                return;
+            }
+
+            if (entry.dead) {
+                processor.process(entry);
+                it.remove();
+            }
+        }
+
+        throw new IllegalStateException("Entry until is not present in history");
+    }
+
     static class Entry {
         final String scopeName;
-        final NavigationPath path;
+        final Factory factory;
         final NavigationScope scope;
         SparseArray<Parcelable> state;
         boolean dead;
 
-        public Entry(String scopeName, NavigationScope scope, NavigationPath path) {
+        public Entry(String scopeName, NavigationScope scope, Factory factory) {
             Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");
             Preconditions.checkNotNull(scope, "Scope cannot be null");
-            Preconditions.checkNotNull(path, "Path cannot be null");
+            Preconditions.checkNotNull(factory, "Factory cannot be null");
             this.scopeName = scopeName;
             this.scope = scope;
-            this.path = path;
+            this.factory = factory;
         }
 
         private Bundle toBundle() {
@@ -170,16 +184,16 @@ public class History {
 
             Bundle bundle = new Bundle();
             bundle.putString(SCOPE_KEY, scopeName);
-            bundle.putParcelable(PATH_KEY, path);
+            bundle.putParcelable(PATH_KEY, factory);
             bundle.putSparseParcelableArray(STATE_KEY, state);
             return bundle;
         }
 
         private static Entry fromBundle(Bundle bundle) {
-            NavigationPath path = bundle.getParcelable(PATH_KEY);
+            Factory factory = bundle.getParcelable(PATH_KEY);
 
             // new entry with new scope instance, but preserving previous scope name
-            Entry entry = new Entry(bundle.getString(SCOPE_KEY), path.withScope(), path);
+            Entry entry = new Entry(bundle.getString(SCOPE_KEY), factory.createScope(), factory);
             entry.state = bundle.getSparseParcelableArray(STATE_KEY);
             return entry;
         }
@@ -199,9 +213,19 @@ public class History {
         public int hashCode() {
             return scopeName.hashCode();
         }
+
+        /**
+         * Attached to History entry and persisted
+         * Allow to create and recreate instances of scopes & views
+         */
+        interface Factory extends Parcelable {
+            NavigationScope createScope();
+
+            View createView(Context context);
+        }
     }
 
-    interface Filter {
-        boolean filter(Entry entry);
+    interface Processor {
+        void process(Entry entry);
     }
 }

@@ -1,8 +1,5 @@
 package mortarnav.library;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mortar.MortarScope;
 
 /**
@@ -75,42 +72,23 @@ class Dispatcher {
             @Override
             public void onComplete() {
                 if (navigator.getScope() != null) {
-                    clean(top);
+                    // remove dead entries from real top until the dispatching top
+                    navigator.history.removeDeadUntil(top, new History.Processor() {
+                        @Override
+                        public void process(History.Entry entry) {
+                            MortarScope scope = navigator.getScope().findChild(entry.scopeName);
+                            if (scope != null) {
+                                Logger.d("Destroy scope %s", entry.scopeName);
+                                scope.destroy();
+                            }
+                        }
+                    });
                 }
 
                 endDispatch();
                 dispatch();
             }
         });
-    }
-
-    private void clean(final History.Entry current) {
-        final List<History.Entry> entriesToRemove = new ArrayList<>();
-        navigator.history.filterFromTop(new History.Filter() {
-            @Override
-            public boolean filter(History.Entry entry) {
-                if (entry == current) {
-                    // stop when we get to the currently dispatched entry
-                    return false;
-                }
-
-                if (entry.dead) {
-                    // destroy scope and add entry to be removed from history
-                    MortarScope scope = navigator.getScope().findChild(entry.scopeName);
-                    if (scope != null) {
-                        Logger.d("Destroy scope %s", entry.scopeName);
-                        scope.destroy();
-                    }
-                    entriesToRemove.add(entry);
-                }
-
-                return true;
-            }
-        });
-
-        if (!entriesToRemove.isEmpty()) {
-            navigator.history.removeAll(entriesToRemove);
-        }
     }
 
     private void endDispatch() {

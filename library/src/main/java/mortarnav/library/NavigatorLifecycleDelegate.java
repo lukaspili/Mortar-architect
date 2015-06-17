@@ -24,16 +24,18 @@ public class NavigatorLifecycleDelegate {
         Preconditions.checkNotNull(defaultPath, "Default path cannot not be null");
 
         if (navigator.history.isEmpty()) {
-            History history;
+            History history = null;
             if (intent != null && intent.hasExtra(HISTORY_KEY)) {
                 history = History.fromBundle(intent.getBundleExtra(HISTORY_KEY));
             } else if (savedInstanceState != null && savedInstanceState.containsKey(HISTORY_KEY)) {
                 history = History.fromBundle(savedInstanceState.getBundle(HISTORY_KEY));
-            } else {
-                history = History.create(defaultPath);
             }
 
-            navigator.history.copy(history);
+            if (history != null) {
+                navigator.history.copy(history);
+            } else {
+                navigator.history.push(defaultPath);
+            }
         }
 
         navigator.presenter.attach(containerView);

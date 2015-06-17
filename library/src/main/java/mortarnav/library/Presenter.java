@@ -70,7 +70,7 @@ class Presenter {
         dispatchingCallback = callback;
 
         Context context = newScope.createContext(view.getContext());
-        View newView = entry.path.withView(context);
+        View newView = entry.factory.createView(context);
 
         if (entry.state != null) {
             newView.restoreHierarchyState(entry.state);

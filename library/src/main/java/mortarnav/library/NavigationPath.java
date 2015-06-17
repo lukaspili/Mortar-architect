@@ -2,13 +2,12 @@ package mortarnav.library;
 
 import android.content.Context;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.view.View;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class NavigationPath<T extends NavigationScope> implements Parcelable {
+public abstract class NavigationPath<T extends NavigationScope> implements History.Entry.Factory {
 
     public NavigationPath() {
 
@@ -17,6 +16,16 @@ public abstract class NavigationPath<T extends NavigationScope> implements Parce
     protected NavigationPath(Parcel parcel) {
         this();
         readParcel(parcel);
+    }
+
+    @Override
+    public final NavigationScope createScope() {
+        return withScope();
+    }
+
+    @Override
+    public final View createView(Context context) {
+        return withView(context);
     }
 
     @Override
