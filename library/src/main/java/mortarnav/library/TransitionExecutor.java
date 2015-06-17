@@ -18,14 +18,10 @@ public class TransitionExecutor {
         this.transitions = transitions;
     }
 
-    public void makeTransition(View originView, View destinationView, Dispatcher.Direction direction, final Dispatcher.TraversalCallback callback) {
-        // depending on transition direction, the target view is either the origin or destination
-        View target = direction == Dispatcher.Direction.FORWARD ? destinationView : originView;
-        View from = direction == Dispatcher.Direction.FORWARD ? originView : destinationView;
-        ScreenTransition transition = transitions.findTransition(target, from);
+    public void makeTransition(View originView, View destinationView, Dispatcher.Direction direction, final Presenter.PresenterSession session, final Presenter.TransitionCallback callback) {
+        ScreenTransition transition = findTransition(originView, destinationView, direction);
         if (transition == null) {
-            System.out.println("Cannot find transition for " + destinationView);
-            callback.onTraversalCompleted();
+            callback.onTransitionFinished(session);
             return;
         }
 
@@ -33,7 +29,7 @@ public class TransitionExecutor {
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                callback.onTraversalCompleted();
+                callback.onTransitionFinished(session);
             }
         });
 
@@ -46,5 +42,12 @@ public class TransitionExecutor {
         }
 
         set.start();
+    }
+
+    private ScreenTransition findTransition(View originView, View destinationView, Dispatcher.Direction direction) {
+        // depending on transition direction, the target view is either the origin or destination
+        View target = direction == Dispatcher.Direction.FORWARD ? destinationView : originView;
+        View from = direction == Dispatcher.Direction.FORWARD ? originView : destinationView;
+        return transitions.findTransition(target, from);
     }
 }

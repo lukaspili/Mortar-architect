@@ -2,6 +2,8 @@ package mortarnav.library;
 
 import android.content.Context;
 
+import mortar.MortarScope;
+
 /**
  * Mortar services related to Navigator
  *
@@ -9,7 +11,13 @@ import android.content.Context;
  */
 public class NavigatorServices {
 
-    public static ScreenContextFactory getContextFactoryService(Context context) {
-        return Navigator.get(context).contextFactory;
+    /**
+     * Get service from navigator's mortar scope or its parent
+     */
+    public static <T> T getService(MortarScope scope, String name) {
+        Navigator navigator = scope.getService(Navigator.SERVICE_NAME);
+        Preconditions.checkNotNull(navigator, "Cannot find navigator in the scope");
+
+        return navigator.getScope().getService(name);
     }
 }

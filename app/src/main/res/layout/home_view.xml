@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/holo_orange_dark"
+              android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/home_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/home_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+    <Button
+        android:id="@+id/next_home_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to next home view"/>
+
+    <Button
+        android:id="@+id/subnav_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to view with sub navigator"/>
+
+    <com.mortarnav.view.HomeSubcontentView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <com.mortarnav.view.HomeAdditionalCustomView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"/>
+
+    <com.mortarnav.view.BannerView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"/>
+
+    <!--<mortarnav.library.view.SubscreenContainer-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--app:screenClass="com.mortarnav.screen.SubscreenOne"/>-->
+
+    <!--<com.mortarnav.view.CustomViewA-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"/>-->
+
+    <!--<mortarnav.library.view.SubscreenContainer-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--app:screenClass="com.mortarnav.screen.LoginScreen"/>-->
+</LinearLayout>

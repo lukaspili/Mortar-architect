@@ -6,68 +6,106 @@ import android.util.SparseArray;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 
 /**
+ * An history of scopes...
+ * History restoration from instance state bundle is only used during app process kill
+ * During simple configuration change, the navigator scope is preserved, and thus the history also
+ * See NavigatorLifecycleDelegate.onCreate() to see implementation details
+ * <p/>
+ * History also persists its ScopeNamer instance, in order to preserve scope names
+ * between state restoration (process kill)
+ *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class History {
 
-    public static History create(Screen... screens) {
-        Preconditions.checkNotNull(screens, "Screens null");
-        Preconditions.checkArgument(screens.length > 0, "Cannot create empty history");
+    private static final String ENTRIES_KEY = "ENTRIES";
+    private static final String PATH_KEY = "PATH";
+    private static final String SCOPE_KEY = "SCOPE_STATE";
+    private static final String STATE_KEY = "VIEW_STATE";
+    private static final String SCOPES_NAMER_KEY = "SCOPES_IDS";
 
-        Deque<Entry> entries = new ArrayDeque<>();
-        for (Screen screen : screens) {
-            entries.add(new Entry(screen));
-        }
-        return new History(entries);
-    }
-
-    public static History fromBundle(Bundle bundle) {
-        ArrayList<Bundle> entryBundles = bundle.getParcelableArrayList("ENTRIES");
+    static History fromBundle(Bundle bundle) {
+        ArrayList<Bundle> entryBundles = bundle.getParcelableArrayList(ENTRIES_KEY);
         Deque<Entry> entries = new ArrayDeque<>(entryBundles.size());
         for (Bundle entryBundle : entryBundles) {
-            Screen screen = (Screen) entryBundle.get("SCREEN");
-            Entry entry = new Entry(screen);
-            entry.state = entryBundle.getSparseParcelableArray("VIEW_STATE");
-            entries.add(entry);
+            entries.add(Entry.fromBundle(entryBundle));
         }
-        return new History(entries);
+
+        ScopeNamer scopeNamer = bundle.getParcelable(SCOPES_NAMER_KEY);
+
+        return new History(entries, scopeNamer);
     }
 
-    public Bundle toBundle() {
+    static History create(NavigationPath path) {
+        History history = new History();
+        history.push(path);
+        return history;
+    }
+
+    Bundle toBundle() {
         Bundle historyBundle = new Bundle();
         ArrayList<Bundle> entryBundles = new ArrayList<>(entries.size());
         for (Entry entry : entries) {
-            entryBundles.add(entry.toBundle());
+            Bundle entryBundle = entry.toBundle();
+            if (entryBundle != null) {
+                entryBundles.add(entryBundle);
+            }
         }
-        historyBundle.putParcelableArrayList("ENTRIES", entryBundles);
+        historyBundle.putParcelableArrayList(ENTRIES_KEY, entryBundles);
+        historyBundle.putParcelable(SCOPES_NAMER_KEY, scopeNamer);
+
         return historyBundle;
     }
 
     private final Deque<Entry> entries;
+    private final ScopeNamer scopeNamer;
 
     History() {
-        this(new ArrayDeque<Entry>());
+        this(new ArrayDeque<Entry>(), new ScopeNamer());
     }
 
-    private History(Deque<Entry> entries) {
+    private History(Deque<Entry> entries, ScopeNamer scopeNamer) {
         this.entries = entries;
+        this.scopeNamer = scopeNamer;
     }
 
-    public boolean isEmpty() {
+
+    boolean isEmpty() {
         return entries.isEmpty();
     }
 
-    public void replaceBy(History history) {
-        entries.clear();
-        entries.addAll(history.entries);
+    /**
+     * Filter should return true to stop the loop
+     */
+    void filterFromTop(Filter filter) {
+        for (Entry entry : entries) {
+            if (filter.filter(entry)) {
+                return;
+            }
+        }
     }
 
-    public History.Entry findScreen(String scopeName) {
+    void removeAll(Collection<Entry> entries) {
+        this.entries.removeAll(entries);
+    }
+
+    void copy(History history) {
+        Preconditions.checkArgument(entries.isEmpty(), "Cannot copy new history if previous one is not empty");
+        entries.addAll(history.entries);
+
+        Logger.d("New history");
+        for (Entry entry : entries) {
+            Logger.d("Entry scope = %s", entry.scopeName);
+        }
+    }
+
+    History.Entry find(String scope) {
         for (History.Entry entry : entries) {
-            if (entry.getScreen().getMortarScopeName().equals(scopeName)) {
+            if (entry.scopeName.equals(scope)) {
                 return entry;
             }
         }
@@ -75,52 +113,95 @@ public class History {
         return null;
     }
 
-    public void push(Screen screen) {
-        entries.addFirst(new Entry(screen));
+    void push(NavigationPath navigationPath) {
+        NavigationScope scope = navigationPath.withScope();
+
+        Entry entry = new Entry(scopeNamer.getName(scope), scope, navigationPath);
+        Preconditions.checkArgument(!entries.contains(entry), "An entry with the same navigation path is already present in history");
+        entries.addFirst(entry);
     }
 
     /**
      * At least 2 entries
      */
-    public boolean canPop() {
+    boolean canKill() {
         return entries.size() > 1;
     }
 
-    public void pop() {
-        entries.removeFirst();
+    void killTop() {
+        entries.getFirst().dead = true;
     }
 
-    public History.Entry peek() {
-        return entries.peekFirst();
-    }
-
-    public static class Entry {
-        private final Screen screen;
-        private SparseArray<Parcelable> state;
-
-        public Entry(Screen screen) {
-            Preconditions.checkNotNull(screen, "Screen cannot be null");
-            Preconditions.checkNotNull(screen.getMortarScopeName(), "Screen scope name cannot be null");
-            this.screen = screen;
+    /**
+     * Return the most top entry that is alive
+     */
+    History.Entry peekAlive() {
+        for (Entry entry : entries) {
+            if (!entry.dead) {
+                return entry;
+            }
         }
 
-        Bundle toBundle() {
+        return null;
+    }
+
+    static class Entry {
+        final String scopeName;
+        final NavigationPath path;
+        final NavigationScope scope;
+        SparseArray<Parcelable> state;
+        boolean dead;
+
+        public Entry(String scopeName, NavigationScope scope, NavigationPath path) {
+            Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");
+            Preconditions.checkNotNull(scope, "Scope cannot be null");
+            Preconditions.checkNotNull(path, "Path cannot be null");
+            this.scopeName = scopeName;
+            this.scope = scope;
+            this.path = path;
+        }
+
+        private Bundle toBundle() {
+            if (dead) {
+                // don't save dead entry
+                // its scope will be destroyed anyway
+                return null;
+            }
+
             Bundle bundle = new Bundle();
-            bundle.putSerializable("SCREEN", screen);
-            bundle.putSparseParcelableArray("VIEW_STATE", state);
+            bundle.putString(SCOPE_KEY, scopeName);
+            bundle.putParcelable(PATH_KEY, path);
+            bundle.putSparseParcelableArray(STATE_KEY, state);
             return bundle;
         }
 
-        public Screen getScreen() {
-            return screen;
+        private static Entry fromBundle(Bundle bundle) {
+            NavigationPath path = bundle.getParcelable(PATH_KEY);
+
+            // new entry with new scope instance, but preserving previous scope name
+            Entry entry = new Entry(bundle.getString(SCOPE_KEY), path.withScope(), path);
+            entry.state = bundle.getSparseParcelableArray(STATE_KEY);
+            return entry;
         }
 
-        public SparseArray<Parcelable> getState() {
-            return state;
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Entry entry = (Entry) o;
+
+            return scopeName.equals(entry.scopeName);
+
         }
 
-        public void setState(SparseArray<Parcelable> state) {
-            this.state = state;
+        @Override
+        public int hashCode() {
+            return scopeName.hashCode();
         }
+    }
+
+    interface Filter {
+        boolean filter(Entry entry);
     }
 }

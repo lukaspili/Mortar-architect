@@ -1,7 +1,6 @@
 package mortarnav.library;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.view.View;
 
 import mortar.MortarScope;
@@ -45,55 +44,50 @@ public class Navigator implements Scoped {
     }
 
     final History history;
-    final ScreenContextFactory contextFactory;
     final Transitions transitions;
-    final ContainerManager containerManager;
+    final Presenter presenter;
     final NavigatorLifecycleDelegate delegate;
     final Dispatcher dispatcher;
     private MortarScope scope;
 
     private Navigator() {
         history = new History();
-        contextFactory = new ScreenContextFactory();
         transitions = new Transitions();
         delegate = new NavigatorLifecycleDelegate(this);
         dispatcher = new Dispatcher(this);
-        containerManager = new ContainerManager(dispatcher, transitions);
+        presenter = new Presenter(transitions);
     }
 
-    public void push(Screen screen) {
-        checkInit();
+    public void push(NavigationPath path) {
+        Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
 
-        history.push(screen);
+        history.push(path);
         dispatcher.dispatch();
     }
 
     public boolean back() {
-        checkInit();
-        if (!history.canPop()) {
+        Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
+
+        if (!history.canKill()) {
             return false;
         }
 
-        history.pop();
+        history.killTop();
         dispatcher.dispatch();
 
         return true;
     }
 
-    private void checkInit() {
-        Preconditions.checkNotNull(history, "History not set, did you forget to call delegate onCreate()?");
+    /**
+     * Scope can be null if the method is called after the navigator scope was destroyed
+     * //TODO: is it really possible to be null?
+     */
+    MortarScope getScope() {
+        return scope;
     }
 
     public NavigatorLifecycleDelegate delegate() {
         return delegate;
-    }
-
-    /**
-     * Scope can be null if the method is called after the navigator scope was destroyed
-     */
-    @Nullable
-    MortarScope getScope() {
-        return scope;
     }
 
     public Transitions transitions() {
@@ -105,12 +99,21 @@ public class Navigator implements Scoped {
 
     @Override
     public void onEnterScope(MortarScope scope) {
+        Preconditions.checkNull(this.scope, "Cannot register navigator multiple times in a scope");
         this.scope = scope;
     }
 
+    /**
+     * Scope associated to navigator is destroyed
+     * Everything will be destroyed
+     */
     @Override
     public void onExitScope() {
-        dispatcher.stop();
-        this.scope = null;
+        Logger.d("Navigation scope exit");
+
+        // stop and kill the dispatcher
+        dispatcher.kill();
+
+        scope = null;
     }
 }

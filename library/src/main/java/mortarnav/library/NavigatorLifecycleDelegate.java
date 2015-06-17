@@ -11,7 +11,7 @@ import android.os.Bundle;
 public class NavigatorLifecycleDelegate {
 
     private static final String HISTORY_KEY =
-            NavigatorLifecycleDelegate.class.getSimpleName() + "_history";
+            Navigator.class.getSimpleName() + "_history";
 
     private final Navigator navigator;
 
@@ -19,9 +19,9 @@ public class NavigatorLifecycleDelegate {
         this.navigator = navigator;
     }
 
-    public void onCreate(Intent intent, Bundle savedInstanceState, NavigatorContainerView containerView, Screen defaultScreen) {
-        Preconditions.checkNotNull(containerView, "Container view may not be null");
-        Preconditions.checkNotNull(defaultScreen, "Default screen may not be null");
+    public void onCreate(Intent intent, Bundle savedInstanceState, NavigatorView containerView, NavigationPath defaultPath) {
+        Preconditions.checkNotNull(containerView, "Container view cannot not be null");
+        Preconditions.checkNotNull(defaultPath, "Default path cannot not be null");
 
         if (navigator.history.isEmpty()) {
             History history;
@@ -30,21 +30,21 @@ public class NavigatorLifecycleDelegate {
             } else if (savedInstanceState != null && savedInstanceState.containsKey(HISTORY_KEY)) {
                 history = History.fromBundle(savedInstanceState.getBundle(HISTORY_KEY));
             } else {
-                history = History.create(defaultScreen);
+                history = History.create(defaultPath);
             }
-            navigator.history.replaceBy(history);
+
+            navigator.history.copy(history);
         }
 
-        // set the container, which triggers a dispatch
-        navigator.containerManager.setContainerView(containerView);
+        navigator.presenter.attach(containerView);
     }
 
     //TODO: copy past from Flow, but not tested
     public void onNewIntent(Intent intent) {
         Preconditions.checkNotNull(intent, "Intent may not be null");
-        if (intent.hasExtra(HISTORY_KEY)) {
+        if (navigator.history.isEmpty() && intent.hasExtra(HISTORY_KEY)) {
             History history = History.fromBundle(intent.getBundleExtra(HISTORY_KEY));
-            navigator.history.replaceBy(history);
+            navigator.history.copy(history);
         }
     }
 
@@ -56,12 +56,23 @@ public class NavigatorLifecycleDelegate {
         }
     }
 
+    public void onStart() {
+        Logger.d("Lifecycle onStart");
+        navigator.presenter.activate();
+        navigator.dispatcher.dispatch();
+    }
+
+    public void onStop() {
+        Logger.d("Lifecycle onStop");
+        navigator.presenter.desactivate();
+    }
+
     public void onDestroy() {
-        navigator.containerManager.removeContainerView();
+        navigator.presenter.detach();
     }
 
     public boolean onBackPressed() {
-        if (navigator.containerManager.containerViewOnBackPressed()) {
+        if (navigator.presenter.containerViewOnBackPressed()) {
             return true;
         }
 

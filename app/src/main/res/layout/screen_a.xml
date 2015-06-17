@@ -18,17 +18,17 @@
         android:layout_height="wrap_content"
         android:text="Got to View B"/>
 
-    <mortarnav.library.view.SubscreenContainer
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:screenClass="com.mortarnav.screen.SubscreenOne"/>
+    <!--<mortarnav.library.view.SubscreenContainer-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:screenClass="com.mortarnav.screen.SubscreenOne"/>-->
 
-    <com.mortarnav.view.CustomViewA
+    <com.mortarnav.view.HomeAdditionalCustomView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <mortarnav.library.view.SubscreenContainer
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:screenClass="com.mortarnav.screen.LoginScreen"/>
+    <!--<mortarnav.library.view.SubscreenContainer-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:screenClass="com.mortarnav.screen.LoginScreen"/>-->
 </LinearLayout>

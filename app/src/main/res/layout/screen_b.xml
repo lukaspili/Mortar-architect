@@ -30,8 +30,8 @@
         android:layout_gravity="center"
         android:text="Below, the container with another Navigator"/>
 
-    <mortarnav.library.NavigatorContainerView
-        android:id="@+id/screen_b_navigatorcontainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <!--<mortarnav.library.NavigatorView-->
+        <!--android:id="@+id/screen_b_navigatorcontainer"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"/>-->
 </LinearLayout>

@@ -7,29 +7,28 @@ import android.widget.FrameLayout;
 
 import com.mortarnav.DaggerService;
 import com.mortarnav.R;
-import com.mortarnav.screen.LoginScreen;
-import com.mortarnav.screen.ScreenA;
+import com.mortarnav.nav.HomeScope;
+import com.mortarnav.presenter.HomePresenter;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import mortarnav.library.NavigatorServices;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class CustomViewA extends FrameLayout {
+public class HomeAdditionalCustomView extends FrameLayout {
 
     @Inject
-    protected ScreenA.Presenter presenter;
+    protected HomePresenter presenter;
 
-    public CustomViewA(Context context, AttributeSet attrs) {
+    public HomeAdditionalCustomView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        DaggerService.<ScreenA.Component>get(context).inject(this);
+        DaggerService.<HomeScope.Component>get(context).inject(this);
 
-        View view = View.inflate(context, R.layout.customview_a, this);
+        View view = View.inflate(context, R.layout.home_additional_custom_view, this);
         ButterKnife.inject(view);
     }
 

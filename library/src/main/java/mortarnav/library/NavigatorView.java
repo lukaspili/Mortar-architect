@@ -12,16 +12,16 @@ import mortarnav.library.view.HandlesBack;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class NavigatorContainerView extends FrameLayout implements HandlesBack {
+public class NavigatorView extends FrameLayout implements HandlesBack {
 
-    private TransitionExecutor transitionExecutor;
     private boolean interactionsDisabled;
+    private View viewToRemove;
 
-    public NavigatorContainerView(Context context) {
+    public NavigatorView(Context context) {
         super(context);
     }
 
-    public NavigatorContainerView(Context context, AttributeSet attrs) {
+    public NavigatorView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -41,17 +41,25 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
         return hasCurrentView() ? getChildAt(getChildCount() - 1) : null;
     }
 
-    public void performTransition(final View newView, final Dispatcher.Direction direction, final Dispatcher.TraversalCallback callback) {
-        Preconditions.checkArgument(!interactionsDisabled, "Perform transition but previous one is still running");
-        Preconditions.checkNotNull(transitionExecutor, "Cannot perform transition without transitionner set");
+    void endPresentation() {
+        Preconditions.checkArgument(interactionsDisabled, "End presentation but looks like presentation never started");
+        interactionsDisabled = false;
+
+        if (viewToRemove != null) {
+            removeView(viewToRemove);
+            viewToRemove = null;
+        }
+    }
+
+    void startPresentation(final View newView, final Dispatcher.Direction direction, final Presenter.PresenterSession session, final Presenter.PresentationCallback callback) {
+        Preconditions.checkArgument(!interactionsDisabled, "Start presentation but previous one did not end");
         interactionsDisabled = true;
 
         final View currentView = getCurrentView();
-
         if (currentView == null) {
             // no previous view, add and show directly
             addView(newView);
-            endTransition(callback);
+            callback.onPresentationFinished(null, newView, session);
             return;
         }
 
@@ -60,29 +68,16 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
             addView(newView);
         } else {
             addView(newView, getChildCount() - 1);
+            viewToRemove = currentView;
         }
 
         Util.waitForMeasure(newView, new Util.OnMeasuredCallback() {
             @Override
             public void onMeasured(View view, int width, int height) {
-                transitionExecutor.makeTransition(currentView, view, direction, new Dispatcher.TraversalCallback() {
-                    @Override
-                    public void onTraversalCompleted() {
-                        removeView(currentView);
-                        endTransition(callback);
-                    }
-                });
+                callback.onPresentationFinished(currentView, view, session);
             }
         });
     }
-
-    private void endTransition(Dispatcher.TraversalCallback callback) {
-        Preconditions.checkArgument(interactionsDisabled, "End transition but perform transition did not start");
-
-        interactionsDisabled = false;
-        callback.onTraversalCompleted();
-    }
-
 
     // HandlesBack
 
@@ -99,16 +94,13 @@ public class NavigatorContainerView extends FrameLayout implements HandlesBack {
         return false;
     }
 
-    public void setTransitionExecutor(TransitionExecutor transitionExecutor) {
-        this.transitionExecutor = transitionExecutor;
-    }
 
-    protected static class Util {
+    /**
+     * Copy paste from Square Flow
+     */
+    private static class Util {
 
-        /**
-         * Copy paste from Square Flow
-         */
-        public static void waitForMeasure(final View view, final OnMeasuredCallback callback) {
+        private static void waitForMeasure(final View view, final OnMeasuredCallback callback) {
             int width = view.getWidth();
             int height = view.getHeight();
 
