@@ -1,4 +1,4 @@
-package mortarnav.library;
+package mortarnav;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

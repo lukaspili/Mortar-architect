@@ -1,4 +1,4 @@
-package mortarnav.library;
+package mortarnav;
 
 import android.view.View;
 
@@ -9,7 +9,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import mortarnav.library.transition.ScreenTransition;
+import mortarnav.transition.ScreenTransition;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

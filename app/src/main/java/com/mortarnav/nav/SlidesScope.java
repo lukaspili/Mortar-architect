@@ -6,11 +6,13 @@ import com.mortarnav.MainActivity;
 import com.mortarnav.view.SlidesView;
 
 import mortar.MortarScope;
-import mortarnav.library.NavigationScope;
+import mortarnav.NavigationScope;
+import mortarnav.Path;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
+@Path(withView = SlidesView.class)
 public class SlidesScope implements NavigationScope {
 
     @Override

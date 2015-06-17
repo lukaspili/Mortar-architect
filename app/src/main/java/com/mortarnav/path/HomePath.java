@@ -5,17 +5,19 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
 
+import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.mortarnav.nav.HomeScope;
 import com.mortarnav.view.HomeView;
 
-import mortarnav.library.NavigationPath;
+import mortarnav.NavigationPath;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
+@ParcelablePlease
 public class HomePath extends NavigationPath<HomeScope> {
 
-    private String name;
+    String name;
 
     public HomePath(String name) {
         this.name = name;
@@ -37,12 +39,12 @@ public class HomePath extends NavigationPath<HomeScope> {
 
     @Override
     protected void readParcel(Parcel parcel) {
-        name = parcel.readString();
+        HomePathParcelablePlease.readFromParcel(this, parcel);
     }
 
     @Override
     protected void writeParcel(Parcel parcel) {
-        parcel.writeString(name);
+        HomePathParcelablePlease.writeToParcel(this, parcel, 0);
     }
 
     public static final Parcelable.Creator<HomePath> CREATOR = new Parcelable.Creator<HomePath>() {

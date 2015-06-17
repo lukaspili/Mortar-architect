@@ -1,4 +1,4 @@
-package mortarnav.library.transition;
+package mortarnav.transition;
 
 import android.animation.AnimatorSet;
 import android.view.animation.AccelerateDecelerateInterpolator;

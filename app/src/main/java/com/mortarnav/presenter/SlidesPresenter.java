@@ -7,7 +7,7 @@ import com.mortarnav.view.SlidesView;
 import javax.inject.Inject;
 
 import mortar.ViewPresenter;
-import mortarnav.library.Path;
+import mortarnav.Path;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

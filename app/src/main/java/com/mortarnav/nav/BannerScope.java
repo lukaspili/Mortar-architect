@@ -6,8 +6,8 @@ import com.mortarnav.MainActivity;
 import com.mortarnav.view.BannerView;
 
 import mortar.MortarScope;
-import mortarnav.library.NavigationScope;
-import mortarnav.library.NavigatorServices;
+import mortarnav.NavigationScope;
+import mortarnav.NavigatorServices;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

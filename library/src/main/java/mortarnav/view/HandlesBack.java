@@ -1,4 +1,4 @@
-package mortarnav.library.view;
+package mortarnav.view;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

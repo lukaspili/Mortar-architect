@@ -5,7 +5,7 @@ import com.mortarnav.DaggerService;
 import com.mortarnav.view.SlidePageView;
 
 import mortar.MortarScope;
-import mortarnav.library.NavigationScope;
+import mortarnav.NavigationScope;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

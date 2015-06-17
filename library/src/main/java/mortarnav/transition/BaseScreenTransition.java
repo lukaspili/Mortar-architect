@@ -1,4 +1,4 @@
-package mortarnav.library.transition;
+package mortarnav.transition;
 
 import android.animation.AnimatorSet;
 import android.view.View;
@@ -6,15 +6,15 @@ import android.view.View;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class BaseModalTransition<T extends View> extends ModalTransition<T> {
+public abstract class BaseScreenTransition<T_Origin extends View, T_Destination extends View> implements ScreenTransition<T_Origin, T_Destination> {
 
     protected final Config config;
 
-    public BaseModalTransition() {
+    public BaseScreenTransition() {
         this(new Config());
     }
 
-    public BaseModalTransition(Config config) {
+    public BaseScreenTransition(Config config) {
         this.config = config;
     }
 

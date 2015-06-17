@@ -1,4 +1,4 @@
-<mortarnav.library.NavigatorView
+<mortarnav.NavigatorView
     android:id="@+id/navigator_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"

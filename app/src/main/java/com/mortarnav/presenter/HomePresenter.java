@@ -8,7 +8,7 @@ import com.mortarnav.view.HomeView;
 import java.util.Random;
 
 import mortar.ViewPresenter;
-import mortarnav.library.Navigator;
+import mortarnav.Navigator;
 import timber.log.Timber;
 
 /**

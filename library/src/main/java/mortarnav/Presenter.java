@@ -1,4 +1,4 @@
-package mortarnav.library;
+package mortarnav;
 
 import android.content.Context;
 import android.os.Parcelable;

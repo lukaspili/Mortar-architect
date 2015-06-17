@@ -1,6 +1,4 @@
-package mortarnav.library;
-
-import android.content.Context;
+package mortarnav;
 
 import mortar.MortarScope;
 

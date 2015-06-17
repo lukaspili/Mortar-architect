@@ -1,4 +1,4 @@
-package mortarnav.library;
+package mortarnav;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
-import mortarnav.library.view.HandlesBack;
+import mortarnav.view.HandlesBack;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

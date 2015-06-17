@@ -9,7 +9,7 @@ import com.mortarnav.view.HomeView;
 
 import dagger.Provides;
 import mortar.MortarScope;
-import mortarnav.library.NavigationScope;
+import mortarnav.NavigationScope;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

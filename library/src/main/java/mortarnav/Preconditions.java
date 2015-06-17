@@ -12,7 +12,7 @@
  * the License.
  */
 
-package mortarnav.library;
+package mortarnav;
 
 final class Preconditions {
     private Preconditions() {

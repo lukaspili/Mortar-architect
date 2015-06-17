@@ -14,12 +14,12 @@ import butterknife.InjectView;
 import dagger.Provides;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
-import mortarnav.library.Navigator;
-import mortarnav.library.NavigatorView;
-import mortarnav.library.Transition;
-import mortarnav.library.Transitions;
-import mortarnav.library.transition.Config;
-import mortarnav.library.transition.HorizontalScreenTransition;
+import mortarnav.Navigator;
+import mortarnav.NavigatorView;
+import mortarnav.Transition;
+import mortarnav.Transitions;
+import mortarnav.transition.Config;
+import mortarnav.transition.HorizontalScreenTransition;
 
 
 public class MainActivity extends Activity {

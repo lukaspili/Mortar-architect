@@ -1,11 +1,11 @@
-package mortarnav.library;
+package mortarnav;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.view.View;
 
-import mortarnav.library.transition.ScreenTransition;
+import mortarnav.transition.ScreenTransition;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

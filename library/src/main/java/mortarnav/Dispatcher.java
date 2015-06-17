@@ -1,4 +1,4 @@
-package mortarnav.library;
+package mortarnav;
 
 import mortar.MortarScope;
 

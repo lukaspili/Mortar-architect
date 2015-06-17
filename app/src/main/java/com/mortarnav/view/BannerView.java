@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import mortarnav.library.NavigationScopeFactory;
+import mortarnav.NavigationScopeFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
