@@ -2,24 +2,29 @@ package mortarnav.autopath.compiler;
 
 import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableSet;
+import com.squareup.javapoet.JavaFile;
 
-import java.util.LinkedHashSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
-import autodagger.compiler.message.MessageDelivery;
-import autodagger.compiler.processingstep.ComponentProcessingStep;
-import autodagger.compiler.processingstep.ExposedProcessingStep;
-import autodagger.compiler.processingstep.InjectorProcessingStep;
-import autodagger.compiler.processingstep.ProcessingStep;
-import autodagger.compiler.processingstep.ProcessingStepBus;
+import mortarnav.autopath.compiler.composer.AbstractComposer;
+import mortarnav.autopath.compiler.processing.AbstractProcessing;
+import mortarnav.autopath.compiler.processing.PathProcessing;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -27,9 +32,11 @@ import autodagger.compiler.processingstep.ProcessingStepBus;
 @AutoService(Processor.class)
 public class AnnotationProcessor extends AbstractProcessor {
 
-    private MessageDelivery messageDelivery = new MessageDelivery();
-    private ProcessingStepBus processingStepBus = new ProcessingStepBus();
-    private Set<ProcessingStep> processingSteps;
+    private Elements elements;
+    private Types types;
+    private Filer filer;
+    private Errors errors;
+    private List<AbstractProcessing> builders;
 
     private boolean stop;
 
@@ -37,24 +44,51 @@ public class AnnotationProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
-        processingSteps = new LinkedHashSet<>();
-        processingSteps.add(new InjectorProcessingStep(processingStepBus, messageDelivery));
-        processingSteps.add(new ExposedProcessingStep(processingStepBus));
-        processingSteps.add(new ComponentProcessingStep(processingEnv.getTypeUtils(), processingEnv.getElementUtils(), processingEnv.getFiler(), messageDelivery, processingStepBus));
+        elements = processingEnv.getElementUtils();
+        types = processingEnv.getTypeUtils();
+        filer = processingEnv.getFiler();
+        errors = new Errors();
+
+        builders = new LinkedList<>();
+        builders.add(new PathProcessing(elements, types, errors));
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (stop) return false;
 
-        for (ProcessingStep processingStep : processingSteps) {
-            Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(processingStep.annotation());
+        List<AbstractComposer> composers = new ArrayList<>();
+
+        for (AbstractProcessing processingStep : builders) {
+            Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(processingStep.supportedAnnotation());
             processingStep.process(elements);
+
+            if (isInvalid()) return false;
+            composers.add(processingStep.createComposer());
         }
 
-        messageDelivery.deliver(processingEnv.getMessager());
-        if (messageDelivery.hasErrors()) {
+        List<JavaFile> javaFiles = new ArrayList<>();
+        for (AbstractComposer composer : composers) {
+            javaFiles.addAll(composer.compose());
+        }
+
+        for (JavaFile javaFile : javaFiles) {
+            try {
+                javaFile.writeTo(filer);
+            } catch (Exception e) {
+                StringWriter stackTrace = new StringWriter();
+                e.printStackTrace(new PrintWriter(stackTrace));
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isInvalid() {
+        if (errors.hasErrors()) {
+            errors.deliver(processingEnv.getMessager());
             stop = true;
+            return true;
         }
 
         return false;
@@ -68,8 +102,8 @@ public class AnnotationProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         ImmutableSet.Builder<String> builder = ImmutableSet.builder();
-        for (ProcessingStep step : processingSteps) {
-            builder.add(step.annotation().getName());
+        for (AbstractProcessing step : builders) {
+            builder.add(step.supportedAnnotation().getName());
         }
         return builder.build();
     }

@@ -1,16 +1,16 @@
-package mortarnav.autopath.compiler.model.spec;
+package mortarnav.autopath.compiler.spec;
 
 import com.squareup.javapoet.TypeName;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class InjectorSpec {
+public class FieldSpec {
 
     private final String name;
     private final TypeName typeName;
 
-    public InjectorSpec(String name, TypeName typeName) {
+    public FieldSpec(String name, TypeName typeName) {
         this.name = name;
         this.typeName = typeName;
     }

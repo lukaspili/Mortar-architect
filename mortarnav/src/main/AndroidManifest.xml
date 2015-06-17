@@ -1,7 +1,4 @@
-<manifest
-    package="mortarnav"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest package="mortarnav">
 
-    <application android:allowBackup="true"/>
-
+    <application/>
 </manifest>
