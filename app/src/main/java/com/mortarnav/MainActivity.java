@@ -17,10 +17,9 @@ import mortar.bundler.BundleServiceRunner;
 import mortarnav.library.Navigator;
 import mortarnav.library.NavigatorView;
 import mortarnav.library.Transition;
-import mortarnav.library.dagger.NavigatorInjector;
+import mortarnav.library.Transitions;
 import mortarnav.library.transition.Config;
 import mortarnav.library.transition.HorizontalScreenTransition;
-import timber.log.Timber;
 
 
 public class MainActivity extends Activity {
@@ -69,13 +68,6 @@ public class MainActivity extends Activity {
 //                    .register(Transition.forView(ViewB.class).fromAny().withTransition(new BottomAppearTransition()));
         }
 
-        if (savedInstanceState != null) {
-            Timber.d("on RESTORE");
-            for (String key : savedInstanceState.keySet()) {
-                Timber.d("%s => %s", key, savedInstanceState.get(key));
-            }
-        }
-
         BundleServiceRunner.getBundleServiceRunner(scope).onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
@@ -83,7 +75,6 @@ public class MainActivity extends Activity {
 
         navigator = Navigator.find(this);
         navigator.delegate().onCreate(getIntent(), savedInstanceState, containerView, new HomePath("Initial home"));
-        Timber.d("onCreate END");
     }
 
     @Override
@@ -97,11 +88,6 @@ public class MainActivity extends Activity {
         super.onSaveInstanceState(outState);
         BundleServiceRunner.getBundleServiceRunner(scope).onSaveInstanceState(outState);
         navigator.delegate().onSaveInstanceState(outState);
-
-        Timber.d("on SAVE");
-        for (String key : outState.keySet()) {
-            Timber.d("%s => %s", key, outState.get(key));
-        }
     }
 
     @Override
@@ -118,17 +104,13 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        Timber.d("onDestroy START");
         navigator.delegate().onDestroy();
         navigator = null;
 
         if (isFinishing() && scope != null) {
-            Timber.d("Destroy activity scope");
             scope.destroy();
             scope = null;
         }
-
-        Timber.d("onDestroy END");
 
         super.onDestroy();
     }
@@ -144,9 +126,11 @@ public class MainActivity extends Activity {
 
     @dagger.Component(dependencies = App.Component.class, modules = NavigatorModule.class)
     @DaggerScope(Component.class)
-    public interface Component extends NavigatorInjector {
+    public interface Component {
 
         void inject(MainActivity activity);
+
+        void inject(Transitions transitions);
     }
 
     @dagger.Module
