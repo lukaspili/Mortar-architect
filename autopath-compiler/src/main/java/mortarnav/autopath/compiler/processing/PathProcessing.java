@@ -21,7 +21,7 @@ import mortarnav.autopath.compiler.composer.AbstractComposer;
 import mortarnav.autopath.compiler.composer.PathComposer;
 import mortarnav.autopath.compiler.extractor.PathExtractor;
 import mortarnav.autopath.compiler.spec.ConstructorSpec;
-import mortarnav.autopath.compiler.spec.FieldSpec;
+import mortarnav.autopath.compiler.spec.ParamSpec;
 import mortarnav.autopath.compiler.spec.PathSpec;
 
 /**
@@ -70,7 +70,7 @@ public class PathProcessing extends AbstractProcessing<PathSpec> {
         }
 
         private PathSpec build() {
-            PathSpec spec = new PathSpec(buildClassName());
+            PathSpec spec = new PathSpec(buildClassName(), TypeName.get(extractor.getElement().asType()));
             spec.setViewTypeName(TypeName.get(extractor.getViewTypeMirror()));
 
             boolean defaultConstructorNotPublic = false;
@@ -88,7 +88,12 @@ public class PathProcessing extends AbstractProcessing<PathSpec> {
 
                         ConstructorSpec constructorSpec = new ConstructorSpec();
                         for (VariableElement variableElement : e.getParameters()) {
-                            constructorSpec.getFields().add(new FieldSpec(variableElement.getSimpleName().toString(), TypeName.get(variableElement.asType())));
+                            ParamSpec paramSpec = new ParamSpec(variableElement.getSimpleName().toString(), TypeName.get(variableElement.asType()));
+                            constructorSpec.getFields().add(paramSpec);
+
+                            if (!spec.getFields().contains(paramSpec)) {
+                                spec.getFields().add(paramSpec);
+                            }
                         }
                         spec.getConstructors().add(constructorSpec);
                     }
@@ -109,18 +114,18 @@ public class PathProcessing extends AbstractProcessing<PathSpec> {
             String name = extractor.getElement().getSimpleName().toString();
 
             // try to remove NavigationScope at the end of the name
-            name = removeEndingName(removeEndingName(name, "Scope"), "Navigation");
-            if (name == null) {
-                errors.addInvalid(name);
+            String newName = removeEndingName(removeEndingName(name, "Scope"), "Navigation");
+            if (newName == null) {
+                errors.addInvalid("Class name " + newName);
             }
 
             String pkg = MoreElements.getPackage(extractor.getElement()).getQualifiedName().toString();
             if (StringUtils.isBlank(pkg)) {
                 errors.addInvalid("Package name " + pkg);
             }
-            pkg = pkg + ".Path";
+            pkg = pkg + ".path";
 
-            return ClassName.get(pkg, name + "Path");
+            return ClassName.get(pkg, newName + "Path");
         }
 
         private String removeEndingName(String text, String term) {
@@ -128,7 +133,7 @@ public class PathProcessing extends AbstractProcessing<PathSpec> {
                 return null;
             }
 
-            int index = term.lastIndexOf(term);
+            int index = text.lastIndexOf(term);
             if (index >= 0) {
                 text = text.substring(0, index);
                 if (StringUtils.isBlank(text)) {

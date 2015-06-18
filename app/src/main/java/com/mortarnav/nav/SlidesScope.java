@@ -7,12 +7,12 @@ import com.mortarnav.view.SlidesView;
 
 import mortar.MortarScope;
 import mortarnav.NavigationScope;
-import mortarnav.Path;
+import mortarnav.autopath.AutoPath;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@Path(withView = SlidesView.class)
+@AutoPath(withView = SlidesView.class)
 public class SlidesScope implements NavigationScope {
 
     @Override

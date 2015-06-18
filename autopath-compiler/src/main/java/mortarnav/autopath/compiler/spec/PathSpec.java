@@ -11,12 +11,20 @@ import java.util.List;
  */
 public class PathSpec extends AbstractSpec {
 
-    private TypeName viewTypeName;
+    private final TypeName targetTypeName;
     private final List<ConstructorSpec> constructors;
+    private final List<ParamSpec> fields;
+    private TypeName viewTypeName;
 
-    public PathSpec(ClassName className) {
+    public PathSpec(ClassName className, TypeName targetTypeName) {
         super(className);
+        this.targetTypeName = targetTypeName;
         constructors = new ArrayList<>();
+        fields = new ArrayList<>();
+    }
+
+    public TypeName getTargetTypeName() {
+        return targetTypeName;
     }
 
     public TypeName getViewTypeName() {
@@ -29,5 +37,9 @@ public class PathSpec extends AbstractSpec {
 
     public List<ConstructorSpec> getConstructors() {
         return constructors;
+    }
+
+    public List<ParamSpec> getFields() {
+        return fields;
     }
 }

@@ -8,13 +8,13 @@ import java.util.List;
  */
 public class ConstructorSpec {
 
-    private final List<FieldSpec> fields;
+    private final List<ParamSpec> fields;
 
     public ConstructorSpec() {
         fields = new LinkedList<>();
     }
 
-    public List<FieldSpec> getFields() {
+    public List<ParamSpec> getFields() {
         return fields;
     }
 
