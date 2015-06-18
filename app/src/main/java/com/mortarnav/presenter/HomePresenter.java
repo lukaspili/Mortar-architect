@@ -3,6 +3,7 @@ package com.mortarnav.presenter;
 import android.os.Bundle;
 
 import com.mortarnav.nav.path.SlidesPath;
+import com.mortarnav.nav.path.SubnavPath;
 import com.mortarnav.path.HomePath;
 import com.mortarnav.view.HomeView;
 
@@ -45,7 +46,7 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     }
 
     public void subnavClick() {
-
+        Navigator.get(getView()).push(new SubnavPath());
     }
 
     public void customViewClick() {

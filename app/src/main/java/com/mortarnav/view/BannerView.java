@@ -3,32 +3,33 @@ package com.mortarnav.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 import com.mortarnav.nav.BannerScope;
 import com.mortarnav.presenter.BannerPresenter;
 
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import mortarnav.NavigationScopeFactory;
+import mortarnav.NavigationScope;
+import mortarnav.commons.view.MvpContainerLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class BannerView extends LinearLayout {
-
-    @Inject
-    protected BannerPresenter presenter;
+public class BannerView extends MvpContainerLinearLayout<BannerPresenter> {
 
     public BannerView(Context parentContext, AttributeSet attrs) {
         super(parentContext, attrs);
+    }
 
-        Context context = NavigationScopeFactory.createContext(parentContext, new BannerScope());
+    @Override
+    public NavigationScope getScope() {
+        return new BannerScope();
+    }
 
+    @Override
+    public void initWithContext(Context context) {
         DaggerService.<BannerScope.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.banner_view, this);
@@ -38,17 +39,5 @@ public class BannerView extends LinearLayout {
     @OnClick
     void click() {
         presenter.click();
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        presenter.takeView(this);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        presenter.dropView(this);
-        super.onDetachedFromWindow();
     }
 }

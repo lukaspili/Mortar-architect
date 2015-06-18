@@ -46,9 +46,8 @@ dependencies {
     apt deps.parcelablepls_compiler
 
     compile deps.mortar
+    compile deps.appcompat_v7
 
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.jakewharton.timber:timber:2.7.1'
-
-    compile 'com.android.support:appcompat-v7:22.2.0'
 }

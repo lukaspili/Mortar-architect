@@ -1,5 +1,6 @@
 ext.deps = [
         android_gradle_plugin  : 'com.android.tools.build:gradle:1.2.3',
+        appcompat_v7           : 'com.android.support:appcompat-v7:22.2.0',
 
         flow                   : 'com.squareup.flow:flow:0.9',
         flow_path              : 'com.squareup.flow:flow-path:0.9',

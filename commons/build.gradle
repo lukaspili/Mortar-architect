@@ -18,7 +18,10 @@ android {
 
 dependencies {
     compile project(':mortarnav')
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile deps.appcompat_v7
+
+    provided deps.javax_inject
+    provided deps.mortar
 }
 
 //apply from: '../mvn-publish.gradle'
