@@ -12,6 +12,10 @@ import com.mortarnav.view.HomeView;
 import mortarnav.NavigationPath;
 
 /**
+ * This is a manually written path, for the sample
+ * Recommended and easiest way is to use @AutoPath and let the annotation
+ * processor generate for you that boring boilerplate!
+ *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @ParcelablePlease

@@ -1,19 +1,43 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+ext.deps = [
+        android_gradle_plugin  : 'com.android.tools.build:gradle:1.2.3',
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        flow                   : 'com.squareup.flow:flow:0.9',
+        flow_path              : 'com.squareup.flow:flow-path:0.9',
+        flow_navigation        : 'com.github.lukaspili:flow-navigation:0.2-SNAPSHOT',
+        flow_navigation_mortar : 'com.github.lukaspili:flow-navigation-mortar-common:0.2-SNAPSHOT',
+        flow_navigation_flow   : 'com.github.lukaspili:flow-navigation-flow-common:0.2-SNAPSHOT',
+        dagger2                : 'com.google.dagger:dagger:2.0.1',
+        dagger2_compiler       : 'com.google.dagger:dagger-compiler:2.0.1',
+        javax_annotation_jsr250: 'javax.annotation:jsr250-api:1.0',
+        javax_inject           : 'javax.inject:javax.inject:1',
+        mortar                 : 'com.squareup.mortar:mortar:0.17',
+        android                : 'com.google.android:android:4.1.1.4',
+        autodagger2            : 'com.github.lukaspili:autodagger2:1.0',
+        autodagger2_compiler   : 'com.github.lukaspili:autodagger2-compiler:1.0',
+        parcelablepls          : 'com.hannesdorfmann.parcelableplease:annotation:1.0.1',
+        parcelablepls_compiler : 'com.hannesdorfmann.parcelableplease:processor:1.0.1',
+]
+ext.minSdkVersion = 14
+ext.targetSdkVersion = 22
+ext.compileSdkVersion = 22
+ext.buildToolsVersion = '22.0.1'
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
 }
 
-allprojects {
-    repositories {
-        jcenter()
+subprojects {
+    buildscript {
+        repositories {
+            mavenCentral()
+        }
     }
+
+    repositories {
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+        mavenCentral()
+    }
+
+    group = GROUP
+    version = VERSION_NAME
 }

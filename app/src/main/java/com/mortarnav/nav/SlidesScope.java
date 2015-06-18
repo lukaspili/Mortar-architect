@@ -5,6 +5,7 @@ import com.mortarnav.DaggerService;
 import com.mortarnav.MainActivity;
 import com.mortarnav.view.SlidesView;
 
+import autodagger.AutoComponent;
 import mortar.MortarScope;
 import mortarnav.NavigationScope;
 import mortarnav.autopath.AutoPath;

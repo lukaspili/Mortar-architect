@@ -38,9 +38,9 @@ public abstract class NavigationPath<T extends NavigationScope> implements Histo
         return 0;
     }
 
-    public abstract T withScope();
+    protected abstract T withScope();
 
-    public abstract View withView(Context context);
+    protected abstract View withView(Context context);
 
     protected abstract void readParcel(Parcel parcel);
 

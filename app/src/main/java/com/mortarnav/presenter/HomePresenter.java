@@ -2,6 +2,7 @@ package com.mortarnav.presenter;
 
 import android.os.Bundle;
 
+import com.mortarnav.nav.path.SlidesPath;
 import com.mortarnav.path.HomePath;
 import com.mortarnav.view.HomeView;
 
@@ -24,16 +25,12 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     public HomePresenter(String name) {
         this.name = name;
         random = new Random().nextInt(100);
-        Timber.d("Construct %d", random);
     }
 
     @Override
     protected void onLoad(Bundle savedInstanceState) {
-        super.onLoad(savedInstanceState);
-
         getView().titleTextView.setText(name);
 
-        Timber.d("onLoad %s", savedInstanceState);
         int r = savedInstanceState != null ? savedInstanceState.getInt("random") : random;
         getView().subtitleTextView.setText("Random number: " + r);
     }
@@ -41,7 +38,6 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     @Override
     protected void onSave(Bundle outState) {
         outState.putInt("random", random);
-        Timber.d("SAVE %d", random);
     }
 
     public void nextHomeClick() {
@@ -54,5 +50,9 @@ public class HomePresenter extends ViewPresenter<HomeView> {
 
     public void customViewClick() {
         Timber.d("Click from custom view");
+    }
+
+    public void pagerClick() {
+        Navigator.get(getView()).push(new SlidesPath());
     }
 }

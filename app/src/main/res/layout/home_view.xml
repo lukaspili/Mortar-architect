@@ -29,6 +29,12 @@
         android:layout_height="wrap_content"
         android:text="Go to view with sub navigator"/>
 
+    <Button
+        android:id="@+id/pager_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to view with view pager"/>
+
     <com.mortarnav.view.HomeSubcontentView
         android:layout_width="match_parent"
         android:layout_height="0dp"

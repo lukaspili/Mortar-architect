@@ -1,9 +1,6 @@
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-
     dependencies {
+        classpath deps.android_gradle_plugin
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
     }
 }
@@ -12,16 +9,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
         applicationId "com.mortarnav"
-        minSdkVersion 16
-        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -31,19 +30,25 @@ android {
 }
 
 dependencies {
-    compile project (':mortarnav')
-    compile project (':autopath')
-    apt project (':autopath-compiler')
+    compile project(':mortarnav')
+    compile project(':commons')
+    compile project(':autopath')
+    apt project(':autopath-compiler')
 
-    compile 'com.google.dagger:dagger:2.0.1'
-    apt 'com.google.dagger:dagger-compiler:2.0.1'
-    provided 'javax.annotation:jsr250-api:1.0'
+    compile deps.dagger2
+    apt deps.dagger2_compiler
+    provided deps.javax_annotation_jsr250
 
-    compile 'com.squareup.mortar:mortar:0.17'
+    compile deps.autodagger2
+    apt deps.autodagger2_compiler
+
+    compile deps.parcelablepls
+    apt deps.parcelablepls_compiler
+
+    compile deps.mortar
 
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.jakewharton.timber:timber:2.7.1'
 
-    compile 'com.hannesdorfmann.parcelableplease:annotation:1.0.1'
-    apt 'com.hannesdorfmann.parcelableplease:processor:1.0.1'
+    compile 'com.android.support:appcompat-v7:22.2.0'
 }

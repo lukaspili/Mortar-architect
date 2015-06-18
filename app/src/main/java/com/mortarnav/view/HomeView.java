@@ -44,7 +44,12 @@ public class HomeView extends LinearLayout {
         presenter.nextHomeClick();
     }
 
-    @OnClick(R.id.next_home_button)
+    @OnClick(R.id.pager_button)
+    void pagerClick() {
+        presenter.pagerClick();
+    }
+
+    @OnClick(R.id.subnav_button)
     void subnavClick() {
         presenter.subnavClick();
     }

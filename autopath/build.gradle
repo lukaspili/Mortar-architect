@@ -14,7 +14,7 @@ sourceSets {
 }
 
 dependencies {
-    provided 'com.google.android:android:4.1.1.4'
+    provided deps.android
 }
 
 apply from: '../mvn-publish.gradle'
