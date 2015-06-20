@@ -1,10 +1,8 @@
-package mortarnav.autopath.compiler.extractor;
+package mortarnav.processor;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
-import mortarnav.autopath.compiler.Errors;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

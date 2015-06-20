@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
 import com.mortarnav.nav.SlidesScope;
-import com.mortarnav.nav.path.SlidePagePath;
+import com.mortarnav.presenter.scope.path.SlidePagePath;
 import com.mortarnav.view.SlidesView;
 
 import javax.inject.Inject;

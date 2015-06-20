@@ -49,3 +49,4 @@ target/
 build/
 */build/
 *.log
+java_pid*

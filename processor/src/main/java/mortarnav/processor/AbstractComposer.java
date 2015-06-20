@@ -1,11 +1,9 @@
-package mortarnav.autopath.compiler.composer;
+package mortarnav.processor;
 
 import com.squareup.javapoet.JavaFile;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import mortarnav.autopath.compiler.spec.AbstractSpec;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

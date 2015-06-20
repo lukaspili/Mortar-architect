@@ -1,4 +1,4 @@
-package mortarnav.autopath.compiler.extractor;
+package mortarnav.processor;
 
 import com.google.auto.common.MoreElements;
 import com.google.auto.common.MoreTypes;
@@ -20,7 +20,7 @@ import javax.lang.model.util.Types;
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-final class ExtractorUtils {
+public final class ExtractorUtils {
 
     private static AnnotationValue getAnnotationValue(AnnotationMirror annotationMirror, String key) {
         for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror.getElementValues().entrySet()) {
@@ -29,6 +29,11 @@ final class ExtractorUtils {
             }
         }
         return null;
+    }
+
+    public static <T> T getValueFromAnnotation(AnnotationMirror annotationMirror, Class<? extends Annotation> annotation, String name) {
+        AnnotationValue annotationValue = getAnnotationValue(annotationMirror, name);
+        return annotationValue != null ? (T) annotationValue.getValue() : null;
     }
 
     public static <T> T getValueFromAnnotation(Element element, Class<? extends Annotation> annotation, String name) {

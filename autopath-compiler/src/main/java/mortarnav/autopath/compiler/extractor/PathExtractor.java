@@ -13,7 +13,9 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import mortarnav.autopath.AutoPath;
-import mortarnav.autopath.compiler.Errors;
+import mortarnav.processor.AbstractExtractor;
+import mortarnav.processor.Errors;
+import mortarnav.processor.ExtractorUtils;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

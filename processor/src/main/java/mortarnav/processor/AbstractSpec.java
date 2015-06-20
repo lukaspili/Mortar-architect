@@ -1,4 +1,4 @@
-package mortarnav.autopath.compiler.spec;
+package mortarnav.processor;
 
 import com.squareup.javapoet.ClassName;
 

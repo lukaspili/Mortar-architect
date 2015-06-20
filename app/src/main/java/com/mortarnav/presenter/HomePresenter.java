@@ -2,6 +2,8 @@ package com.mortarnav.presenter;
 
 import android.os.Bundle;
 
+import com.mortarnav.DaggerScope;
+import com.mortarnav.MainActivity;
 import com.mortarnav.nav.path.SlidesPath;
 import com.mortarnav.nav.path.SubnavPath;
 import com.mortarnav.path.HomePath;
@@ -9,8 +11,12 @@ import com.mortarnav.view.HomeView;
 
 import java.util.Random;
 
+import autodagger.AutoComponent;
 import mortar.ViewPresenter;
 import mortarnav.Navigator;
+import mortarnav.autopath.AutoPath;
+import mortarnav.autoscope.AutoScope;
+import mortarnav.autoscope.FromNav;
 import timber.log.Timber;
 
 /**
@@ -23,7 +29,7 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     private final String name;
     private final int random;
 
-    public HomePresenter(String name) {
+    public HomePresenter(@FromNav String name) {
         this.name = name;
         random = new Random().nextInt(100);
     }

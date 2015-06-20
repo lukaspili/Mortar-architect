@@ -1,11 +1,11 @@
-package mortarnav.autopath.compiler;
+package mortarnav.processor;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class Logger {
 
-    private static final String TAG = "AutoPath Processor";
+    private static final String TAG = "Processor";
 
     public static void d(String message, Object... format) {
         if (format != null) {

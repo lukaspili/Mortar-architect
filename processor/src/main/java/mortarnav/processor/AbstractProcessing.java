@@ -1,4 +1,4 @@
-package mortarnav.autopath.compiler.processing;
+package mortarnav.processor;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -8,10 +8,6 @@ import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
-import mortarnav.autopath.compiler.Errors;
-import mortarnav.autopath.compiler.composer.AbstractComposer;
-import mortarnav.autopath.compiler.spec.AbstractSpec;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

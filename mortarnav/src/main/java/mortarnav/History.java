@@ -16,7 +16,6 @@ import java.util.Iterator;
  * History restoration from instance state bundle is only used during app process kill
  * During simple configuration change, the navigator scope is preserved, and thus the history also
  * See NavigatorLifecycleDelegate.onCreate() to see implementation details
- * <p/>
  * History also persists its ScopeNamer instance, in order to preserve scope names
  * between state restoration (process kill)
  *

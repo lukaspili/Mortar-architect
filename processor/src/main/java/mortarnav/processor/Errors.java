@@ -1,4 +1,4 @@
-package mortarnav.autopath.compiler;
+package mortarnav.processor;
 
 import java.util.LinkedList;
 import java.util.List;

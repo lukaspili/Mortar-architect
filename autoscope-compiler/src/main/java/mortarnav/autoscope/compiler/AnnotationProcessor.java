@@ -1,12 +1,16 @@
-package mortarnav.autopath.compiler;
+package mortarnav.autoscope.compiler;
 
 import com.google.auto.service.AutoService;
 
+import java.util.Set;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.TypeElement;
 
-import mortarnav.autopath.compiler.processing.PathProcessing;
 import mortarnav.processor.AbstractProcessor;
+import mortarnav.processor.Logger;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -18,6 +22,6 @@ public class AnnotationProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
-        builders.add(new PathProcessing(elements, types, errors));
+        builders.add(new ScopeProcessing(elements, types, errors));
     }
 }

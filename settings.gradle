@@ -1,1 +1,1 @@
-include ':mortarnav', ':autopath', ':autopath-compiler', ':app', ':commons'
+include ':mortarnav', ':autopath', ':autopath-compiler', ':app', ':commons', ':autoscope', ':processor', ':autoscope-compiler'

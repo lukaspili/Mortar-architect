@@ -5,7 +5,6 @@ buildscript {
 }
 
 apply plugin: 'com.android.library'
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -18,7 +17,15 @@ android {
 
 dependencies {
     provided deps.javax_inject
-    provided deps.mortar
+    compile deps.mortar
 }
 
-//apply from: '../mvn-publish.gradle'
+//afterEvaluate { project ->
+//    android.libraryVariants.all { variant ->
+//        tasks.androidJavadocs.doFirst {
+//            classpath += files(variant.javaCompile.classpath.files)
+//        }
+//    }
+//}
+
+apply from: '../mvn-publish-android.gradle'

@@ -21,6 +21,7 @@ import mortarnav.autopath.compiler.AnnotationProcessor;
 import mortarnav.autopath.compiler.spec.ConstructorSpec;
 import mortarnav.autopath.compiler.spec.ParamSpec;
 import mortarnav.autopath.compiler.spec.PathSpec;
+import mortarnav.processor.AbstractComposer;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

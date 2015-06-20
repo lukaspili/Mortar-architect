@@ -16,13 +16,14 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import mortarnav.autopath.AutoPath;
-import mortarnav.autopath.compiler.Errors;
-import mortarnav.autopath.compiler.composer.AbstractComposer;
 import mortarnav.autopath.compiler.composer.PathComposer;
 import mortarnav.autopath.compiler.extractor.PathExtractor;
 import mortarnav.autopath.compiler.spec.ConstructorSpec;
 import mortarnav.autopath.compiler.spec.ParamSpec;
 import mortarnav.autopath.compiler.spec.PathSpec;
+import mortarnav.processor.AbstractComposer;
+import mortarnav.processor.AbstractProcessing;
+import mortarnav.processor.Errors;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

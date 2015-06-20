@@ -7,8 +7,8 @@ import android.view.View;
 import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 import com.mortarnav.nav.SlidesScope;
-import com.mortarnav.nav.path.SlidePagePath;
 import com.mortarnav.presenter.SlidesPresenter;
+import com.mortarnav.presenter.scope.path.SlidePagePath;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

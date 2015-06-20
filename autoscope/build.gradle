@@ -22,6 +22,8 @@ idea {
 }
 
 dependencies {
+    compile project(':autopath')
+    provided deps.autodagger2
     provided deps.android
 }
 
