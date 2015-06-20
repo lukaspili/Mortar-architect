@@ -20,12 +20,4 @@ dependencies {
     compile deps.mortar
 }
 
-//afterEvaluate { project ->
-//    android.libraryVariants.all { variant ->
-//        tasks.androidJavadocs.doFirst {
-//            classpath += files(variant.javaCompile.classpath.files)
-//        }
-//    }
-//}
-
 apply from: '../mvn-publish-android.gradle'

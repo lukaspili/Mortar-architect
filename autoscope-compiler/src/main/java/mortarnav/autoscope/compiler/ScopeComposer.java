@@ -50,7 +50,7 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
                 .addCode(CodeBlock.builder()
                         .add("return new $T().with($T.SERVICE_NAME, $T.builder()\n", SERVICES_CLS, DAGGERSERVICE_CLS, spec.getDaggerComponentTypeName())
                         .indent()
-                        .add(".component(parentScope.<$T>getService($T.SERVICE_NAME))\n", spec.getParentComponentTypeName(), DAGGERSERVICE_CLS)
+                        .add(".$L(parentScope.<$T>getService($T.SERVICE_NAME))\n", spec.getDaggerComponentBuilderDependencyMethodName(), spec.getDaggerComponentBuilderDependencyTypeName(), DAGGERSERVICE_CLS)
                         .add(".module(new Module())\n")
                         .add(".build());\n")
                         .unindent()

@@ -1,6 +1,7 @@
 package mortarnav.autoscope.compiler;
 
 import com.google.auto.common.MoreElements;
+import com.google.auto.common.MoreTypes;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterSpec;
@@ -15,6 +16,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import autodagger.AutoComponent;
+import autodagger.compiler.utils.AutoComponentClassNameUtil;
 import mortarnav.autoscope.AutoScope;
 import mortarnav.autoscope.FromNav;
 import mortarnav.processor.AbstractComposer;
@@ -67,7 +70,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec> {
         }
 
         private ScopeSpec build() {
-            ScopeSpec spec = new ScopeSpec(buildClassName());
+            ScopeSpec spec = new ScopeSpec(buildClassName(extractor.getElement()));
             spec.setParentComponentTypeName(TypeName.get(extractor.getComponentDependency()));
 
             TypeName presenterTypeName = TypeName.get(extractor.getElement().asType());
@@ -79,6 +82,28 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec> {
             spec.setComponentAnnotationSpec(builder.build());
 
             spec.setDaggerComponentTypeName(ClassName.get(spec.getClassName().packageName(), String.format("Dagger%sComponent", spec.getClassName().simpleName())));
+
+            // dagger2 builder dependency method name and type can have 3 diff values
+            // - name and type of the generated scope if dependency is annotated with @AutoScope
+            // - name and type of the target if dependency is annotated with @AutoComponent (valid also for #2, so check #2 condition first)
+            // - name and type of the class if dependency is a manually written component
+            String methodName;
+            TypeName typeName;
+            Element daggerDependencyElement = MoreTypes.asElement(extractor.getComponentDependency());
+            if (MoreElements.isAnnotationPresent(daggerDependencyElement, AutoScope.class)) {
+                ClassName daggerDependencyScopeClassName = buildClassName(daggerDependencyElement);
+                ClassName daggerDependencyClassName = AutoComponentClassNameUtil.getComponentClassName(daggerDependencyScopeClassName);
+                methodName = StringUtils.uncapitalize(daggerDependencyClassName.simpleName());
+                typeName = daggerDependencyClassName;
+            } else if (MoreElements.isAnnotationPresent(daggerDependencyElement, AutoComponent.class)) {
+                methodName = StringUtils.uncapitalize(daggerDependencyElement.getSimpleName().toString()) + "Component";
+                typeName = AutoComponentClassNameUtil.getComponentClassName(daggerDependencyElement);
+            } else {
+                methodName = StringUtils.uncapitalize(daggerDependencyElement.getSimpleName().toString());
+                typeName = TypeName.get(extractor.getComponentDependency());
+            }
+            spec.setDaggerComponentBuilderDependencyTypeName(typeName);
+            spec.setDaggerComponentBuilderDependencyMethodName(methodName);
 
             if (extractor.getScopeAnnotationTypeMirror() != null) {
                 spec.setScopeAnnotationSpec(AnnotationSpec.get(extractor.getScopeAnnotationTypeMirror()));
@@ -106,8 +131,8 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec> {
             return spec;
         }
 
-        private ClassName buildClassName() {
-            String name = extractor.getElement().getSimpleName().toString();
+        private ClassName buildClassName(Element element) {
+            String name = element.getSimpleName().toString();
 
             // try to remove NavigationScope at the end of the name
             String newName = removeEndingName(name, "Presenter");
@@ -115,7 +140,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec> {
                 errors.addInvalid("Class name " + newName);
             }
 
-            String pkg = MoreElements.getPackage(extractor.getElement()).getQualifiedName().toString();
+            String pkg = MoreElements.getPackage(element).getQualifiedName().toString();
             if (StringUtils.isBlank(pkg)) {
                 errors.addInvalid("Package name " + pkg);
             }

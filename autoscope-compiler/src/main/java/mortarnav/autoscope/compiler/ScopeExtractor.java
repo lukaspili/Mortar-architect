@@ -81,8 +81,13 @@ public class ScopeExtractor extends AbstractExtractor {
         List<AnnotationValue> values = ExtractorUtils.getValueFromAnnotation(annotationMirror, AutoComponent.class, name);
         if (values != null) {
             for (AnnotationValue value : values) {
-                TypeMirror tm = (TypeMirror) value.getValue();
-                typeMirrors.add(tm);
+                try {
+                    TypeMirror tm = (TypeMirror) value.getValue();
+                    typeMirrors.add(tm);
+                } catch (Exception e) {
+                    errors.addInvalid("@AutoComponent dependency (did your reference an auto generated class? use rather the target class)");
+                    break;
+                }
             }
         }
 

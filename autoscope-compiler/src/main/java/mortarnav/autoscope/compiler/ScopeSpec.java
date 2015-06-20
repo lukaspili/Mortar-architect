@@ -12,6 +12,8 @@ import mortarnav.processor.AbstractSpec;
 public class ScopeSpec extends AbstractSpec {
 
     private ModuleSpec moduleSpec;
+    private String daggerComponentBuilderDependencyMethodName;
+    private TypeName daggerComponentBuilderDependencyTypeName;
     private TypeName daggerComponentTypeName;
     private TypeName parentComponentTypeName;
     private AnnotationSpec scopeAnnotationSpec;
@@ -24,6 +26,22 @@ public class ScopeSpec extends AbstractSpec {
 
     public ModuleSpec getModuleSpec() {
         return moduleSpec;
+    }
+
+    public String getDaggerComponentBuilderDependencyMethodName() {
+        return daggerComponentBuilderDependencyMethodName;
+    }
+
+    public void setDaggerComponentBuilderDependencyMethodName(String daggerComponentBuilderDependencyMethodName) {
+        this.daggerComponentBuilderDependencyMethodName = daggerComponentBuilderDependencyMethodName;
+    }
+
+    public TypeName getDaggerComponentBuilderDependencyTypeName() {
+        return daggerComponentBuilderDependencyTypeName;
+    }
+
+    public void setDaggerComponentBuilderDependencyTypeName(TypeName daggerComponentBuilderDependencyTypeName) {
+        this.daggerComponentBuilderDependencyTypeName = daggerComponentBuilderDependencyTypeName;
     }
 
     public void setModuleSpec(ModuleSpec moduleSpec) {

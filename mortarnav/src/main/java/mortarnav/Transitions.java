@@ -25,14 +25,6 @@ public class Transitions {
         transitions = new HashMap<>();
     }
 
-    /**
-     * Allows to register transitions by injection
-     */
-    @Inject
-    public void setTransitions(List<Transition> transitions) {
-        register(transitions);
-    }
-
     public Transitions register(List<Transition> transitions) {
         Preconditions.checkNotNull(transitions, "Transitions cannot be null");
 

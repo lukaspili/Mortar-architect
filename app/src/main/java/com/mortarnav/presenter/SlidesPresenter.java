@@ -3,18 +3,25 @@ package com.mortarnav.presenter;
 import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.nav.SlidesScope;
+import com.mortarnav.MainActivity;
 import com.mortarnav.presenter.scope.path.SlidePagePath;
 import com.mortarnav.view.SlidesView;
 
 import javax.inject.Inject;
 
+import autodagger.AutoComponent;
 import mortar.ViewPresenter;
+import mortarnav.autopath.AutoPath;
+import mortarnav.autoscope.AutoScope;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@DaggerScope(SlidesScope.Component.class)
+@AutoScope(
+        component = @AutoComponent(dependencies = MainActivity.Component.class),
+        path = @AutoPath(withView = SlidesView.class)
+)
+@DaggerScope(SlidesPresenter.class)
 public class SlidesPresenter extends ViewPresenter<SlidesView> {
 
     private SlidePagePath[] pagePaths;

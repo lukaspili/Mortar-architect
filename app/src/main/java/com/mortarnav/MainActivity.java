@@ -9,6 +9,8 @@ import com.mortarnav.path.HomePath;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import dagger.Provides;
@@ -17,7 +19,6 @@ import mortar.bundler.BundleServiceRunner;
 import mortarnav.Navigator;
 import mortarnav.NavigatorView;
 import mortarnav.Transition;
-import mortarnav.Transitions;
 import mortarnav.transition.Config;
 import mortarnav.transition.HorizontalScreenTransition;
 
@@ -26,6 +27,9 @@ public class MainActivity extends Activity {
 
     private MortarScope scope;
     private Navigator navigator;
+
+    @Inject
+    List<Transition> navigatorTransitions;
 
     @InjectView(R.id.navigator_container)
     protected NavigatorView containerView;
@@ -58,14 +62,7 @@ public class MainActivity extends Activity {
                     .build(scopeName);
 
             Navigator navigator = Navigator.create(scope);
-
-            // option1: inject navigator transitions
-            component.inject(navigator.transitions());
-
-            // option2: register them directly
-//            navigator.transitions()
-//                    .register(Transition.defaultTransition(new HorizontalScreenTransition()))
-//                    .register(Transition.forView(ViewB.class).fromAny().withTransition(new BottomAppearTransition()));
+            navigator.transitions().register(navigatorTransitions);
         }
 
         BundleServiceRunner.getBundleServiceRunner(scope).onCreate(savedInstanceState);
@@ -129,8 +126,6 @@ public class MainActivity extends Activity {
     public interface Component {
 
         void inject(MainActivity activity);
-
-        void inject(Transitions transitions);
     }
 
     @dagger.Module

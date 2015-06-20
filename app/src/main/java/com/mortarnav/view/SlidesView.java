@@ -6,10 +6,11 @@ import android.view.View;
 
 import com.mortarnav.DaggerService;
 import com.mortarnav.R;
-import com.mortarnav.nav.SlidesScope;
 import com.mortarnav.presenter.SlidesPresenter;
+import com.mortarnav.presenter.scope.SlidesScopeComponent;
 import com.mortarnav.presenter.scope.path.SlidePagePath;
 
+import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import mortarnav.commons.adapter.PathPagerAdapter;
@@ -18,6 +19,7 @@ import mortarnav.commons.view.MvpLinearLayout;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
+@AutoInjector(SlidesPresenter.class)
 public class SlidesView extends MvpLinearLayout<SlidesPresenter> {
 
     @InjectView(R.id.pager)
@@ -28,7 +30,7 @@ public class SlidesView extends MvpLinearLayout<SlidesPresenter> {
     public SlidesView(Context context) {
         super(context);
 
-        DaggerService.<SlidesScope.Component>get(context).inject(this);
+        DaggerService.<SlidesScopeComponent>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.slides_view, this);
         ButterKnife.inject(view);
