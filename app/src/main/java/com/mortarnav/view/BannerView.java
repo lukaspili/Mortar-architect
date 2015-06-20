@@ -4,19 +4,22 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 import com.mortarnav.nav.BannerScope;
+import com.mortarnav.nav.BannerScopeComponent;
 import com.mortarnav.presenter.BannerPresenter;
 
+import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mortarnav.NavigationScope;
+import mortarnav.autoscope.DaggerService;
 import mortarnav.commons.view.MvpContainerLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
+@AutoInjector(BannerScope.class)
 public class BannerView extends MvpContainerLinearLayout<BannerPresenter> {
 
     public BannerView(Context parentContext, AttributeSet attrs) {
@@ -30,7 +33,7 @@ public class BannerView extends MvpContainerLinearLayout<BannerPresenter> {
 
     @Override
     public void initWithContext(Context context) {
-        DaggerService.<BannerScope.Component>get(context).inject(this);
+        DaggerService.<BannerScopeComponent>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.banner_view, this);
         ButterKnife.inject(view);

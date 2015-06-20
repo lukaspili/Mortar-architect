@@ -37,12 +37,12 @@ dependencies {
     compile project(':autoscope')
     apt project(':autoscope-compiler')
 
+    compile deps.autodagger2
+    apt deps.autodagger2_compiler
+
     compile deps.dagger2
     apt deps.dagger2_compiler
     provided deps.javax_annotation_jsr250
-
-    compile deps.autodagger2
-    apt deps.autodagger2_compiler
 
     compile deps.parcelablepls
     apt deps.parcelablepls_compiler

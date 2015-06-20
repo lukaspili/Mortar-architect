@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 import com.mortarnav.nav.HomeScope;
 import com.mortarnav.presenter.HomePresenter;
@@ -14,6 +13,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import mortarnav.autoscope.DaggerService;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

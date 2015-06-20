@@ -14,7 +14,7 @@ import timber.log.Timber;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@DaggerScope(BannerScope.Component.class)
+@DaggerScope(BannerScope.class)
 public class BannerPresenter extends ViewPresenter<BannerView> {
 
     @Inject

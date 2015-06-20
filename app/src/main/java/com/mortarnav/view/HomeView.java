@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 import com.mortarnav.nav.HomeScope;
 import com.mortarnav.presenter.HomePresenter;
@@ -12,6 +11,7 @@ import com.mortarnav.presenter.HomePresenter;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import mortarnav.autoscope.DaggerService;
 import mortarnav.commons.view.MvpLinearLayout;
 
 /**

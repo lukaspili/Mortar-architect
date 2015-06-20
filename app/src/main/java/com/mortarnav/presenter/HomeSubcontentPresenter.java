@@ -3,20 +3,25 @@ package com.mortarnav.presenter;
 import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.nav.HomeSubcontentScope;
+import com.mortarnav.nav.HomeScope;
 import com.mortarnav.view.HomeSubcontentView;
 
 import java.util.Random;
 
 import javax.inject.Inject;
 
+import autodagger.AutoComponent;
 import mortar.ViewPresenter;
+import mortarnav.autoscope.AutoScope;
 import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@DaggerScope(HomeSubcontentScope.Component.class)
+@AutoScope(
+        component = @AutoComponent(dependencies = HomeScope.Component.class)
+)
+@DaggerScope(HomeSubcontentPresenter.class)
 public class HomeSubcontentPresenter extends ViewPresenter<HomeSubcontentView> {
 
     private final int random;

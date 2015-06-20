@@ -11,6 +11,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import autodagger.AutoComponent;
+import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import dagger.Provides;
@@ -19,10 +21,16 @@ import mortar.bundler.BundleServiceRunner;
 import mortarnav.Navigator;
 import mortarnav.NavigatorView;
 import mortarnav.Transition;
+import mortarnav.autoscope.DaggerService;
 import mortarnav.transition.Config;
 import mortarnav.transition.HorizontalScreenTransition;
 
-
+@AutoComponent(
+        dependencies = App.class,
+        modules = MainActivity.NavigatorModule.class
+)
+@AutoInjector
+@DaggerScope(MainActivity.class)
 public class MainActivity extends Activity {
 
     private MortarScope scope;
@@ -50,13 +58,15 @@ public class MainActivity extends Activity {
         String scopeName = getLocalClassName() + "-task-" + getTaskId();
         scope = MortarScope.findChild(getApplicationContext(), scopeName);
         if (scope == null) {
-            Component component = DaggerMainActivity_Component.builder()
-                    .component(App.getComponent(getApplication()))
+            MortarScope parentScope = MortarScope.getScope(getApplicationContext());
+
+            MainActivityComponent component = DaggerMainActivityComponent.builder()
+                    .appComponent(parentScope.<AppComponent>getService(DaggerService.SERVICE_NAME))
                     .navigatorModule(new NavigatorModule())
                     .build();
             component.inject(this);
 
-            scope = MortarScope.buildChild(getApplicationContext())
+            scope = parentScope.buildChild()
                     .withService(BundleServiceRunner.SERVICE_NAME, new BundleServiceRunner())
                     .withService(DaggerService.SERVICE_NAME, component)
                     .build(scopeName);
@@ -121,18 +131,11 @@ public class MainActivity extends Activity {
         super.onBackPressed();
     }
 
-    @dagger.Component(dependencies = App.Component.class, modules = NavigatorModule.class)
-    @DaggerScope(Component.class)
-    public interface Component {
-
-        void inject(MainActivity activity);
-    }
-
     @dagger.Module
     public static class NavigatorModule {
 
         @Provides
-        @DaggerScope(Component.class)
+        @DaggerScope(MainActivity.class)
         public List<Transition> providesTransitions() {
             List<Transition> transitions = new ArrayList<>();
             transitions.add(Transition.defaultTransition(new HorizontalScreenTransition(new Config().duration(300))));

@@ -5,20 +5,23 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
-import com.mortarnav.DaggerService;
 import com.mortarnav.R;
-import com.mortarnav.nav.HomeSubcontentScope;
 import com.mortarnav.presenter.HomeSubcontentPresenter;
+import com.mortarnav.presenter.scope.HomeSubcontentScope;
+import com.mortarnav.presenter.scope.HomeSubcontentScopeComponent;
 
+import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import mortarnav.NavigationScope;
+import mortarnav.autoscope.DaggerService;
 import mortarnav.commons.view.MvpContainerLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
+@AutoInjector(HomeSubcontentPresenter.class)
 public class HomeSubcontentView extends MvpContainerLinearLayout<HomeSubcontentPresenter> {
 
     @InjectView(R.id.home_sub_random)
@@ -35,7 +38,7 @@ public class HomeSubcontentView extends MvpContainerLinearLayout<HomeSubcontentP
 
     @Override
     public void initWithContext(Context context) {
-        DaggerService.<HomeSubcontentScope.Component>get(context).inject(this);
+        DaggerService.<HomeSubcontentScopeComponent>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.home_subcontent_view, this);
         ButterKnife.inject(view);

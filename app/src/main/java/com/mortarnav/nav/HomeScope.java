@@ -1,8 +1,7 @@
 package com.mortarnav.nav;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.DaggerService;
-import com.mortarnav.MainActivity;
+import com.mortarnav.MainActivityComponent;
 import com.mortarnav.presenter.HomePresenter;
 import com.mortarnav.view.HomeAdditionalCustomView;
 import com.mortarnav.view.HomeView;
@@ -10,8 +9,11 @@ import com.mortarnav.view.HomeView;
 import dagger.Provides;
 import mortar.MortarScope;
 import mortarnav.NavigationScope;
+import mortarnav.autoscope.DaggerService;
 
 /**
+ * Manually written scope, for example purpose
+ *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class HomeScope implements NavigationScope {
@@ -25,7 +27,7 @@ public class HomeScope implements NavigationScope {
     @Override
     public Services withServices(MortarScope parentScope) {
         return new Services().with(DaggerService.SERVICE_NAME, DaggerHomeScope_Component.builder()
-                .component(parentScope.<MainActivity.Component>getService(DaggerService.SERVICE_NAME))
+                .mainActivityComponent(parentScope.<MainActivityComponent>getService(DaggerService.SERVICE_NAME))
                 .module(new Module())
                 .build());
     }
@@ -40,7 +42,7 @@ public class HomeScope implements NavigationScope {
         }
     }
 
-    @dagger.Component(dependencies = MainActivity.Component.class, modules = Module.class)
+    @dagger.Component(dependencies = MainActivityComponent.class, modules = Module.class)
     @DaggerScope(Component.class)
     public interface Component {
 
