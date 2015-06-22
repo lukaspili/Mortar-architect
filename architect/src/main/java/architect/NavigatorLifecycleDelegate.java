@@ -25,10 +25,12 @@ public class NavigatorLifecycleDelegate {
 
         if (navigator.history.isEmpty()) {
             History history = null;
-            if (intent != null && intent.hasExtra(HISTORY_KEY)) {
-                history = History.fromBundle(intent.getBundleExtra(HISTORY_KEY));
-            } else if (savedInstanceState != null && savedInstanceState.containsKey(HISTORY_KEY)) {
-                history = History.fromBundle(savedInstanceState.getBundle(HISTORY_KEY));
+            if (!navigator.config.dontRestoreStackAfterKill) {
+                if (intent != null && intent.hasExtra(HISTORY_KEY)) {
+                    history = History.fromBundle(intent.getBundleExtra(HISTORY_KEY));
+                } else if (savedInstanceState != null && savedInstanceState.containsKey(HISTORY_KEY)) {
+                    history = History.fromBundle(savedInstanceState.getBundle(HISTORY_KEY));
+                }
             }
 
             if (history != null) {

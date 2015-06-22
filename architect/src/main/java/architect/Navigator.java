@@ -33,7 +33,14 @@ public class Navigator implements Scoped {
     }
 
     public static Navigator create(MortarScope containerScope) {
-        Navigator navigator = new Navigator();
+        return create(containerScope, null);
+    }
+
+    public static Navigator create(MortarScope containerScope, Config config) {
+        if (config == null) {
+            config = new Config();
+        }
+        Navigator navigator = new Navigator(config);
 
         MortarScope scope = containerScope.buildChild()
                 .withService(SERVICE_NAME, navigator)
@@ -43,6 +50,7 @@ public class Navigator implements Scoped {
         return navigator;
     }
 
+    final Config config;
     final History history;
     final Transitions transitions;
     final Presenter presenter;
@@ -50,7 +58,8 @@ public class Navigator implements Scoped {
     final Dispatcher dispatcher;
     private MortarScope scope;
 
-    private Navigator() {
+    private Navigator(Config config) {
+        this.config = config;
         history = new History();
         transitions = new Transitions();
         delegate = new NavigatorLifecycleDelegate(this);
@@ -115,5 +124,22 @@ public class Navigator implements Scoped {
         dispatcher.kill();
 
         scope = null;
+    }
+
+    public static class Config {
+
+        /**
+         * After process kill, the previous stack won't be restored
+         * and the app will start from the beginning again
+         * The advantage of this is that it allows the developer to not care
+         * about saving and restoring state in presenters' bundles at all
+         * Default value is false, the stack will be restored
+         */
+        boolean dontRestoreStackAfterKill;
+
+        public Config dontRestoreStackAfterKill(boolean dontRestoreStackAfterKill) {
+            this.dontRestoreStackAfterKill = dontRestoreStackAfterKill;
+            return this;
+        }
     }
 }

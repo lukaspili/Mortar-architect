@@ -7,20 +7,21 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import architect.Navigator;
+import architect.NavigatorView;
+import architect.StackPath;
+import architect.Transition;
+import architect.Transitions;
+import architect.autostack.DaggerService;
+import architect.commons.ArchitectActivity;
+import architect.transition.Config;
+import architect.transition.HorizontalScreenTransition;
 import autodagger.AutoComponent;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import dagger.Provides;
 import mortar.MortarScope;
-import architect.StackPath;
-import architect.Navigator;
-import architect.NavigatorView;
-import architect.Transition;
-import architect.autostack.DaggerService;
-import architect.commons.ArchitectActivity;
-import architect.transition.Config;
-import architect.transition.HorizontalScreenTransition;
 
 /**
  * Root activity example, using ArchitectActivity base class
@@ -59,8 +60,13 @@ public class MainActivity2 extends ArchitectActivity {
     }
 
     @Override
-    protected void configureNavigator(Navigator navigator) {
-        navigator.transitions().register(navigatorTransitions);
+    protected void registerNavigatorTransitions(Transitions transitions) {
+        transitions.register(navigatorTransitions);
+    }
+
+    @Override
+    protected Navigator.Config getNavigatorConfig() {
+        return null;
     }
 
     @Override

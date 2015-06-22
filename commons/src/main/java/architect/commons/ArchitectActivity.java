@@ -4,11 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import mortar.MortarScope;
-import mortar.bundler.BundleServiceRunner;
-import architect.StackPath;
 import architect.Navigator;
 import architect.NavigatorView;
+import architect.StackPath;
+import architect.Transitions;
+import mortar.MortarScope;
+import mortar.bundler.BundleServiceRunner;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -22,11 +23,17 @@ public abstract class ArchitectActivity extends Activity {
 
     protected abstract void configureScope(MortarScope.Builder builder, MortarScope parMortarScope);
 
-    protected abstract void configureNavigator(Navigator navigator);
+    protected abstract void registerNavigatorTransitions(Transitions transitions);
+
+    /**
+     * @return the navigator config or null for default config
+     */
+    protected abstract Navigator.Config getNavigatorConfig();
 
     protected abstract NavigatorView getNavigatorView();
 
     protected abstract StackPath getInitialPath();
+
 
     @Override
     public Object getSystemService(String name) {
@@ -51,8 +58,8 @@ public abstract class ArchitectActivity extends Activity {
             configureScope(builder, parentScope);
             scope = builder.build(scopeName);
 
-            Navigator navigator = Navigator.create(scope);
-            configureNavigator(navigator);
+            Navigator navigator = Navigator.create(scope, getNavigatorConfig());
+            registerNavigatorTransitions(navigator.transitions());
         }
 
         BundleServiceRunner.getBundleServiceRunner(scope).onCreate(savedInstanceState);
