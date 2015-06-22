@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import android.view.View;
 
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
-import com.mortarnav.nav.HomeScope;
+import com.mortarnav.stack.HomeStackScope;
 import com.mortarnav.view.HomeView;
 
 import mortarnav.NavigationPath;
@@ -19,7 +19,7 @@ import mortarnav.NavigationPath;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @ParcelablePlease
-public class HomePath extends NavigationPath<HomeScope> {
+public class HomePath extends NavigationPath<HomeStackScope> {
 
     String name;
 
@@ -32,8 +32,8 @@ public class HomePath extends NavigationPath<HomeScope> {
     }
 
     @Override
-    public HomeScope withScope() {
-        return new HomeScope(name);
+    public HomeStackScope withScope() {
+        return new HomeStackScope(name);
     }
 
     @Override

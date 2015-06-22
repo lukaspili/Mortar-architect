@@ -3,7 +3,7 @@ package com.mortarnav.presenter;
 import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.nav.BannerScope;
+import com.mortarnav.stack.BannerStackScope;
 import com.mortarnav.view.BannerView;
 
 import javax.inject.Inject;
@@ -14,7 +14,7 @@ import timber.log.Timber;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@DaggerScope(BannerScope.class)
+@DaggerScope(BannerStackScope.class)
 public class BannerPresenter extends ViewPresenter<BannerView> {
 
     @Inject

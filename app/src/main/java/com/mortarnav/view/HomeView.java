@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.mortarnav.R;
-import com.mortarnav.nav.HomeScope;
+import com.mortarnav.stack.HomeStackScope;
 import com.mortarnav.presenter.HomePresenter;
 
 import butterknife.ButterKnife;
@@ -28,7 +28,7 @@ public class HomeView extends MvpLinearLayout<HomePresenter> {
     public HomeView(Context context) {
         super(context);
 
-        DaggerService.<HomeScope.Component>get(context).inject(this);
+        DaggerService.<HomeStackScope.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.home_view, this);
         ButterKnife.inject(view);

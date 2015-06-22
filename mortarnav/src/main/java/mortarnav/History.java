@@ -89,7 +89,7 @@ public class History {
     }
 
     void push(NavigationPath navigationPath) {
-        NavigationScope scope = navigationPath.withScope();
+        StackScope scope = navigationPath.withScope();
 
         Entry entry = new Entry(scopeNamer.getName(scope), scope, navigationPath);
         Preconditions.checkArgument(!entries.contains(entry), "An entry with the same navigation path is already present in history");
@@ -161,11 +161,11 @@ public class History {
     static class Entry {
         final String scopeName;
         final Factory factory;
-        final NavigationScope scope;
+        final StackScope scope;
         SparseArray<Parcelable> state;
         boolean dead;
 
-        public Entry(String scopeName, NavigationScope scope, Factory factory) {
+        public Entry(String scopeName, StackScope scope, Factory factory) {
             Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");
             Preconditions.checkNotNull(scope, "Scope cannot be null");
             Preconditions.checkNotNull(factory, "Factory cannot be null");
@@ -218,7 +218,7 @@ public class History {
          * Allow to create and recreate instances of scopes & views
          */
         interface Factory extends Parcelable {
-            NavigationScope createScope();
+            StackScope createScope();
 
             View createView(Context context);
         }

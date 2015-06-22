@@ -11,11 +11,11 @@ import mortar.MortarScope;
  */
 public class NavigationScopeFactory {
 
-    public static Context createContext(Context parentContext, NavigationScope scope) {
+    public static Context createContext(Context parentContext, StackScope scope) {
         return createContext(parentContext, scope, null);
     }
 
-    public static Context createContext(Context parentContext, NavigationScope scope, String identifier) {
+    public static Context createContext(Context parentContext, StackScope scope, String identifier) {
         Preconditions.checkNotNull(parentContext, "Parent context cannot be null");
         Preconditions.checkNotNull(scope, "Scope cannot be null");
 
@@ -34,10 +34,10 @@ public class NavigationScopeFactory {
     /**
      * Create Mortar scope from navigation scope
      */
-    static MortarScope createScope(MortarScope parentScope, NavigationScope scope, String scopeName) {
+    static MortarScope createScope(MortarScope parentScope, StackScope scope, String scopeName) {
         MortarScope.Builder scopeBuilder = parentScope.buildChild();
 
-        NavigationScope.Services services = scope.withServices(parentScope);
+        StackScope.Services services = scope.withServices(parentScope);
         if (services != null && !services.services.isEmpty()) {
             for (Map.Entry<String, Object> service : services.services.entrySet()) {
                 scopeBuilder.withService(service.getKey(), service.getValue());

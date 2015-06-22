@@ -8,7 +8,7 @@ import mortar.MortarScope;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public interface NavigationScope {
+public interface StackScope {
 
     Services withServices(MortarScope parentScope);
 

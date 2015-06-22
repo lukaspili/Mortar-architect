@@ -14,7 +14,7 @@ import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import mortarnav.NavigationScope;
+import mortarnav.StackScope;
 import mortarnav.autoscope.DaggerService;
 import mortarnav.commons.view.StackLinearLayout;
 
@@ -32,7 +32,7 @@ public class HomeSubcontentView extends StackLinearLayout<HomeSubcontentPresente
     }
 
     @Override
-    public NavigationScope getScope() {
+    public StackScope getScope() {
         return new HomeSubcontentScope();
     }
 

@@ -5,21 +5,21 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.mortarnav.R;
-import com.mortarnav.nav.BannerScope;
-import com.mortarnav.nav.BannerScopeComponent;
 import com.mortarnav.presenter.BannerPresenter;
+import com.mortarnav.stack.BannerStackScope;
+import com.mortarnav.stack.BannerStackScopeComponent;
 
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import mortarnav.NavigationScope;
+import mortarnav.StackScope;
 import mortarnav.autoscope.DaggerService;
 import mortarnav.commons.view.StackLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoInjector(BannerScope.class)
+@AutoInjector(BannerStackScope.class)
 public class BannerView extends StackLinearLayout<BannerPresenter> {
 
     public BannerView(Context parentContext, AttributeSet attrs) {
@@ -27,13 +27,13 @@ public class BannerView extends StackLinearLayout<BannerPresenter> {
     }
 
     @Override
-    public NavigationScope getScope() {
-        return new BannerScope();
+    public StackScope getScope() {
+        return new BannerStackScope();
     }
 
     @Override
     public void initWithContext(Context context) {
-        DaggerService.<BannerScopeComponent>get(context).inject(this);
+        DaggerService.<BannerStackScopeComponent>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.banner_view, this);
         ButterKnife.inject(view);

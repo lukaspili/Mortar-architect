@@ -1,4 +1,4 @@
-package com.mortarnav.nav;
+package com.mortarnav.stack;
 
 import com.mortarnav.DaggerScope;
 import com.mortarnav.MainActivity2;
@@ -6,7 +6,7 @@ import com.mortarnav.MainActivity2Component;
 
 import autodagger.AutoComponent;
 import mortar.MortarScope;
-import mortarnav.NavigationScope;
+import mortarnav.StackScope;
 import mortarnav.NavigatorServices;
 import mortarnav.autoscope.DaggerService;
 
@@ -14,8 +14,8 @@ import mortarnav.autoscope.DaggerService;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoComponent(dependencies = MainActivity2.class)
-@DaggerScope(BannerScope.class)
-public class BannerScope implements NavigationScope {
+@DaggerScope(BannerStackScope.class)
+public class BannerStackScope implements StackScope {
 
     @Override
     public Services withServices(MortarScope parentScope) {
@@ -24,7 +24,7 @@ public class BannerScope implements NavigationScope {
         // retreive the main activity component from the navigator scope
         MainActivity2Component component = NavigatorServices.getService(parentScope, DaggerService.SERVICE_NAME);
 
-        return new Services().with(DaggerService.SERVICE_NAME, DaggerBannerScopeComponent.builder()
+        return new Services().with(DaggerService.SERVICE_NAME, DaggerBannerStackScopeComponent.builder()
                 .mainActivity2Component(component)
                 .build());
     }

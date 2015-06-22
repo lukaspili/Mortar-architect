@@ -3,7 +3,7 @@ package com.mortarnav.presenter;
 import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.nav.HomeScope;
+import com.mortarnav.stack.HomeStackScope;
 import com.mortarnav.view.HomeSubcontentView;
 
 import java.util.Random;
@@ -19,7 +19,7 @@ import timber.log.Timber;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoScope(
-        component = @AutoComponent(dependencies = HomeScope.Component.class)
+        component = @AutoComponent(dependencies = HomeStackScope.Component.class)
 )
 @DaggerScope(HomeSubcontentPresenter.class)
 public class HomeSubcontentPresenter extends ViewPresenter<HomeSubcontentView> {

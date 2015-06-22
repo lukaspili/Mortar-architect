@@ -26,8 +26,8 @@ import mortarnav.processor.AbstractComposer;
  */
 public class ScopeComposer extends AbstractComposer<ScopeSpec> {
 
-    private static final ClassName NAVIGATIONSCOPE_CLS = ClassName.get("mortarnav", "NavigationScope");
-    private static final ClassName SERVICES_CLS = ClassName.get("mortarnav", "NavigationScope.Services");
+    private static final ClassName NAVIGATIONSCOPE_CLS = ClassName.get("mortarnav", "StackScope");
+    private static final ClassName SERVICES_CLS = ClassName.get("mortarnav", "StackScope.Services");
     private static final ClassName DAGGERSERVICE_CLS = ClassName.get(DaggerService.class);
 
     public ScopeComposer(List<ScopeSpec> specs) {

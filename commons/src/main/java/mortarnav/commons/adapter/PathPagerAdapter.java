@@ -12,7 +12,7 @@ import java.util.Map;
 
 import mortar.MortarScope;
 import mortarnav.NavigationPath;
-import mortarnav.NavigationScope;
+import mortarnav.StackScope;
 import mortarnav.NavigationScopeFactory;
 
 /**
@@ -22,7 +22,7 @@ public class PathPagerAdapter extends PagerAdapter {
 
     private final Context context;
     private final List<NavigationPath> paths;
-    private final Map<NavigationPath, NavigationScope> scopes;
+    private final Map<NavigationPath, StackScope> scopes;
 
     public PathPagerAdapter(Context context, NavigationPath... paths) {
         this.context = context;
@@ -38,7 +38,7 @@ public class PathPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         NavigationPath path = paths.get(position);
-        NavigationScope scope = scopes.get(path);
+        StackScope scope = scopes.get(path);
         if (scope == null) {
             scope = path.createScope();
             scopes.put(path, scope);

@@ -1,15 +1,14 @@
-package com.mortarnav.nav;
+package com.mortarnav.stack;
 
 import com.mortarnav.DaggerScope;
 import com.mortarnav.MainActivity2Component;
-import com.mortarnav.MainActivityComponent;
 import com.mortarnav.presenter.HomePresenter;
 import com.mortarnav.view.HomeAdditionalCustomView;
 import com.mortarnav.view.HomeView;
 
 import dagger.Provides;
 import mortar.MortarScope;
-import mortarnav.NavigationScope;
+import mortarnav.StackScope;
 import mortarnav.autoscope.DaggerService;
 
 /**
@@ -17,17 +16,17 @@ import mortarnav.autoscope.DaggerService;
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class HomeScope implements NavigationScope {
+public class HomeStackScope implements StackScope {
 
     private final String name;
 
-    public HomeScope(String name) {
+    public HomeStackScope(String name) {
         this.name = name;
     }
 
     @Override
     public Services withServices(MortarScope parentScope) {
-        return new Services().with(DaggerService.SERVICE_NAME, DaggerHomeScope_Component.builder()
+        return new Services().with(DaggerService.SERVICE_NAME, DaggerHomeStackScope_Component.builder()
                 .mainActivity2Component(parentScope.<MainActivity2Component>getService(DaggerService.SERVICE_NAME))
                 .module(new Module())
                 .build());

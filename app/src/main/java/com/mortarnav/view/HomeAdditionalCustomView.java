@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.mortarnav.R;
-import com.mortarnav.nav.HomeScope;
+import com.mortarnav.stack.HomeStackScope;
 import com.mortarnav.presenter.HomePresenter;
 
 import javax.inject.Inject;
@@ -26,7 +26,7 @@ public class HomeAdditionalCustomView extends FrameLayout {
     public HomeAdditionalCustomView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        DaggerService.<HomeScope.Component>get(context).inject(this);
+        DaggerService.<HomeStackScope.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.home_additional_custom_view, this);
         ButterKnife.inject(view);

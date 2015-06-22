@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import mortar.ViewPresenter;
-import mortarnav.NavigationScope;
+import mortarnav.StackScope;
 import mortarnav.NavigationScopeFactory;
 
 /**
@@ -35,7 +35,7 @@ public abstract class StackLinearLayout<T extends ViewPresenter> extends MvpLine
         initWithContext(newContext);
     }
 
-    public abstract NavigationScope getScope();
+    public abstract StackScope getScope();
 
     public abstract void initWithContext(Context context);
 }

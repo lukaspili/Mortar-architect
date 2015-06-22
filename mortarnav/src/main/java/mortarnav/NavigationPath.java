@@ -7,7 +7,7 @@ import android.view.View;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class NavigationPath<T extends NavigationScope> implements History.Entry.Factory {
+public abstract class NavigationPath<T extends StackScope> implements History.Entry.Factory {
 
     public NavigationPath() {
 
@@ -19,7 +19,7 @@ public abstract class NavigationPath<T extends NavigationScope> implements Histo
     }
 
     @Override
-    public final NavigationScope createScope() {
+    public final StackScope createScope() {
         return withScope();
     }
 
