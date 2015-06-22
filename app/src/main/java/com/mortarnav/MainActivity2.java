@@ -28,7 +28,7 @@ import mortarnav.transition.HorizontalScreenTransition;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoComponent(
-        dependencies = App.class,
+        dependencies = App2.class,
         modules = MainActivity2.NavigatorModule.class
 )
 @AutoInjector
@@ -50,7 +50,7 @@ public class MainActivity2 extends ArchitectActivity {
     @Override
     protected void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
         MainActivity2Component component = DaggerMainActivity2Component.builder()
-                .appComponent(parentScope.<AppComponent>getService(DaggerService.SERVICE_NAME))
+                .app2Component(parentScope.<App2Component>getService(DaggerService.SERVICE_NAME))
                 .navigatorModule(new NavigatorModule())
                 .build();
         component.inject(this);
