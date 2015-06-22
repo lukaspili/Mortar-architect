@@ -2,13 +2,21 @@
 
 "Mortar provides a simplified, composable overlay for the Android lifecycle, to aid in the use of Views as the modular unit of Android applications." (quote from Mortar)  
 
-Architect provides a flexible stack for displaying and organising the flow of the couple View <> Mortar scope. In architect, these are designated by stack scopes.
+Architect provides a flexible stack for displaying and organising the flow of views and its Mortar scopes. It organises the mortar scopes in stacks. A stack can be a navigation stack (with its backstack history) or a scope included in another scope (subscopes). 
 
-Stack scope is basically a class used by Architect to build and configure a mortar scope. It is where you would also build the injection graph. See an example that setups a mortar scope with a dagger2 component and a module.
+Architect works only with Mortar, and it's a replacement of the Flow library.  
+The motivation behind Architect is to provid a context for building MVP apps with Mortar, with the minimum friction and boilerplate code.  
+Where Flow can in theory work without Mortar, Architect relies heavely on Mortar and the scope philosophy. The result is an elegant and powerful API that gets the better of Mortar, while still providing a simple and seamless integration.
+
+
+## Getting started
+
+For each mortar scope managed by Architect, you must provide a stack scope class.
+Stack scope is a class that implements `StackScope` and that is used by Architect to build and configure a mortar scope. It is where you would also build the injection graph. See an example that setups a mortar scope with a dagger2 component and a module.
 
 ```java
 
-public class HomeStackScope implements StackScope {
+public class HomeScope implements StackScope {
 
     private final String name;
 
@@ -18,6 +26,7 @@ public class HomeStackScope implements StackScope {
 
     @Override
     public Services withServices(MortarScope parentScope) {
+    	// the services that it will put in the mortar scope
         return new Services().with(DaggerService.SERVICE_NAME, DaggerHomeStackScope_Component.builder()
                 .component(parentScope.<MainActivity.Component>getService(DaggerService.SERVICE_NAME))
                 .module(new Module())
@@ -45,7 +54,7 @@ public class HomeStackScope implements StackScope {
 
 ## Navigator
 
-`Navigator` is the class that handles the navigation between scopes. The API is similar to Flow library, but under the hood the implementation is very different.
+`Navigator` is the class that handles the navigation between scopes. The public API is similar to Flow library, but under the hood the implementation is very different.
 
 Each `Navigator` is associated to a delegate class that you must hook up on the container lifecycle. Usually it's the root activity, but it can also be a ViewPresenter if you want to have sub-navigation somewhere else.  
 See the calls on `Navigator.delegate()` in the `MainActivity` class, in the example project.
@@ -90,3 +99,40 @@ public class SlidePagePresenter extends ViewPresenter<SlidePageView> {
 ## Commons
 
 Architect-commons provides some base classes to work with architect stack. See the example project.
+
+
+## Installation
+
+```groovy
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+		classpath 'com.android.tools.build:gradle:1.1.3'
+		classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+repositories {
+    jcenter()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+dependencies {
+    // TODO
+}
+```
+
+
+## Author
+
+- Lukasz Piliszczuk ([@lukaspili](https://twitter.com/lukaspili))
+
+
+## License
+
+Mortar Architect is released under the MIT license. See the LICENSE file for details.
