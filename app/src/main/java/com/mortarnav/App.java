@@ -4,7 +4,7 @@ import android.app.Application;
 
 import autodagger.AutoComponent;
 import mortar.MortarScope;
-import mortarnav.autoscope.DaggerService;
+import architect.autostack.DaggerService;
 import timber.log.Timber;
 
 /**

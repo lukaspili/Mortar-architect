@@ -11,8 +11,8 @@ import javax.inject.Inject;
 
 import autodagger.AutoComponent;
 import mortar.ViewPresenter;
-import mortarnav.autopath.AutoPath;
-import mortarnav.autoscope.AutoStack;
+import architect.autopath.AutoPath;
+import architect.autostack.AutoStack;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

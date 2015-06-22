@@ -12,11 +12,11 @@ import javax.inject.Inject;
 import autodagger.AutoComponent;
 import mortar.MortarScope;
 import mortar.ViewPresenter;
-import mortarnav.Navigator;
-import mortarnav.Transition;
-import mortarnav.autopath.AutoPath;
-import mortarnav.autoscope.AutoStack;
-import mortarnav.transition.HorizontalScreenTransition;
+import architect.Navigator;
+import architect.Transition;
+import architect.autopath.AutoPath;
+import architect.autostack.AutoStack;
+import architect.transition.HorizontalScreenTransition;
 import timber.log.Timber;
 
 /**

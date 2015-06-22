@@ -9,7 +9,7 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.mortarnav.stack.HomeStackScope;
 import com.mortarnav.view.HomeView;
 
-import mortarnav.StackPath;
+import architect.StackPath;
 
 /**
  * This is a manually written path, for the sample

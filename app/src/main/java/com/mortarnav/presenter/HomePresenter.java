@@ -10,8 +10,8 @@ import com.mortarnav.view.HomeView;
 import java.util.Random;
 
 import mortar.ViewPresenter;
-import mortarnav.Navigator;
-import mortarnav.autoscope.StackParam;
+import architect.Navigator;
+import architect.autostack.StackParam;
 import timber.log.Timber;
 
 /**

@@ -10,10 +10,10 @@ import java.util.Random;
 
 import autodagger.AutoComponent;
 import mortar.ViewPresenter;
-import mortarnav.Navigator;
-import mortarnav.autopath.AutoPath;
-import mortarnav.autoscope.AutoStack;
-import mortarnav.autoscope.StackParam;
+import architect.Navigator;
+import architect.autopath.AutoPath;
+import architect.autostack.AutoStack;
+import architect.autostack.StackParam;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

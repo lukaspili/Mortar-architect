@@ -13,7 +13,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import mortarnav.autoscope.DaggerService;
+import architect.autostack.DaggerService;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

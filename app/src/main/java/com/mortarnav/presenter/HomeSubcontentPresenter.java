@@ -12,7 +12,7 @@ import javax.inject.Inject;
 
 import autodagger.AutoComponent;
 import mortar.ViewPresenter;
-import mortarnav.autoscope.AutoStack;
+import architect.autostack.AutoStack;
 import timber.log.Timber;
 
 /**

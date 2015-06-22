@@ -12,8 +12,8 @@ import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import mortarnav.autoscope.DaggerService;
-import mortarnav.commons.view.MvpFrameLayout;
+import architect.autostack.DaggerService;
+import architect.commons.view.MvpFrameLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

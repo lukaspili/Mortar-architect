@@ -12,9 +12,9 @@ import com.mortarnav.stack.BannerStackScopeComponent;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import mortarnav.StackScope;
-import mortarnav.autoscope.DaggerService;
-import mortarnav.commons.view.StackLinearLayout;
+import architect.StackScope;
+import architect.autostack.DaggerService;
+import architect.commons.view.StackLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

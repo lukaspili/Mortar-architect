@@ -11,8 +11,8 @@ import com.mortarnav.presenter.scope.SlidePageScopeComponent;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import mortarnav.autoscope.DaggerService;
-import mortarnav.commons.view.MvpLinearLayout;
+import architect.autostack.DaggerService;
+import architect.commons.view.MvpLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

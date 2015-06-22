@@ -10,10 +10,10 @@ import com.mortarnav.presenter.scope.SubnavScopeComponent;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import mortarnav.NavigatorView;
-import mortarnav.autoscope.DaggerService;
-import mortarnav.commons.view.MvpFrameLayout;
-import mortarnav.view.HandlesBack;
+import architect.NavigatorView;
+import architect.autostack.DaggerService;
+import architect.commons.view.MvpFrameLayout;
+import architect.view.HandlesBack;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

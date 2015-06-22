@@ -8,8 +8,8 @@ import com.mortarnav.view.HomeView;
 
 import dagger.Provides;
 import mortar.MortarScope;
-import mortarnav.StackScope;
-import mortarnav.autoscope.DaggerService;
+import architect.StackScope;
+import architect.autostack.DaggerService;
 
 /**
  * Manually written scope, for example purpose

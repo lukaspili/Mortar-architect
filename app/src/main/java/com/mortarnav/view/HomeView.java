@@ -11,8 +11,8 @@ import com.mortarnav.presenter.HomePresenter;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import mortarnav.autoscope.DaggerService;
-import mortarnav.commons.view.MvpLinearLayout;
+import architect.autostack.DaggerService;
+import architect.commons.view.MvpLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

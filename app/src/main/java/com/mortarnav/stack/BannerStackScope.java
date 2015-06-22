@@ -6,9 +6,9 @@ import com.mortarnav.MainActivity2Component;
 
 import autodagger.AutoComponent;
 import mortar.MortarScope;
-import mortarnav.StackScope;
-import mortarnav.NavigatorServices;
-import mortarnav.autoscope.DaggerService;
+import architect.StackScope;
+import architect.NavigatorServices;
+import architect.autostack.DaggerService;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

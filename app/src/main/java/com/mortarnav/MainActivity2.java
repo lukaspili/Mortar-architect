@@ -13,14 +13,14 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import dagger.Provides;
 import mortar.MortarScope;
-import mortarnav.StackPath;
-import mortarnav.Navigator;
-import mortarnav.NavigatorView;
-import mortarnav.Transition;
-import mortarnav.autoscope.DaggerService;
-import mortarnav.commons.ArchitectActivity;
-import mortarnav.transition.Config;
-import mortarnav.transition.HorizontalScreenTransition;
+import architect.StackPath;
+import architect.Navigator;
+import architect.NavigatorView;
+import architect.Transition;
+import architect.autostack.DaggerService;
+import architect.commons.ArchitectActivity;
+import architect.transition.Config;
+import architect.transition.HorizontalScreenTransition;
 
 /**
  * Root activity example, using ArchitectActivity base class

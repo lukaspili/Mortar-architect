@@ -2,8 +2,8 @@ package com.mortarnav;
 
 import autodagger.AutoComponent;
 import mortar.MortarScope;
-import mortarnav.autoscope.DaggerService;
-import mortarnav.commons.ArchitectApp;
+import architect.autostack.DaggerService;
+import architect.commons.ArchitectApp;
 import timber.log.Timber;
 
 /**

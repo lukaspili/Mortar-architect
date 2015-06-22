@@ -7,9 +7,9 @@ import com.mortarnav.view.SlidePageView;
 
 import autodagger.AutoComponent;
 import mortar.ViewPresenter;
-import mortarnav.autopath.AutoPath;
-import mortarnav.autoscope.AutoStack;
-import mortarnav.autoscope.StackParam;
+import architect.autopath.AutoPath;
+import architect.autostack.AutoStack;
+import architect.autostack.StackParam;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
