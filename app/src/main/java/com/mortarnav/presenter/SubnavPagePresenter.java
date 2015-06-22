@@ -13,7 +13,7 @@ import mortar.ViewPresenter;
 import mortarnav.Navigator;
 import mortarnav.autopath.AutoPath;
 import mortarnav.autoscope.AutoScope;
-import mortarnav.autoscope.FromNav;
+import mortarnav.autoscope.PathParam;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -27,7 +27,7 @@ public class SubnavPagePresenter extends ViewPresenter<SubnavPageView> {
 
     private final String title;
 
-    public SubnavPagePresenter(@FromNav String title) {
+    public SubnavPagePresenter(@PathParam String title) {
         this.title = title;
     }
 

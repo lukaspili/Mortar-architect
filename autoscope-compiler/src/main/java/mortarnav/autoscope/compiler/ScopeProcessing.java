@@ -19,7 +19,7 @@ import javax.lang.model.util.Types;
 import autodagger.AutoComponent;
 import autodagger.compiler.utils.AutoComponentClassNameUtil;
 import mortarnav.autoscope.AutoScope;
-import mortarnav.autoscope.FromNav;
+import mortarnav.autoscope.PathParam;
 import mortarnav.processor.AbstractComposer;
 import mortarnav.processor.AbstractProcessing;
 import mortarnav.processor.Errors;
@@ -121,7 +121,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec> {
                 ParameterSpec parameterSpec = ParameterSpec.builder(TypeName.get(e.asType()), e.getSimpleName().toString()).build();
                 moduleSpec.getPresenterArgs().add(parameterSpec);
 
-                if (!MoreElements.isAnnotationPresent(e, FromNav.class)) {
+                if (!MoreElements.isAnnotationPresent(e, PathParam.class)) {
                     moduleSpec.getProvideParameters().add(parameterSpec);
                 }
             }

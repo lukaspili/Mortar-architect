@@ -9,7 +9,7 @@ import autodagger.AutoComponent;
 import mortar.ViewPresenter;
 import mortarnav.autopath.AutoPath;
 import mortarnav.autoscope.AutoScope;
-import mortarnav.autoscope.FromNav;
+import mortarnav.autoscope.PathParam;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -23,7 +23,7 @@ public class SlidePagePresenter extends ViewPresenter<SlidePageView> {
 
     private final int id;
 
-    public SlidePagePresenter(@FromNav int id) {
+    public SlidePagePresenter(@PathParam int id) {
         this.id = id;
     }
 
