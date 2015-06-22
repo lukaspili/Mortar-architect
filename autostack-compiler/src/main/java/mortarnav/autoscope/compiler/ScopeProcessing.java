@@ -18,8 +18,8 @@ import javax.lang.model.util.Types;
 
 import autodagger.AutoComponent;
 import autodagger.compiler.utils.AutoComponentClassNameUtil;
-import mortarnav.autoscope.AutoScope;
-import mortarnav.autoscope.PathParam;
+import mortarnav.autoscope.AutoStack;
+import mortarnav.autoscope.StackParam;
 import mortarnav.processor.AbstractComposer;
 import mortarnav.processor.AbstractProcessing;
 import mortarnav.processor.Errors;
@@ -35,7 +35,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec> {
 
     @Override
     public Class<? extends Annotation> supportedAnnotation() {
-        return AutoScope.class;
+        return AutoStack.class;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec> {
             String methodName;
             TypeName typeName;
             Element daggerDependencyElement = MoreTypes.asElement(extractor.getComponentDependency());
-            if (MoreElements.isAnnotationPresent(daggerDependencyElement, AutoScope.class)) {
+            if (MoreElements.isAnnotationPresent(daggerDependencyElement, AutoStack.class)) {
                 ClassName daggerDependencyScopeClassName = buildClassName(daggerDependencyElement);
                 ClassName daggerDependencyClassName = AutoComponentClassNameUtil.getComponentClassName(daggerDependencyScopeClassName);
                 methodName = StringUtils.uncapitalize(daggerDependencyClassName.simpleName());
@@ -121,7 +121,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec> {
                 ParameterSpec parameterSpec = ParameterSpec.builder(TypeName.get(e.asType()), e.getSimpleName().toString()).build();
                 moduleSpec.getPresenterArgs().add(parameterSpec);
 
-                if (!MoreElements.isAnnotationPresent(e, PathParam.class)) {
+                if (!MoreElements.isAnnotationPresent(e, StackParam.class)) {
                     moduleSpec.getProvideParameters().add(parameterSpec);
                 }
             }

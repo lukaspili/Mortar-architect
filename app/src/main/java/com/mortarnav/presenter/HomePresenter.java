@@ -11,7 +11,7 @@ import java.util.Random;
 
 import mortar.ViewPresenter;
 import mortarnav.Navigator;
-import mortarnav.autoscope.PathParam;
+import mortarnav.autoscope.StackParam;
 import timber.log.Timber;
 
 /**
@@ -24,7 +24,7 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     private final String name;
     private final int random;
 
-    public HomePresenter(@PathParam String name) {
+    public HomePresenter(@StackParam String name) {
         this.name = name;
         random = new Random().nextInt(100);
     }

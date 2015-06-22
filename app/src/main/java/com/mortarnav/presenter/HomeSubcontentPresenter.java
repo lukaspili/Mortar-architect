@@ -12,13 +12,13 @@ import javax.inject.Inject;
 
 import autodagger.AutoComponent;
 import mortar.ViewPresenter;
-import mortarnav.autoscope.AutoScope;
+import mortarnav.autoscope.AutoStack;
 import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoScope(
+@AutoStack(
         component = @AutoComponent(dependencies = HomeStackScope.Component.class)
 )
 @DaggerScope(HomeSubcontentPresenter.class)

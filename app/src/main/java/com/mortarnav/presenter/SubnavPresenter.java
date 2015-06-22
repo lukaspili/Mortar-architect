@@ -15,14 +15,14 @@ import mortar.ViewPresenter;
 import mortarnav.Navigator;
 import mortarnav.Transition;
 import mortarnav.autopath.AutoPath;
-import mortarnav.autoscope.AutoScope;
+import mortarnav.autoscope.AutoStack;
 import mortarnav.transition.HorizontalScreenTransition;
 import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoScope(
+@AutoStack(
         component = @AutoComponent(dependencies = MainActivity2.class),
         path = @AutoPath(withView = SubnavView.class)
 )

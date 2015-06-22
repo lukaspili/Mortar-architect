@@ -34,8 +34,8 @@ dependencies {
     compile project(':commons')
     compile project(':autopath')
     apt project(':autopath-compiler')
-    compile project(':autoscope')
-    apt project(':autoscope-compiler')
+    compile project(':autostack')
+    apt project(':autostack-compiler')
 
     compile deps.autodagger2
     apt deps.autodagger2_compiler

@@ -16,11 +16,10 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import autodagger.AutoComponent;
-import mortarnav.autoscope.AutoScope;
+import mortarnav.autoscope.AutoStack;
 import mortarnav.processor.AbstractExtractor;
 import mortarnav.processor.Errors;
 import mortarnav.processor.ExtractorUtils;
-import mortarnav.processor.Logger;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -43,7 +42,7 @@ public class ScopeExtractor extends AbstractExtractor {
 
     @Override
     protected void extract() {
-        componentAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoScope.class, COMPONENT);
+        componentAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStack.class, COMPONENT);
         if (componentAnnotationTypeMirror == null) {
             errors.addMissing("@AutoComponent");
             return;
@@ -56,7 +55,7 @@ public class ScopeExtractor extends AbstractExtractor {
         }
         componentDependency = deps.get(0);
 
-        pathAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoScope.class, PATH);
+        pathAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStack.class, PATH);
         scopeAnnotationTypeMirror = findScope();
 
         constructorsParamtersElements = new ArrayList<>();

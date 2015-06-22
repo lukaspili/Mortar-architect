@@ -8,13 +8,13 @@ import com.mortarnav.view.SlidePageView;
 import autodagger.AutoComponent;
 import mortar.ViewPresenter;
 import mortarnav.autopath.AutoPath;
-import mortarnav.autoscope.AutoScope;
-import mortarnav.autoscope.PathParam;
+import mortarnav.autoscope.AutoStack;
+import mortarnav.autoscope.StackParam;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoScope(
+@AutoStack(
         component = @AutoComponent(dependencies = SlidesPresenter.class),
         path = @AutoPath(withView = SlidePageView.class)
 )
@@ -23,7 +23,7 @@ public class SlidePagePresenter extends ViewPresenter<SlidePageView> {
 
     private final int id;
 
-    public SlidePagePresenter(@PathParam int id) {
+    public SlidePagePresenter(@StackParam int id) {
         this.id = id;
     }
 

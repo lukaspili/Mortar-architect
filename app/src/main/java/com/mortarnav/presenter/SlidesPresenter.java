@@ -12,12 +12,12 @@ import javax.inject.Inject;
 import autodagger.AutoComponent;
 import mortar.ViewPresenter;
 import mortarnav.autopath.AutoPath;
-import mortarnav.autoscope.AutoScope;
+import mortarnav.autoscope.AutoStack;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoScope(
+@AutoStack(
         component = @AutoComponent(dependencies = MainActivity2.class),
         path = @AutoPath(withView = SlidesView.class)
 )

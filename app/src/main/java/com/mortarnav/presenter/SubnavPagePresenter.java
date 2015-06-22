@@ -12,13 +12,13 @@ import autodagger.AutoComponent;
 import mortar.ViewPresenter;
 import mortarnav.Navigator;
 import mortarnav.autopath.AutoPath;
-import mortarnav.autoscope.AutoScope;
-import mortarnav.autoscope.PathParam;
+import mortarnav.autoscope.AutoStack;
+import mortarnav.autoscope.StackParam;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoScope(
+@AutoStack(
         component = @AutoComponent(dependencies = SubnavPresenter.class),
         path = @AutoPath(withView = SubnavPageView.class)
 )
@@ -27,7 +27,7 @@ public class SubnavPagePresenter extends ViewPresenter<SubnavPageView> {
 
     private final String title;
 
-    public SubnavPagePresenter(@PathParam String title) {
+    public SubnavPagePresenter(@StackParam String title) {
         this.title = title;
     }
 
