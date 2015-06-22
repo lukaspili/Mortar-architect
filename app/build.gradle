@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-    compile project(':mortarnav')
+    compile project(':architect')
     compile project(':commons')
     compile project(':autopath')
     apt project(':autopath-compiler')

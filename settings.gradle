@@ -1,4 +1,4 @@
-include ':mortarnav',
+include ':architect',
         ':autopath', ':autopath-compiler',
         ':autostack', ':autostack-compiler',
         ':processor',

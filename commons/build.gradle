@@ -17,11 +17,11 @@ android {
 }
 
 dependencies {
-    compile project(':mortarnav')
+    compile project(':architect')
     compile deps.appcompat_v7
 
     provided deps.javax_inject
     provided deps.mortar
 }
 
-//apply from: '../mvn-publish.gradle'
+apply from: '../mvn-publish-android.gradle'
