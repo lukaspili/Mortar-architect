@@ -3,7 +3,7 @@ package com.mortarnav.presenter;
 import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.MainActivity;
+import com.mortarnav.MainActivity2;
 import com.mortarnav.presenter.scope.path.SlidePagePath;
 import com.mortarnav.view.SlidesView;
 
@@ -18,7 +18,7 @@ import mortarnav.autoscope.AutoScope;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoScope(
-        component = @AutoComponent(dependencies = MainActivity.class),
+        component = @AutoComponent(dependencies = MainActivity2.class),
         path = @AutoPath(withView = SlidesView.class)
 )
 @DaggerScope(SlidesPresenter.class)

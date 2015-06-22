@@ -25,6 +25,9 @@ import mortarnav.autoscope.DaggerService;
 import mortarnav.transition.Config;
 import mortarnav.transition.HorizontalScreenTransition;
 
+/**
+ * Root activity example, without using ArchitectActivity base class
+ */
 @AutoComponent(
         dependencies = App.class,
         modules = MainActivity.NavigatorModule.class

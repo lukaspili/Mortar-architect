@@ -1,8 +1,8 @@
 package com.mortarnav.nav;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.MainActivity;
-import com.mortarnav.MainActivityComponent;
+import com.mortarnav.MainActivity2;
+import com.mortarnav.MainActivity2Component;
 
 import autodagger.AutoComponent;
 import mortar.MortarScope;
@@ -13,7 +13,7 @@ import mortarnav.autoscope.DaggerService;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoComponent(dependencies = MainActivity.class)
+@AutoComponent(dependencies = MainActivity2.class)
 @DaggerScope(BannerScope.class)
 public class BannerScope implements NavigationScope {
 
@@ -22,10 +22,10 @@ public class BannerScope implements NavigationScope {
 
         // parentScope is not the main activity scope, but the scope of its container (like home scope)
         // retreive the main activity component from the navigator scope
-        MainActivityComponent component = NavigatorServices.getService(parentScope, DaggerService.SERVICE_NAME);
+        MainActivity2Component component = NavigatorServices.getService(parentScope, DaggerService.SERVICE_NAME);
 
         return new Services().with(DaggerService.SERVICE_NAME, DaggerBannerScopeComponent.builder()
-                .mainActivityComponent(component)
+                .mainActivity2Component(component)
                 .build());
     }
 }

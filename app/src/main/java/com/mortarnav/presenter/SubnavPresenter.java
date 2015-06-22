@@ -3,7 +3,7 @@ package com.mortarnav.presenter;
 import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.MainActivity;
+import com.mortarnav.MainActivity2;
 import com.mortarnav.presenter.scope.path.SubnavPagePath;
 import com.mortarnav.view.SubnavView;
 
@@ -23,7 +23,7 @@ import timber.log.Timber;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoScope(
-        component = @AutoComponent(dependencies = MainActivity.class),
+        component = @AutoComponent(dependencies = MainActivity2.class),
         path = @AutoPath(withView = SubnavView.class)
 )
 @DaggerScope(SubnavPresenter.class)
