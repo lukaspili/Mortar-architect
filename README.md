@@ -1,4 +1,4 @@
-# Mortar architect
+# Mortar Architect
 
 "Mortar provides a simplified, composable overlay for the Android lifecycle, to aid in the use of Views as the modular unit of Android applications." (quote from Mortar)  
 
@@ -6,6 +6,7 @@ Architect provides a flexible stack for displaying and organising the flow of vi
 
 Architect works only with Mortar, and it's a replacement of the Flow library.  
 The motivation behind Architect is to provid a context for building MVP apps with Mortar, with the minimum friction and boilerplate code.  
+
 Where Flow can in theory work without Mortar, Architect relies heavely on Mortar and the scope philosophy. The result is an elegant and powerful API that gets the better of Mortar, while still providing a simple and seamless integration.
 
 
@@ -76,7 +77,6 @@ For the dagger2 component and module generation, `@AutoStack` relies on Auto dag
 If you want to pass parameters from one presenter to another, annotate the presenter constructor param with `@StackParam`, and generated stack scope and stack path classes will take it in account.
 
 ```java
-
 // it will generate:
 // - SlidePageScope
 // - SlidePagePath
