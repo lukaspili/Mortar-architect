@@ -16,13 +16,13 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import mortarnav.NavigationScope;
 import mortarnav.autoscope.DaggerService;
-import mortarnav.commons.view.MvpContainerLinearLayout;
+import mortarnav.commons.view.StackLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(HomeSubcontentPresenter.class)
-public class HomeSubcontentView extends MvpContainerLinearLayout<HomeSubcontentPresenter> {
+public class HomeSubcontentView extends StackLinearLayout<HomeSubcontentPresenter> {
 
     @InjectView(R.id.home_sub_random)
     public TextView randomTextView;

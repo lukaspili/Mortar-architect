@@ -10,19 +10,19 @@ import mortarnav.NavigationScopeFactory;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class MvpContainerLinearLayout<T extends ViewPresenter> extends MvpLinearLayout<T> {
+public abstract class StackFrameLayout<T extends ViewPresenter> extends MvpFrameLayout<T> {
 
-    public MvpContainerLinearLayout(Context context) {
+    public StackFrameLayout(Context context) {
         super(context);
         init(context);
     }
 
-    public MvpContainerLinearLayout(Context context, AttributeSet attrs) {
+    public StackFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public MvpContainerLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public StackFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }

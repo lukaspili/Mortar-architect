@@ -14,13 +14,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mortarnav.NavigationScope;
 import mortarnav.autoscope.DaggerService;
-import mortarnav.commons.view.MvpContainerLinearLayout;
+import mortarnav.commons.view.StackLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(BannerScope.class)
-public class BannerView extends MvpContainerLinearLayout<BannerPresenter> {
+public class BannerView extends StackLinearLayout<BannerPresenter> {
 
     public BannerView(Context parentContext, AttributeSet attrs) {
         super(parentContext, attrs);
