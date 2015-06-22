@@ -9,7 +9,7 @@ import mortar.MortarScope;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class NavigationScopeFactory {
+public class StackFactory {
 
     public static Context createContext(Context parentContext, StackScope scope) {
         return createContext(parentContext, scope, null);
@@ -32,7 +32,7 @@ public class NavigationScopeFactory {
     }
 
     /**
-     * Create Mortar scope from navigation scope
+     * Create Mortar scope from stack scope
      */
     static MortarScope createScope(MortarScope parentScope, StackScope scope, String scopeName) {
         MortarScope.Builder scopeBuilder = parentScope.buildChild();

@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Navigation scope names policy
- * Tracks and provides unique names for navigation scopes
+ * Stack scope names policy
+ * Tracks and provides unique names for stack scopes
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */

@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 
 import mortar.ViewPresenter;
 import mortarnav.StackScope;
-import mortarnav.NavigationScopeFactory;
+import mortarnav.StackFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -31,7 +31,7 @@ public abstract class StackLinearLayout<T extends ViewPresenter> extends MvpLine
     protected void init(Context context) {
         super.init(context);
 
-        Context newContext = NavigationScopeFactory.createContext(context, getScope());
+        Context newContext = StackFactory.createContext(context, getScope());
         initWithContext(newContext);
     }
 

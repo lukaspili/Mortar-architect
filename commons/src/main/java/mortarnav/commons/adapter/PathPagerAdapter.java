@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 import mortar.MortarScope;
-import mortarnav.NavigationPath;
+import mortarnav.StackPath;
 import mortarnav.StackScope;
-import mortarnav.NavigationScopeFactory;
+import mortarnav.StackFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -21,10 +21,10 @@ import mortarnav.NavigationScopeFactory;
 public class PathPagerAdapter extends PagerAdapter {
 
     private final Context context;
-    private final List<NavigationPath> paths;
-    private final Map<NavigationPath, StackScope> scopes;
+    private final List<StackPath> paths;
+    private final Map<StackPath, StackScope> scopes;
 
-    public PathPagerAdapter(Context context, NavigationPath... paths) {
+    public PathPagerAdapter(Context context, StackPath... paths) {
         this.context = context;
         this.paths = Arrays.asList(paths);
         scopes = new HashMap<>();
@@ -37,14 +37,14 @@ public class PathPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        NavigationPath path = paths.get(position);
+        StackPath path = paths.get(position);
         StackScope scope = scopes.get(path);
         if (scope == null) {
             scope = path.createScope();
             scopes.put(path, scope);
         }
 
-        Context pageContext = NavigationScopeFactory.createContext(context, scope, String.valueOf(position));
+        Context pageContext = StackFactory.createContext(context, scope, String.valueOf(position));
         View newChild = path.createView(pageContext);
         container.addView(newChild);
         return newChild;

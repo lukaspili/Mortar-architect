@@ -7,13 +7,13 @@ import android.view.View;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class NavigationPath<T extends StackScope> implements History.Entry.Factory {
+public abstract class StackPath<T extends StackScope> implements History.Entry.Factory {
 
-    public NavigationPath() {
+    public StackPath() {
 
     }
 
-    protected NavigationPath(Parcel parcel) {
+    protected StackPath(Parcel parcel) {
         this();
         readParcel(parcel);
     }

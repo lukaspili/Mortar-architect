@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
-import mortarnav.NavigationPath;
+import mortarnav.StackPath;
 import mortarnav.Navigator;
 import mortarnav.NavigatorView;
 
@@ -26,7 +26,7 @@ public abstract class ArchitectActivity extends Activity {
 
     protected abstract NavigatorView getNavigatorView();
 
-    protected abstract NavigationPath getInitialPath();
+    protected abstract StackPath getInitialPath();
 
     @Override
     public Object getSystemService(String name) {

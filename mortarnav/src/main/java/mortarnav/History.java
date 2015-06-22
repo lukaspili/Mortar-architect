@@ -88,10 +88,10 @@ public class History {
         return null;
     }
 
-    void push(NavigationPath navigationPath) {
-        StackScope scope = navigationPath.withScope();
+    void push(StackPath stackPath) {
+        StackScope scope = stackPath.withScope();
 
-        Entry entry = new Entry(scopeNamer.getName(scope), scope, navigationPath);
+        Entry entry = new Entry(scopeNamer.getName(scope), scope, stackPath);
         Preconditions.checkArgument(!entries.contains(entry), "An entry with the same navigation path is already present in history");
         entries.addFirst(entry);
     }

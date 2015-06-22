@@ -9,7 +9,7 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.mortarnav.stack.HomeStackScope;
 import com.mortarnav.view.HomeView;
 
-import mortarnav.NavigationPath;
+import mortarnav.StackPath;
 
 /**
  * This is a manually written path, for the sample
@@ -19,7 +19,7 @@ import mortarnav.NavigationPath;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @ParcelablePlease
-public class HomePath extends NavigationPath<HomeStackScope> {
+public class HomePath extends StackPath<HomeStackScope> {
 
     String name;
 

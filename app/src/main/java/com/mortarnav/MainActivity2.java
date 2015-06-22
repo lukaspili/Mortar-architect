@@ -13,7 +13,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import dagger.Provides;
 import mortar.MortarScope;
-import mortarnav.NavigationPath;
+import mortarnav.StackPath;
 import mortarnav.Navigator;
 import mortarnav.NavigatorView;
 import mortarnav.Transition;
@@ -69,7 +69,7 @@ public class MainActivity2 extends ArchitectActivity {
     }
 
     @Override
-    protected NavigationPath getInitialPath() {
+    protected StackPath getInitialPath() {
         return new HomePath("Initial home");
     }
 

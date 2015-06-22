@@ -65,7 +65,7 @@ class Dispatcher {
 
         MortarScope newScope = navigator.getScope().findChild(top.scopeName);
         if (newScope == null) {
-            newScope = NavigationScopeFactory.createScope(navigator.getScope(), top.scope, top.scopeName);
+            newScope = StackFactory.createScope(navigator.getScope(), top.scope, top.scopeName);
         }
 
         navigator.presenter.present(top, newScope, direction, new Callback() {

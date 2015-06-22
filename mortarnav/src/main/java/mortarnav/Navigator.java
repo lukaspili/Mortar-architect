@@ -58,7 +58,7 @@ public class Navigator implements Scoped {
         presenter = new Presenter(transitions);
     }
 
-    public void push(NavigationPath path) {
+    public void push(StackPath path) {
         Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
 
         history.push(path);

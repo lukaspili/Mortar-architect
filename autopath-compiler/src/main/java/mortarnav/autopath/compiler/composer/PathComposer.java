@@ -28,7 +28,7 @@ import mortarnav.processor.AbstractComposer;
  */
 public class PathComposer extends AbstractComposer<PathSpec> {
 
-    private static final ClassName NAVIGATIONPATH_CLS = ClassName.get("mortarnav", "NavigationPath");
+    private static final ClassName NAVIGATIONPATH_CLS = ClassName.get("mortarnav", "StackPath");
     private static final ClassName PARCEL_CLS = ClassName.get("android.os", "Parcel");
     private static final ClassName PARCEL_CREATOR_CLS = ClassName.get("android.os.Parcelable", "Creator");
     private static final ClassName CONTEXT_CLS = ClassName.get("android.content", "Context");
