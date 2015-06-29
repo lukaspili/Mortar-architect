@@ -13,9 +13,9 @@ ext.deps = [
         javax_inject                 : 'javax.inject:javax.inject:1',
         mortar                       : 'com.squareup.mortar:mortar:0.17',
         android                      : 'com.google.android:android:4.1.1.4',
-        autodagger2                  : 'com.github.lukaspili:autodagger2:1.1-SNAPSHOT',
-        autodagger2_compiler         : 'com.github.lukaspili:autodagger2-compiler:1.1-SNAPSHOT',
-        autodagger2_compiler_utils   : 'com.github.lukaspili:autodagger2-compiler-utils:1.1-SNAPSHOT',
+        autodagger2                  : 'com.github.lukaspili.autodagger2:autodagger2:1.1-SNAPSHOT',
+        autodagger2_compiler         : 'com.github.lukaspili.autodagger2:autodagger2-compiler:1.1-SNAPSHOT',
+        autodagger2_compiler_utils   : 'com.github.lukaspili.autodagger2:autodagger2-compiler-utils:1.1-SNAPSHOT',
         parcelablepls                : 'com.hannesdorfmann.parcelableplease:annotation:1.0.1',
         parcelablepls_compiler       : 'com.hannesdorfmann.parcelableplease:processor:1.0.1',
         processor_workflow           : 'com.github.lukaspili.processor-workflow:processor-workflow:1.0'
