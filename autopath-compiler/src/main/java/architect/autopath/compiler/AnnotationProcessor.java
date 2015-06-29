@@ -2,22 +2,29 @@ package architect.autopath.compiler;
 
 import com.google.auto.service.AutoService;
 
-import javax.annotation.processing.ProcessingEnvironment;
+import java.util.LinkedList;
+
 import javax.annotation.processing.Processor;
 
 import architect.autopath.compiler.processing.PathProcessing;
-import architect.processor.AbstractProcessor;
+import processorworkflow.AbstractProcessing;
+import processorworkflow.AbstractProcessor;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoService(Processor.class)
-public class AnnotationProcessor extends AbstractProcessor {
+public class AnnotationProcessor extends AbstractProcessor<Void> {
 
     @Override
-    public synchronized void init(ProcessingEnvironment processingEnv) {
-        super.init(processingEnv);
+    protected Void processingState() {
+        return null;
+    }
 
-        builders.add(new PathProcessing(elements, types, errors));
+    @Override
+    protected LinkedList<AbstractProcessing> processings() {
+        LinkedList<AbstractProcessing> processings = new LinkedList<>();
+        processings.add(new PathProcessing(elements, types, errors, null));
+        return processings;
     }
 }

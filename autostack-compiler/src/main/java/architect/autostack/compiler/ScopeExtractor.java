@@ -17,11 +17,14 @@ import javax.lang.model.util.Types;
 
 import architect.autostack.AutoStack;
 import autodagger.AutoComponent;
+import processorworkflow.AbstractExtractor;
+import processorworkflow.Errors;
+import processorworkflow.ExtractorUtils;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScopeExtractor extends architect.processor.AbstractExtractor {
+public class ScopeExtractor extends AbstractExtractor {
 
     private static final String COMPONENT = "component";
     private static final String COMPONENT_DEPENDENCIES = "dependencies";
@@ -33,13 +36,15 @@ public class ScopeExtractor extends architect.processor.AbstractExtractor {
     private TypeMirror componentDependency;
     private List<VariableElement> constructorsParamtersElements;
 
-    public ScopeExtractor(Element element, Types types, Elements elements, architect.processor.Errors errors) {
+    public ScopeExtractor(Element element, Types types, Elements elements, Errors errors) {
         super(element, types, elements, errors);
+
+        extract();
     }
 
     @Override
-    protected void extract() {
-        componentAnnotationTypeMirror = architect.processor.ExtractorUtils.getValueFromAnnotation(element, AutoStack.class, COMPONENT);
+    public void extract() {
+        componentAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStack.class, COMPONENT);
         if (componentAnnotationTypeMirror == null) {
             errors.addMissing("@AutoComponent");
             return;
@@ -52,7 +57,7 @@ public class ScopeExtractor extends architect.processor.AbstractExtractor {
         }
         componentDependency = deps.get(0);
 
-        pathAnnotationTypeMirror = architect.processor.ExtractorUtils.getValueFromAnnotation(element, AutoStack.class, PATH);
+        pathAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStack.class, PATH);
         scopeAnnotationTypeMirror = findScope();
 
         constructorsParamtersElements = new ArrayList<>();
@@ -74,7 +79,7 @@ public class ScopeExtractor extends architect.processor.AbstractExtractor {
 
     private List<TypeMirror> findTypeMirrors(AnnotationMirror annotationMirror, String name) {
         List<TypeMirror> typeMirrors = new ArrayList<>();
-        List<AnnotationValue> values = architect.processor.ExtractorUtils.getValueFromAnnotation(annotationMirror, AutoComponent.class, name);
+        List<AnnotationValue> values = ExtractorUtils.getValueFromAnnotation(annotationMirror, AutoComponent.class, name);
         if (values != null) {
             for (AnnotationValue value : values) {
                 try {

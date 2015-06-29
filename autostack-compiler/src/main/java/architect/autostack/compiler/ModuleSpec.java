@@ -11,18 +11,22 @@ import java.util.List;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ModuleSpec extends architect.processor.AbstractSpec {
+public class ModuleSpec {
 
+    private final ClassName className;
     private TypeName presenterTypeName;
     private AnnotationSpec scopeAnnotationSpec;
     private final List<ParameterSpec> provideParameters;
     private final List<ParameterSpec> presenterArgs;
 
     public ModuleSpec(ClassName className) {
-        super(className);
-
+        this.className = className;
         provideParameters = new LinkedList<>();
         presenterArgs = new LinkedList<>();
+    }
+
+    public ClassName getClassName() {
+        return className;
     }
 
     public TypeName getPresenterTypeName() {

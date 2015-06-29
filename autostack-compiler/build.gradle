@@ -4,10 +4,10 @@ sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
 dependencies {
-    compile project(':processor')
     compile project(':autostack')
     compile project(':autopath')
 
+    compile deps.processor_workflow
     compile deps.dagger2
     compile deps.android
     compile deps.autodagger2

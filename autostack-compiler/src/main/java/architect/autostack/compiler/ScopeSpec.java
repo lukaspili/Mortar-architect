@@ -7,8 +7,9 @@ import com.squareup.javapoet.TypeName;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScopeSpec extends architect.processor.AbstractSpec {
+public class ScopeSpec  {
 
+    private ClassName className;
     private ModuleSpec moduleSpec;
     private String daggerComponentBuilderDependencyMethodName;
     private TypeName daggerComponentBuilderDependencyTypeName;
@@ -19,7 +20,11 @@ public class ScopeSpec extends architect.processor.AbstractSpec {
     private AnnotationSpec pathAnnotationSpec;
 
     public ScopeSpec(ClassName className) {
-        super(className);
+        this.className = className;
+    }
+
+    public ClassName getClassName() {
+        return className;
     }
 
     public ModuleSpec getModuleSpec() {

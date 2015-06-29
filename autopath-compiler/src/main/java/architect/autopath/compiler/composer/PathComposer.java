@@ -18,12 +18,14 @@ import javax.annotation.Generated;
 import javax.lang.model.element.Modifier;
 
 import architect.autopath.compiler.spec.ConstructorSpec;
+import architect.autopath.compiler.spec.ParamSpec;
 import architect.autopath.compiler.spec.PathSpec;
+import processorworkflow.AbstractComposer;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class PathComposer extends architect.processor.AbstractComposer<PathSpec> {
+public class PathComposer extends AbstractComposer<PathSpec> {
 
     private static final ClassName NAVIGATIONPATH_CLS = ClassName.get("architect", "StackPath");
     private static final ClassName PARCEL_CLS = ClassName.get("android.os", "Parcel");
@@ -35,15 +37,15 @@ public class PathComposer extends architect.processor.AbstractComposer<PathSpec>
     }
 
     @Override
-    protected JavaFile compose(architect.autopath.compiler.spec.PathSpec spec) {
+    protected JavaFile compose(PathSpec spec) {
         TypeSpec typeSpec = build(spec);
         return JavaFile.builder(spec.getClassName().packageName(), typeSpec).build();
     }
 
-    private TypeSpec build(architect.autopath.compiler.spec.PathSpec spec) {
+    private TypeSpec build(PathSpec spec) {
         StringBuilder constructorParamsStringBuilder = new StringBuilder();
         List<FieldSpec> fieldSpecs = new ArrayList<>();
-        for (architect.autopath.compiler.spec.ParamSpec paramSpec : spec.getFields()) {
+        for (ParamSpec paramSpec : spec.getFields()) {
             fieldSpecs.add(FieldSpec.builder(paramSpec.getTypeName(), paramSpec.getName()).build());
             constructorParamsStringBuilder.append(paramSpec.getName()).append(", ");
         }

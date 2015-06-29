@@ -1,6 +1,7 @@
 package com.mortarnav;
 
 import autodagger.AutoComponent;
+import autodagger.AutoExpose;
 import mortar.MortarScope;
 import architect.autostack.DaggerService;
 import architect.commons.ArchitectApp;

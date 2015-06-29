@@ -19,11 +19,12 @@ import architect.autostack.DaggerService;
 import dagger.Module;
 import dagger.Provides;
 import mortar.MortarScope;
+import processorworkflow.AbstractComposer;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScopeComposer extends architect.processor.AbstractComposer<ScopeSpec> {
+public class ScopeComposer extends AbstractComposer<ScopeSpec> {
 
     private static final ClassName NAVIGATIONSCOPE_CLS = ClassName.get("architect", "StackScope");
     private static final ClassName SERVICES_CLS = ClassName.get("architect", "StackScope.Services");

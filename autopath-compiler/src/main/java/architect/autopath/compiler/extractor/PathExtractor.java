@@ -13,9 +13,9 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import architect.autopath.AutoPath;
-import architect.processor.AbstractExtractor;
-import architect.processor.Errors;
-import architect.processor.ExtractorUtils;
+import processorworkflow.AbstractExtractor;
+import processorworkflow.Errors;
+import processorworkflow.ExtractorUtils;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -29,10 +29,11 @@ public class PathExtractor extends AbstractExtractor {
 
     public PathExtractor(Element element, Types types, Elements elements, Errors errors) {
         super(element, types, elements, errors);
+        extract();
     }
 
     @Override
-    protected void extract() {
+    public void extract() {
         if (element.getKind() != ElementKind.CLASS) {
             errors.addInvalid("Annotation can be applied only on a class");
             return;

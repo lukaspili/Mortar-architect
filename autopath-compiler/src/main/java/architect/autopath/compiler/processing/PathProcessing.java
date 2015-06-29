@@ -1,12 +1,14 @@
 package architect.autopath.compiler.processing;
 
 import com.google.auto.common.MoreElements;
+import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.Annotation;
+import java.util.Set;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -15,32 +17,39 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import architect.autopath.AutoPath;
 import architect.autopath.compiler.composer.PathComposer;
+import architect.autopath.compiler.extractor.PathExtractor;
 import architect.autopath.compiler.spec.ConstructorSpec;
 import architect.autopath.compiler.spec.PathSpec;
+import processorworkflow.AbstractComposer;
+import processorworkflow.AbstractProcessing;
+import processorworkflow.Errors;
+import processorworkflow.ProcessingBuilder;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class PathProcessing extends architect.processor.AbstractProcessing<PathSpec> {
+public class PathProcessing extends AbstractProcessing<PathSpec, Void> {
 
-    public PathProcessing(Elements elements, Types types, architect.processor.Errors errors) {
-        super(elements, types, errors);
+    public PathProcessing(Elements elements, Types types, Errors errors, Void aVoid) {
+        super(elements, types, errors, aVoid);
     }
 
     @Override
-    public Class<? extends Annotation> supportedAnnotation() {
-        return architect.autopath.AutoPath.class;
+    public Set<Class<? extends Annotation>> supportedAnnotations() {
+        Set set = ImmutableSet.of(AutoPath.class);
+        return set;
     }
 
     @Override
-    public boolean processElement(Element element, architect.processor.Errors.ElementErrors elementErrors) {
-        architect.autopath.compiler.extractor.PathExtractor extractor = new architect.autopath.compiler.extractor.PathExtractor(element, types, elements, errors);
+    public boolean processElement(Element element, Errors.ElementErrors elementErrors) {
+        PathExtractor extractor = new architect.autopath.compiler.extractor.PathExtractor(element, types, elements, errors);
         if (errors.hasErrors()) {
             return false;
         }
 
-        architect.autopath.compiler.spec.PathSpec spec = new ElementBuilder(extractor, errors).build();
+        PathSpec spec = new ElementBuilder(extractor, errors).build();
         if (errors.hasErrors()) {
             return false;
         }
@@ -50,22 +59,19 @@ public class PathProcessing extends architect.processor.AbstractProcessing<PathS
     }
 
     @Override
-    public architect.processor.AbstractComposer<PathSpec> createComposer() {
+    public AbstractComposer<PathSpec> createComposer() {
         return new PathComposer(specs);
     }
 
-    private class ElementBuilder {
+    private class ElementBuilder extends ProcessingBuilder<PathExtractor, PathSpec> {
 
-        private final architect.autopath.compiler.extractor.PathExtractor extractor;
-        private final architect.processor.Errors.ElementErrors errors;
-
-        public ElementBuilder(architect.autopath.compiler.extractor.PathExtractor extractor, architect.processor.Errors errors) {
-            this.extractor = extractor;
-            this.errors = errors.getFor(extractor.getElement());
+        public ElementBuilder(PathExtractor extractor, Errors errors) {
+            super(extractor, errors);
         }
 
-        private architect.autopath.compiler.spec.PathSpec build() {
-            architect.autopath.compiler.spec.PathSpec spec = new architect.autopath.compiler.spec.PathSpec(buildClassName(), TypeName.get(extractor.getElement().asType()));
+        @Override
+        protected PathSpec build() {
+            PathSpec spec = new architect.autopath.compiler.spec.PathSpec(buildClassName(), TypeName.get(extractor.getElement().asType()));
             spec.setViewTypeName(TypeName.get(extractor.getViewTypeMirror()));
 
             boolean defaultConstructorNotPublic = false;
@@ -139,24 +145,4 @@ public class PathProcessing extends architect.processor.AbstractProcessing<PathS
             return text;
         }
     }
-
-
-//
-//    private void generateSpecs(List<ComponentSpec> componentSpecs) {
-//        for (ComponentSpec componentSpec : componentSpecs) {
-//            TypeSpec typeSpec = misunderstoodPoet.compose(componentSpec);
-//            JavaFile javaFile = JavaFile.builder(componentSpec.getClassName().packageName(), typeSpec).build();
-//            write(javaFile, componentSpec.getElement());
-//        }
-//    }
-//
-//    private void write(JavaFile javaFile, Element element) {
-//        try {
-//            javaFile.writeTo(filer);
-//        } catch (Exception e) {
-//            StringWriter stackTrace = new StringWriter();
-//            e.printStackTrace(new PrintWriter(stackTrace));
-//            errors.add(Message.error(element, "Unable to generate class for %s. %s", javaFile.typeSpec.name, stackTrace));
-//        }
-//    }
 }

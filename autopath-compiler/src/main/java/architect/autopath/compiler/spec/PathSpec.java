@@ -9,18 +9,23 @@ import java.util.List;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class PathSpec extends architect.processor.AbstractSpec {
+public class PathSpec {
 
+    private final ClassName className;
     private final TypeName targetTypeName;
     private final List<ConstructorSpec> constructors;
     private final List<architect.autopath.compiler.spec.ParamSpec> fields;
     private TypeName viewTypeName;
 
     public PathSpec(ClassName className, TypeName targetTypeName) {
-        super(className);
+        this.className = className;
         this.targetTypeName = targetTypeName;
         constructors = new ArrayList<>();
         fields = new ArrayList<>();
+    }
+
+    public ClassName getClassName() {
+        return className;
     }
 
     public TypeName getTargetTypeName() {

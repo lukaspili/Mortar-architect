@@ -2,6 +2,7 @@ package architect.autostack.compiler;
 
 import com.google.auto.common.MoreElements;
 import com.google.auto.common.MoreTypes;
+import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterSpec;
@@ -10,6 +11,7 @@ import com.squareup.javapoet.TypeName;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.Annotation;
+import java.util.Set;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;
@@ -17,32 +19,37 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import architect.autostack.AutoStack;
-import architect.processor.Errors;
+import architect.autostack.StackParam;
 import autodagger.AutoComponent;
 import autodagger.compiler.utils.AutoComponentClassNameUtil;
+import processorworkflow.AbstractComposer;
+import processorworkflow.AbstractProcessing;
+import processorworkflow.Errors;
+import processorworkflow.ProcessingBuilder;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScopeProcessing extends architect.processor.AbstractProcessing<architect.autostack.compiler.ScopeSpec> {
+public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
 
-    public ScopeProcessing(Elements elements, Types types, architect.processor.Errors errors) {
-        super(elements, types, errors);
+    public ScopeProcessing(Elements elements, Types types, Errors errors, Void aVoid) {
+        super(elements, types, errors, aVoid);
     }
 
     @Override
-    public Class<? extends Annotation> supportedAnnotation() {
-        return AutoStack.class;
+    public Set<Class<? extends Annotation>> supportedAnnotations() {
+        Set set = ImmutableSet.of(AutoStack.class);
+        return set;
     }
 
     @Override
-    public boolean processElement(Element element, architect.processor.Errors.ElementErrors elementErrors) {
+    public boolean processElement(Element element, Errors.ElementErrors elementErrors) {
         ScopeExtractor extractor = new ScopeExtractor(element, types, elements, errors);
         if (errors.hasErrors()) {
             return false;
         }
 
-        architect.autostack.compiler.ScopeSpec spec = new ElementBuilder(extractor, errors).build();
+        ScopeSpec spec = new ElementBuilder(extractor, errors).build();
         if (errors.hasErrors()) {
             return false;
         }
@@ -52,21 +59,18 @@ public class ScopeProcessing extends architect.processor.AbstractProcessing<arch
     }
 
     @Override
-    public architect.processor.AbstractComposer<architect.autostack.compiler.ScopeSpec> createComposer() {
+    public AbstractComposer<ScopeSpec> createComposer() {
         return new ScopeComposer(specs);
     }
 
-    private class ElementBuilder {
+    private class ElementBuilder extends ProcessingBuilder<ScopeExtractor, ScopeSpec> {
 
-        private final ScopeExtractor extractor;
-        private final Errors.ElementErrors errors;
-
-        public ElementBuilder(ScopeExtractor extractor, architect.processor.Errors errors) {
-            this.extractor = extractor;
-            this.errors = errors.getFor(extractor.getElement());
+        public ElementBuilder(ScopeExtractor extractor, Errors errors) {
+            super(extractor, errors);
         }
 
-        private architect.autostack.compiler.ScopeSpec build() {
+        @Override
+        protected ScopeSpec build() {
             architect.autostack.compiler.ScopeSpec spec = new architect.autostack.compiler.ScopeSpec(buildClassName(extractor.getElement()));
             spec.setParentComponentTypeName(TypeName.get(extractor.getComponentDependency()));
 
@@ -118,7 +122,7 @@ public class ScopeProcessing extends architect.processor.AbstractProcessing<arch
                 ParameterSpec parameterSpec = ParameterSpec.builder(TypeName.get(e.asType()), e.getSimpleName().toString()).build();
                 moduleSpec.getPresenterArgs().add(parameterSpec);
 
-                if (!MoreElements.isAnnotationPresent(e, architect.autostack.StackParam.class)) {
+                if (!MoreElements.isAnnotationPresent(e, StackParam.class)) {
                     moduleSpec.getProvideParameters().add(parameterSpec);
                 }
             }
