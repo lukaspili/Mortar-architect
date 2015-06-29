@@ -1,6 +1,5 @@
 include ':architect',
         ':autopath', ':autopath-compiler',
         ':autostack', ':autostack-compiler',
-        ':processor',
         ':commons',
         ':app'
