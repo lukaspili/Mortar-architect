@@ -16,13 +16,13 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import architect.StackScope;
 import architect.autostack.DaggerService;
-import architect.commons.view.StackLinearLayout;
+import architect.commons.view.StackedLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(HomeSubcontentPresenter.class)
-public class HomeSubcontentView extends StackLinearLayout<HomeSubcontentPresenter> {
+public class HomeSubcontentView extends StackedLinearLayout<HomeSubcontentPresenter> {
 
     @InjectView(R.id.home_sub_random)
     public TextView randomTextView;

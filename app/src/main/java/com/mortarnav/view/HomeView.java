@@ -12,12 +12,12 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import architect.autostack.DaggerService;
-import architect.commons.view.MvpLinearLayout;
+import architect.commons.view.PresenterLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class HomeView extends MvpLinearLayout<HomePresenter> {
+public class HomeView extends PresenterLinearLayout<HomePresenter> {
 
     @InjectView(R.id.home_title)
     public TextView titleTextView;
@@ -47,5 +47,10 @@ public class HomeView extends MvpLinearLayout<HomePresenter> {
     @OnClick(R.id.subnav_button)
     void subnavClick() {
         presenter.subnavClick();
+    }
+
+    @OnClick(R.id.show_popup)
+    void showPopupClick() {
+        presenter.showPopupClick();
     }
 }

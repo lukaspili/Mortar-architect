@@ -1,6 +1,7 @@
 package com.mortarnav;
 
 import com.mortarnav.path.HomePath;
+import com.mortarnav.view.MyPopupView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,9 @@ public class MainActivity2 extends ArchitectActivity {
         public List<Transition> providesTransitions() {
             List<Transition> transitions = new ArrayList<>();
             transitions.add(Transition.defaultTransition(new HorizontalScreenTransition(new Config().duration(300))));
+
+            // add custom transition for showing and hiding MyPopupView
+            transitions.add(Transition.forView(MyPopupView.class).fromAny().withTransition(new NoAnimationModalTransition(false)));
 
             return transitions;
         }

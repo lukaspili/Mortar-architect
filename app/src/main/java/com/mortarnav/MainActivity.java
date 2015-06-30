@@ -5,12 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.mortarnav.path.HomePath;
+import com.mortarnav.view.MyPopupView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import architect.Navigator;
+import architect.NavigatorView;
+import architect.Transition;
+import architect.autostack.DaggerService;
+import architect.transition.Config;
+import architect.transition.HorizontalScreenTransition;
 import autodagger.AutoComponent;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
@@ -18,12 +25,6 @@ import butterknife.InjectView;
 import dagger.Provides;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
-import architect.Navigator;
-import architect.NavigatorView;
-import architect.Transition;
-import architect.autostack.DaggerService;
-import architect.transition.Config;
-import architect.transition.HorizontalScreenTransition;
 
 /**
  * Root activity example, without using ArchitectActivity base class
@@ -142,6 +143,10 @@ public class MainActivity extends Activity {
         public List<Transition> providesTransitions() {
             List<Transition> transitions = new ArrayList<>();
             transitions.add(Transition.defaultTransition(new HorizontalScreenTransition(new Config().duration(300))));
+
+            // add custom transition for showing and hiding MyPopupView
+            transitions.add(Transition.forView(MyPopupView.class).fromAny().withTransition(new NoAnimationModalTransition(false)));
+
 //            transitions.add(Transition.forView(ViewC.class).fromAny().withTransition(new BottomAppearTransition()));
 
             return transitions;

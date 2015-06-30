@@ -13,19 +13,19 @@ import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import architect.autostack.DaggerService;
-import architect.commons.adapter.PathPagerAdapter;
-import architect.commons.view.MvpLinearLayout;
+import architect.commons.adapter.StackPagerAdapter;
+import architect.commons.view.PresenterLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(SlidesPresenter.class)
-public class SlidesView extends MvpLinearLayout<SlidesPresenter> {
+public class SlidesView extends PresenterLinearLayout<SlidesPresenter> {
 
     @InjectView(R.id.pager)
     public ViewPager viewPager;
 
-    public PathPagerAdapter adapter;
+    public StackPagerAdapter adapter;
 
     public SlidesView(Context context) {
         super(context);
@@ -37,7 +37,7 @@ public class SlidesView extends MvpLinearLayout<SlidesPresenter> {
     }
 
     public void show(SlidePagePath[] pagePaths) {
-        adapter = new PathPagerAdapter(getContext(), pagePaths);
+        adapter = new StackPagerAdapter(getContext(), pagePaths);
         viewPager.setAdapter(adapter);
     }
 }

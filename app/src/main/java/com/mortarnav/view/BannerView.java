@@ -14,13 +14,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import architect.StackScope;
 import architect.autostack.DaggerService;
-import architect.commons.view.StackLinearLayout;
+import architect.commons.view.StackedLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(BannerStackScope.class)
-public class BannerView extends StackLinearLayout<BannerPresenter> {
+public class BannerView extends StackedLinearLayout<BannerPresenter> {
 
     public BannerView(Context parentContext, AttributeSet attrs) {
         super(parentContext, attrs);

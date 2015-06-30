@@ -13,13 +13,13 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import architect.autostack.DaggerService;
-import architect.commons.view.MvpFrameLayout;
+import architect.commons.view.PresentedFrameLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(SubnavPagePresenter.class)
-public class SubnavPageView extends MvpFrameLayout<SubnavPagePresenter> {
+public class SubnavPageView extends PresentedFrameLayout<SubnavPagePresenter> {
 
     @InjectView(R.id.subnav_page_title)
     public TextView textView;

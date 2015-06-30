@@ -12,14 +12,14 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import architect.NavigatorView;
 import architect.autostack.DaggerService;
-import architect.commons.view.MvpFrameLayout;
+import architect.commons.view.PresentedFrameLayout;
 import architect.view.HandlesBack;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(SubnavPresenter.class)
-public class SubnavView extends MvpFrameLayout<SubnavPresenter> implements HandlesBack {
+public class SubnavView extends PresentedFrameLayout<SubnavPresenter> implements HandlesBack {
 
     @InjectView(R.id.sub_navigator)
     public NavigatorView navigatorView;
