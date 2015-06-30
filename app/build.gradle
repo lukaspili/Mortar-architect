@@ -29,6 +29,10 @@ android {
     }
 }
 
+//configurations.all {
+//    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+//}
+
 dependencies {
     compile project(':architect')
     compile project(':commons')
@@ -37,6 +41,12 @@ dependencies {
     compile project(':autostack')
     apt project(':autostack-compiler')
 
+//    compile (deps.autodagger2) {
+//        changing = true
+//    }
+//    apt (deps.autodagger2_compiler) {
+//        changing = true
+//    }
     compile deps.autodagger2
     apt deps.autodagger2_compiler
 

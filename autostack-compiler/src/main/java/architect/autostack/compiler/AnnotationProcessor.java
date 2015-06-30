@@ -8,6 +8,7 @@ import javax.annotation.processing.Processor;
 
 import processorworkflow.AbstractProcessing;
 import processorworkflow.AbstractProcessor;
+import processorworkflow.Logger;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -25,5 +26,9 @@ public class AnnotationProcessor extends AbstractProcessor<Void> {
         LinkedList<AbstractProcessing> processings = new LinkedList<>();
         processings.add(new ScopeProcessing(elements, types, errors, null));
         return processings;
+    }
+
+    public AnnotationProcessor() {
+        Logger.init("AutoStack Processor", false);
     }
 }
