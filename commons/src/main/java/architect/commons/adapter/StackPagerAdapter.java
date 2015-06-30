@@ -18,13 +18,13 @@ import architect.StackFactory;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class PathPagerAdapter extends PagerAdapter {
+public class StackPagerAdapter extends PagerAdapter {
 
     private final Context context;
     private final List<StackPath> paths;
     private final Map<StackPath, StackScope> scopes;
 
-    public PathPagerAdapter(Context context, StackPath... paths) {
+    public StackPagerAdapter(Context context, StackPath... paths) {
         this.context = context;
         this.paths = Arrays.asList(paths);
         scopes = new HashMap<>();
