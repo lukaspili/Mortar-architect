@@ -17,11 +17,13 @@ public class ModuleSpec {
     private TypeName presenterTypeName;
     private AnnotationSpec scopeAnnotationSpec;
     private final List<ParameterSpec> provideParameters;
+    private final List<ParameterSpec> internalParameters;
     private final List<ParameterSpec> presenterArgs;
 
     public ModuleSpec(ClassName className) {
         this.className = className;
         provideParameters = new LinkedList<>();
+        internalParameters = new LinkedList<>();
         presenterArgs = new LinkedList<>();
     }
 
@@ -47,6 +49,10 @@ public class ModuleSpec {
 
     public List<ParameterSpec> getProvideParameters() {
         return provideParameters;
+    }
+
+    public List<ParameterSpec> getInternalParameters() {
+        return internalParameters;
     }
 
     public List<ParameterSpec> getPresenterArgs() {

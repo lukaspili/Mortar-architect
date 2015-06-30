@@ -122,7 +122,9 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
                 ParameterSpec parameterSpec = ParameterSpec.builder(TypeName.get(e.asType()), e.getSimpleName().toString()).build();
                 moduleSpec.getPresenterArgs().add(parameterSpec);
 
-                if (!MoreElements.isAnnotationPresent(e, StackParam.class)) {
+                if (MoreElements.isAnnotationPresent(e, StackParam.class)) {
+                    moduleSpec.getInternalParameters().add(parameterSpec);
+                } else {
                     moduleSpec.getProvideParameters().add(parameterSpec);
                 }
             }

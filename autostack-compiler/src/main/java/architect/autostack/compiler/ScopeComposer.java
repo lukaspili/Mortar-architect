@@ -58,7 +58,7 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
                 .build();
 
         List<FieldSpec> fieldSpecs = new ArrayList<>();
-        for (ParameterSpec parameterSpec : spec.getModuleSpec().getPresenterArgs()) {
+        for (ParameterSpec parameterSpec : spec.getModuleSpec().getInternalParameters()) {
             fieldSpecs.add(FieldSpec.builder(parameterSpec.type, parameterSpec.name)
                     .addModifiers(Modifier.PRIVATE)
                     .build());
@@ -66,8 +66,8 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
 
         MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addParameters(spec.getModuleSpec().getPresenterArgs());
-        for (ParameterSpec parameterSpec : spec.getModuleSpec().getPresenterArgs()) {
+                .addParameters(spec.getModuleSpec().getInternalParameters());
+        for (ParameterSpec parameterSpec : spec.getModuleSpec().getInternalParameters()) {
             constructorBuilder.addStatement("this.$L = $L", parameterSpec.name, parameterSpec.name);
         }
 
@@ -94,8 +94,13 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
 
     private TypeSpec buildModule(ModuleSpec spec) {
         CodeBlock.Builder blockBuilder = CodeBlock.builder().add("return new $T(", spec.getPresenterTypeName());
+        int i = 0;
         for (ParameterSpec parameterSpec : spec.getPresenterArgs()) {
             blockBuilder.add(parameterSpec.name);
+
+            if (i++ < spec.getPresenterArgs().size() - 1) {
+                blockBuilder.add(", ");
+            }
         }
         blockBuilder.add(");\n");
 

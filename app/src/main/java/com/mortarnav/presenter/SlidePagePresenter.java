@@ -3,19 +3,24 @@ package com.mortarnav.presenter;
 import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
+import com.mortarnav.deps.RestClient;
+import com.mortarnav.deps.UserManager;
+import com.mortarnav.deps.WithAppDependencies;
 import com.mortarnav.view.SlidePageView;
 
-import autodagger.AutoComponent;
-import mortar.ViewPresenter;
 import architect.autopath.AutoPath;
 import architect.autostack.AutoStack;
 import architect.autostack.StackParam;
+import autodagger.AutoComponent;
+import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoStack(
-        component = @AutoComponent(dependencies = SlidesPresenter.class),
+        component = @AutoComponent(
+                dependencies = SlidesPresenter.class,
+                superinterfaces = WithAppDependencies.class),
         path = @AutoPath(withView = SlidePageView.class)
 )
 @DaggerScope(SlidePagePresenter.class)
@@ -23,8 +28,14 @@ public class SlidePagePresenter extends ViewPresenter<SlidePageView> {
 
     private final int id;
 
-    public SlidePagePresenter(@StackParam int id) {
+    // some dependencies provided by dagger
+    private final RestClient restClient;
+    private final UserManager userManager;
+
+    public SlidePagePresenter(@StackParam int id, RestClient restClient, UserManager userManager) {
         this.id = id;
+        this.restClient = restClient;
+        this.userManager = userManager;
     }
 
     @Override

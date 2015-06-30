@@ -1,5 +1,6 @@
 package com.mortarnav;
 
+import com.mortarnav.deps.WithAppDependencies;
 import com.mortarnav.path.HomePath;
 import com.mortarnav.view.MyPopupView;
 
@@ -31,7 +32,8 @@ import mortar.MortarScope;
  */
 @AutoComponent(
         dependencies = App2.class,
-        modules = MainActivity2.NavigatorModule.class
+        modules = MainActivity2.NavigatorModule.class,
+        superinterfaces = WithAppDependencies.class
 )
 @AutoInjector
 @DaggerScope(MainActivity2.class)

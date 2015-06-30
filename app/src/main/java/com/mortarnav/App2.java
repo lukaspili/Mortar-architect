@@ -1,10 +1,11 @@
 package com.mortarnav;
 
-import autodagger.AutoComponent;
-import autodagger.AutoExpose;
-import mortar.MortarScope;
+import com.mortarnav.deps.WithAppDependencies;
+
 import architect.autostack.DaggerService;
 import architect.commons.ArchitectApp;
+import autodagger.AutoComponent;
+import mortar.MortarScope;
 import timber.log.Timber;
 
 /**
@@ -12,7 +13,7 @@ import timber.log.Timber;
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoComponent
+@AutoComponent(superinterfaces = WithAppDependencies.class)
 @DaggerScope(App2.class)
 public class App2 extends ArchitectApp {
 
