@@ -10,19 +10,19 @@ import architect.StackFactory;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class StackLinearLayout<T extends ViewPresenter> extends MvpLinearLayout<T> {
+public abstract class StackedLinearLayout<T extends ViewPresenter> extends PresenterLinearLayout<T> {
 
-    public StackLinearLayout(Context context) {
+    public StackedLinearLayout(Context context) {
         super(context);
         init(context);
     }
 
-    public StackLinearLayout(Context context, AttributeSet attrs) {
+    public StackedLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public StackLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public StackedLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }

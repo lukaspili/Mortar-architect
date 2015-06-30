@@ -11,22 +11,22 @@ import mortar.ViewPresenter;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class MvpLinearLayout<T extends ViewPresenter> extends LinearLayout {
+public abstract class PresenterLinearLayout<T extends ViewPresenter> extends LinearLayout {
 
     @Inject
     protected T presenter;
 
-    public MvpLinearLayout(Context context) {
+    public PresenterLinearLayout(Context context) {
         super(context);
         init(context);
     }
 
-    public MvpLinearLayout(Context context, AttributeSet attrs) {
+    public PresenterLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public MvpLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PresenterLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }

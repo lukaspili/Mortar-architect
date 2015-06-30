@@ -10,19 +10,19 @@ import mortar.ViewPresenter;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class StackFrameLayout<T extends ViewPresenter> extends MvpFrameLayout<T> {
+public abstract class StackedFrameLayout<T extends ViewPresenter> extends PresentedFrameLayout<T> {
 
-    public StackFrameLayout(Context context) {
+    public StackedFrameLayout(Context context) {
         super(context);
         init(context);
     }
 
-    public StackFrameLayout(Context context, AttributeSet attrs) {
+    public StackedFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public StackFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public StackedFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }

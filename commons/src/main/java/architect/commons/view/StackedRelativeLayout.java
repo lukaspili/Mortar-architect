@@ -10,19 +10,19 @@ import architect.StackFactory;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class StackRelativeLayout<T extends ViewPresenter> extends MvpRelativeLayout<T> {
+public abstract class StackedRelativeLayout<T extends ViewPresenter> extends PresentedRelativeLayout<T> {
 
-    public StackRelativeLayout(Context context) {
+    public StackedRelativeLayout(Context context) {
         super(context);
         init(context);
     }
 
-    public StackRelativeLayout(Context context, AttributeSet attrs) {
+    public StackedRelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public StackRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public StackedRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }

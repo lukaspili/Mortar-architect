@@ -2,8 +2,8 @@ package architect.commons.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import javax.inject.Inject;
 
@@ -12,22 +12,22 @@ import mortar.ViewPresenter;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class MvpFrameLayout<T extends ViewPresenter> extends FrameLayout {
+public abstract class PresentedRelativeLayout<T extends ViewPresenter> extends RelativeLayout {
 
     @Inject
     protected T presenter;
 
-    public MvpFrameLayout(Context context) {
+    public PresentedRelativeLayout(Context context) {
         super(context);
         init(context);
     }
 
-    public MvpFrameLayout(Context context, AttributeSet attrs) {
+    public PresentedRelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public MvpFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PresentedRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
