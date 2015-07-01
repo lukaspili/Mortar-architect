@@ -6,7 +6,8 @@ import android.view.View;
 
 import com.mortarnav.R;
 import com.mortarnav.presenter.HomeDoubleSubcontentPresenter;
-import com.mortarnav.presenter.HomeDoubleSubcontentScopeComponent;
+import com.mortarnav.presenter.scope.HomeDoubleSubcontentScope;
+import com.mortarnav.presenter.scope.HomeDoubleSubcontentScopeComponent;
 
 import architect.StackScope;
 import architect.autostack.DaggerService;
@@ -27,7 +28,7 @@ public class HomeDoubleSubcontentView extends StackedLinearLayout<HomeDoubleSubc
 
     @Override
     public StackScope getScope() {
-        return new HomeDoubleSubcontentPresenter.HomeDoubleSubcontentScope();
+        return new HomeDoubleSubcontentScope();
     }
 
     @Override
