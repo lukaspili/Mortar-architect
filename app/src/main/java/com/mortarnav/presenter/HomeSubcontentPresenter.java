@@ -29,6 +29,7 @@ public class HomeSubcontentPresenter extends ViewPresenter<HomeSubcontentView> {
     @Inject
     public HomeSubcontentPresenter() {
         random = new Random().nextInt(100);
+        Timber.d("NEW %s", this);
     }
 
     @Override

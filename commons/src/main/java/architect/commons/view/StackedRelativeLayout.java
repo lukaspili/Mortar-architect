@@ -3,14 +3,14 @@ package architect.commons.view;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import mortar.ViewPresenter;
-import architect.StackScope;
 import architect.StackFactory;
+import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class StackedRelativeLayout<T extends ViewPresenter> extends PresentedRelativeLayout<T> {
+public abstract class StackedRelativeLayout<T extends ViewPresenter> extends PresentedRelativeLayout<T>
+        implements StackedContainer {
 
     public StackedRelativeLayout(Context context) {
         super(context);
@@ -28,11 +28,12 @@ public abstract class StackedRelativeLayout<T extends ViewPresenter> extends Pre
     protected void init(Context context) {
         super.init(context);
 
-        Context newContext = StackFactory.createContext(context, getScope());
+        Context newContext = StackFactory.createContext(context, getScope(), getScopeIdentifier());
         initWithContext(newContext);
     }
 
-    public abstract StackScope getScope();
-
-    public abstract void initWithContext(Context context);
+    @Override
+    public String getScopeIdentifier() {
+        return null;
+    }
 }

@@ -4,13 +4,13 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import architect.StackFactory;
-import architect.StackScope;
 import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class StackedFrameLayout<T extends ViewPresenter> extends PresentedFrameLayout<T> {
+public abstract class StackedFrameLayout<T extends ViewPresenter> extends PresentedFrameLayout<T>
+        implements StackedContainer {
 
     public StackedFrameLayout(Context context) {
         super(context);
@@ -28,11 +28,12 @@ public abstract class StackedFrameLayout<T extends ViewPresenter> extends Presen
     protected void init(Context context) {
         super.init(context);
 
-        Context newContext = StackFactory.createContext(context, getScope());
+        Context newContext = StackFactory.createContext(context, getScope(), getScopeIdentifier());
         initWithContext(newContext);
     }
 
-    public abstract StackScope getScope();
-
-    public abstract void initWithContext(Context context);
+    @Override
+    public String getScopeIdentifier() {
+        return null;
+    }
 }
