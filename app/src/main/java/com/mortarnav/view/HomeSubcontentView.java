@@ -10,13 +10,13 @@ import com.mortarnav.presenter.HomeSubcontentPresenter;
 import com.mortarnav.presenter.scope.HomeSubcontentScope;
 import com.mortarnav.presenter.scope.HomeSubcontentScopeComponent;
 
+import architect.StackScope;
+import architect.autostack.DaggerService;
+import architect.commons.view.StackedLinearLayout;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import architect.StackScope;
-import architect.autostack.DaggerService;
-import architect.commons.view.StackedLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

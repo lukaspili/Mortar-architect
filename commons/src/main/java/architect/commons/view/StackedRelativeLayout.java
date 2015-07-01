@@ -14,17 +14,14 @@ public abstract class StackedRelativeLayout<T extends ViewPresenter> extends Pre
 
     public StackedRelativeLayout(Context context) {
         super(context);
-        init(context);
     }
 
     public StackedRelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
     }
 
     public StackedRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
     }
 
     @Override

@@ -14,17 +14,14 @@ public abstract class StackedFrameLayout<T extends ViewPresenter> extends Presen
 
     public StackedFrameLayout(Context context) {
         super(context);
-        init(context);
     }
 
     public StackedFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
     }
 
     public StackedFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
     }
 
     @Override

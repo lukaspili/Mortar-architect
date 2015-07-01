@@ -14,17 +14,14 @@ public abstract class StackedLinearLayout<T extends ViewPresenter> extends Prese
 
     public StackedLinearLayout(Context context) {
         super(context);
-        init(context);
     }
 
     public StackedLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
     }
 
     public StackedLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
     }
 
     @Override
