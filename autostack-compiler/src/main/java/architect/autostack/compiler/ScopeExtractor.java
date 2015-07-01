@@ -18,6 +18,7 @@ import javax.lang.model.util.Types;
 
 import architect.autostack.AutoStack;
 import autodagger.AutoComponent;
+import autodagger.compiler.utils.AutoComponentExtractorUtil;
 import processorworkflow.AbstractExtractor;
 import processorworkflow.Errors;
 import processorworkflow.ExtractorUtils;
@@ -29,8 +30,6 @@ import processorworkflow.Logger;
 public class ScopeExtractor extends AbstractExtractor {
 
     private static final String COMPONENT = "component";
-    private static final String COMPONENT_DEPENDENCIES = "dependencies";
-    private static final String COMPONENT_INCLUDES = "includes";
     private static final String PATH = "path";
 
     private AnnotationMirror scopeAnnotationTypeMirror;
@@ -55,23 +54,7 @@ public class ScopeExtractor extends AbstractExtractor {
         }
 
         // get dependency from @AutoComponent
-        List<TypeMirror> deps = new ArrayList<>();
-        TypeMirror includesTypeMirror = ExtractorUtils.getValueFromAnnotation(componentAnnotationTypeMirror, AutoComponent.class, COMPONENT_INCLUDES);
-        if (includesTypeMirror != null) {
-            // includes
-            Element includesElement = MoreTypes.asElement(includesTypeMirror);
-            if (!MoreElements.isAnnotationPresent(includesElement, AutoComponent.class)) {
-                errors.addInvalid("Included element is missing @AutoComponent annotation");
-                return;
-            }
-
-            List<AnnotationValue> values = ExtractorUtils.getValueFromAnnotation(includesElement, AutoComponent.class, COMPONENT_DEPENDENCIES);
-            deps.addAll(findTypeMirrors(values));
-        }
-
-        List<AnnotationValue> values = ExtractorUtils.getValueFromAnnotation(componentAnnotationTypeMirror, AutoComponent.class, COMPONENT_DEPENDENCIES);
-        deps.addAll(findTypeMirrors(values));
-
+        List<TypeMirror> deps = AutoComponentExtractorUtil.getDependencies(componentAnnotationTypeMirror, errors);
         if (deps.size() != 1) {
             errors.addInvalid("@AutoComponent must have only 1 dependency");
             return;
@@ -96,41 +79,6 @@ public class ScopeExtractor extends AbstractExtractor {
             errors.addInvalid("Cannot have several constructors");
             return;
         }
-    }
-
-//    private List<TypeMirror> findTypeMirrors(AnnotationMirror annotationMirror, String name) {
-//        List<TypeMirror> typeMirrors = new ArrayList<>();
-//        List<AnnotationValue> values = ExtractorUtils.getValueFromAnnotation(annotationMirror, AutoComponent.class, name);
-//        if (values != null) {
-//            for (AnnotationValue value : values) {
-//                try {
-//                    TypeMirror tm = (TypeMirror) value.getValue();
-//                    typeMirrors.add(tm);
-//                } catch (Exception e) {
-//                    errors.addInvalid("@AutoComponent dependency (did your reference an auto generated class? use rather the target class)");
-//                    break;
-//                }
-//            }
-//        }
-//
-//        return typeMirrors;
-//    }
-
-    private List<TypeMirror> findTypeMirrors(List<AnnotationValue> values) {
-        List<TypeMirror> typeMirrors = new ArrayList<>();
-        if (values != null) {
-            for (AnnotationValue value : values) {
-                try {
-                    TypeMirror tm = (TypeMirror) value.getValue();
-                    typeMirrors.add(tm);
-                } catch (Exception e) {
-                    errors.addInvalid("@AutoComponent dependency (did your reference an auto generated class? use rather the target class)");
-                    break;
-                }
-            }
-        }
-
-        return typeMirrors;
     }
 
     /**

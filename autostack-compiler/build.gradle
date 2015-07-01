@@ -3,6 +3,10 @@ apply plugin: 'java'
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
+//configurations.all {
+//    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+//}
+
 dependencies {
     compile project(':autostack')
     compile project(':autopath')
@@ -13,6 +17,13 @@ dependencies {
     compile deps.autodagger2
     compile deps.autodagger2_compiler_utils
     compile deps.mortar
+
+//    compile (deps.autodagger2) {
+//        changing = true
+//    }
+//    compile (deps.autodagger2_compiler_utils) {
+//        changing = true
+//    }
 }
 
 apply from: '../mvn-publish.gradle'

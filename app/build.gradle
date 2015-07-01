@@ -44,6 +44,9 @@ dependencies {
 //    compile (deps.autodagger2) {
 //        changing = true
 //    }
+//    compile (deps.autodagger2_compiler_utils) {
+//        changing = true
+//    }
 //    apt (deps.autodagger2_compiler) {
 //        changing = true
 //    }
