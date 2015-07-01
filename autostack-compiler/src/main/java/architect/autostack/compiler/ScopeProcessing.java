@@ -137,7 +137,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
         private ClassName buildClassName(Element element) {
             String name = element.getSimpleName().toString();
 
-            // try to remove NavigationScope at the end of the name
+            // try to remove Presenter at the end of the name
             String newName = removeEndingName(name, "Presenter");
             if (newName == null) {
                 errors.addInvalid("Class name " + newName);
