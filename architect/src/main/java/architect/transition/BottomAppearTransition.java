@@ -27,7 +27,7 @@ public class BottomAppearTransition extends BaseModalTransition {
     }
 
     @Override
-    public boolean hideViewBelow() {
+    public boolean hideExitView() {
         return true;
     }
 }

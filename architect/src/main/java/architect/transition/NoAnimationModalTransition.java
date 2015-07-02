@@ -1,19 +1,22 @@
-package com.mortarnav;
+package architect.transition;
 
 import android.animation.AnimatorSet;
 import android.view.View;
 
-import architect.transition.BaseModalTransition;
-
 /**
+ * Modal transition that is not animated
+ *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class NoAnimationModalTransition extends BaseModalTransition<View> {
 
-    private boolean hideViewBelow;
+    private boolean hideExitView;
 
-    public NoAnimationModalTransition(boolean hideViewBelow) {
-        this.hideViewBelow = hideViewBelow;
+    /**
+     * @param hideExitView should the transition hide the exit view?
+     */
+    public NoAnimationModalTransition(boolean hideExitView) {
+        this.hideExitView = hideExitView;
     }
 
     @Override
@@ -30,7 +33,7 @@ public class NoAnimationModalTransition extends BaseModalTransition<View> {
     }
 
     @Override
-    public boolean hideViewBelow() {
-        return hideViewBelow;
+    public boolean hideExitView() {
+        return hideExitView;
     }
 }

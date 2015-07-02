@@ -7,7 +7,7 @@ import android.os.Bundle;
 import architect.Navigator;
 import architect.NavigatorView;
 import architect.StackPath;
-import architect.Transitions;
+import architect.TransitionsMapping;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 
@@ -23,14 +23,14 @@ public abstract class ArchitectActivity extends Activity {
 
     protected abstract void configureScope(MortarScope.Builder builder, MortarScope parMortarScope);
 
-    protected abstract void registerNavigatorTransitions(Transitions transitions);
-
     /**
      * @return the navigator config or null for default config
      */
     protected abstract Navigator.Config getNavigatorConfig();
 
     protected abstract NavigatorView getNavigatorView();
+
+    protected abstract TransitionsMapping getTransitionsMapping();
 
     protected abstract StackPath getInitialPath();
 
@@ -59,7 +59,7 @@ public abstract class ArchitectActivity extends Activity {
             scope = builder.build(scopeName);
 
             Navigator navigator = Navigator.create(scope, getNavigatorConfig());
-            registerNavigatorTransitions(navigator.transitions());
+            navigator.transitions().register(getTransitionsMapping());
         }
 
         BundleServiceRunner.getBundleServiceRunner(scope).onCreate(savedInstanceState);

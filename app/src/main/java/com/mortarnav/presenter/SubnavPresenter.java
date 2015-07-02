@@ -9,14 +9,14 @@ import com.mortarnav.view.SubnavView;
 
 import javax.inject.Inject;
 
+import architect.Navigator;
+import architect.TransitionsMapping;
+import architect.autopath.AutoPath;
+import architect.autostack.AutoStack;
+import architect.transition.LateralViewTransition;
 import autodagger.AutoComponent;
 import mortar.MortarScope;
 import mortar.ViewPresenter;
-import architect.Navigator;
-import architect.Transition;
-import architect.autopath.AutoPath;
-import architect.autostack.AutoStack;
-import architect.transition.HorizontalScreenTransition;
 import timber.log.Timber;
 
 /**
@@ -41,7 +41,7 @@ public class SubnavPresenter extends ViewPresenter<SubnavView> {
         if (navigator == null) {
             Timber.d("create navigator");
             navigator = Navigator.create(MortarScope.getScope(getView().getContext()));
-            navigator.transitions().register(Transition.defaultTransition(new HorizontalScreenTransition()));
+            navigator.transitions().register(new TransitionsMapping().byDefault(new LateralViewTransition()));
         }
 
         navigator.delegate().onCreate(null, savedInstanceState, getView().navigatorView, new SubnavPagePath("INITIAL"));

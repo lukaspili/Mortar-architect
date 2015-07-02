@@ -1,5 +1,8 @@
 package architect;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -7,6 +10,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
+import architect.transition.ViewTransition;
 import architect.view.HandlesBack;
 
 /**
@@ -14,8 +18,8 @@ import architect.view.HandlesBack;
  */
 public class NavigatorView extends FrameLayout implements HandlesBack {
 
+    int sessionId;
     private boolean interactionsDisabled;
-    private View viewToRemove;
 
     public NavigatorView(Context context) {
         super(context);
@@ -41,43 +45,143 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         return hasCurrentView() ? getChildAt(getChildCount() - 1) : null;
     }
 
-    void endPresentation() {
-        Preconditions.checkArgument(interactionsDisabled, "End presentation but looks like presentation never started");
-        interactionsDisabled = false;
-
-        if (viewToRemove != null) {
-            removeView(viewToRemove);
-            viewToRemove = null;
-        }
-    }
-
-    void startPresentation(final View newView, final Dispatcher.Direction direction, final Presenter.PresenterSession session, final Presenter.PresentationCallback callback) {
+    void show(final View newView, int newViewIndex, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
         Preconditions.checkArgument(!interactionsDisabled, "Start presentation but previous one did not end");
+        Preconditions.checkArgument(sessionId > 0, "Cannot show while session is not valid");
+        Preconditions.checkNotNull(newView, "New view cannot be null");
+        Preconditions.checkArgument(newViewIndex == -1 || newViewIndex <= getChildCount() - 2, "newViewIndex out of bounds of navigator child views, must be -1 or at least the before last, but is %d", newViewIndex);
         interactionsDisabled = true;
 
         final View currentView = getCurrentView();
+
         if (currentView == null) {
             // no previous view, add and show directly
             addView(newView);
-            callback.onPresentationFinished(null, newView, session);
+            end(callback);
             return;
         }
 
-        // add view at the end, or before the current one if backward direction
-        if (direction == Dispatcher.Direction.FORWARD) {
-            addView(newView);
-        } else {
-            addView(newView, getChildCount() - 1);
-            viewToRemove = currentView;
+        if (transition == null) {
+            // no transition
+            removeView(currentView);
+
+            if (newViewIndex == -1) {
+                addView(newView);
+            } else {
+                // newView already exist
+                removeInBetweenViews(newViewIndex, newView, false);
+            }
+            end(callback);
+            return;
         }
 
-        Util.waitForMeasure(newView, new Util.OnMeasuredCallback() {
+        if (newViewIndex == -1) {
+            addView(newView);
+            measureAndTransition(newView, currentView, direction, transition, callback);
+        } else {
+            removeInBetweenViews(newViewIndex, newView, true);
+            transition(currentView, newView, direction, transition, callback);
+        }
+    }
+
+    private void end(Presenter.PresentationCallback callback) {
+        interactionsDisabled = false;
+        callback.onPresentationFinished(sessionId);
+    }
+
+    private void removeInBetweenViews(int index, View view, boolean keepLast) {
+        int lastViewIndex = getChildCount() - 1;
+        int length = lastViewIndex - index - (keepLast ? 2 : 1);
+        removeViews(index + 1, length);
+
+        Preconditions.checkArgument(getChildAt(getChildCount() - (keepLast ? 2 : 1)) == view, "Remove view in between mismatch, newView is not at the expected position in its container");
+    }
+
+    private void transition(View originView, View destinationView, Dispatcher.Direction direction, ViewTransition transition, final Presenter.PresentationCallback callback) {
+        AnimatorSet set = new AnimatorSet();
+        set.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onMeasured(View view, int width, int height) {
-                callback.onPresentationFinished(currentView, view, session);
+            public void onAnimationEnd(Animator animation) {
+                end(callback);
+            }
+        });
+
+        transition.configure(set);
+
+        if (direction == Dispatcher.Direction.FORWARD) {
+            transition.forward(destinationView, originView, set);
+        } else {
+            transition.backward(destinationView, originView, set);
+        }
+
+        set.start();
+    }
+
+    private void measureAndTransition(final View newView, final View previousView, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
+        int width = newView.getWidth();
+        int height = newView.getHeight();
+
+        if (width > 0 && height > 0) {
+            transition(previousView, newView, direction, transition, callback);
+            return;
+        }
+
+        newView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                final ViewTreeObserver observer = newView.getViewTreeObserver();
+                if (observer.isAlive()) {
+                    observer.removeOnPreDrawListener(this);
+                }
+
+                transition(previousView, newView, direction, transition, callback);
+                return true;
             }
         });
     }
+
+//    void endPresentation(boolean removePreviousView) {
+//        Preconditions.checkArgument(interactionsDisabled, "End presentation but looks like presentation never started");
+//        interactionsDisabled = false;
+//
+//        if (removePreviousView && previousView != null) {
+//            Logger.d("Remove previous view %s", previousView);
+//            removeView(previousView);
+//        }
+//        previousView = null;
+//    }
+//
+//    void startPresentation(final View newView, final Dispatcher.Direction direction, final Presenter.PresenterSession session, final Presenter.PresentationCallback callback) {
+//        Preconditions.checkArgument(!interactionsDisabled, "Start presentation but previous one did not end");
+//        interactionsDisabled = true;
+//
+//        final View currentView = getCurrentView();
+//        if (currentView == null) {
+//            // no previous view, add and show directly
+//            addView(newView);
+//            callback.onPresentationFinished(null, newView, session);
+//            return;
+//        }
+//
+//        previousView = currentView;
+//
+//        // add view at the end, or before the current one if backward direction
+//        if (direction == Dispatcher.Direction.FORWARD) {
+//            addView(newView);
+//        } else {
+//            addView(newView, getChildCount() - 1);
+//        }
+//
+//        measureAndTransition(newView, currentView);
+//
+//        measureAndTransition(newView, new OnMeasuredCallback() {
+//            @Override
+//            public void onMeasured(View view, int width, int height) {
+//                callback.onPresentationFinished(currentView, view, session);
+//            }
+//        });
+//    }
+
 
     // HandlesBack
 
@@ -92,43 +196,5 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         }
 
         return false;
-    }
-
-
-    /**
-     * Copy paste from Square Flow
-     */
-    private static class Util {
-
-        private static void waitForMeasure(final View view, final OnMeasuredCallback callback) {
-            int width = view.getWidth();
-            int height = view.getHeight();
-
-            if (width > 0 && height > 0) {
-                callback.onMeasured(view, width, height);
-                return;
-            }
-
-            view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    final ViewTreeObserver observer = view.getViewTreeObserver();
-                    if (observer.isAlive()) {
-                        observer.removeOnPreDrawListener(this);
-                    }
-
-                    callback.onMeasured(view, view.getWidth(), view.getHeight());
-
-                    return true;
-                }
-            });
-        }
-
-        private Util() {
-        }
-
-        public interface OnMeasuredCallback {
-            void onMeasured(View view, int width, int height);
-        }
     }
 }

@@ -6,20 +6,25 @@ import android.view.View;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class BaseScreenTransition<T_Origin extends View, T_Destination extends View> implements ScreenTransition<T_Origin, T_Destination> {
+public abstract class BaseViewTransition<T_Origin extends View, T_Destination extends View> implements ViewTransition<T_Origin, T_Destination> {
 
     protected final Config config;
 
-    public BaseScreenTransition() {
+    public BaseViewTransition() {
         this(new Config());
     }
 
-    public BaseScreenTransition(Config config) {
+    public BaseViewTransition(Config config) {
         this.config = config;
     }
 
     @Override
     public void configure(AnimatorSet set) {
         config.configure(set);
+    }
+
+    @Override
+    public boolean removeExitView() {
+        return true;
     }
 }

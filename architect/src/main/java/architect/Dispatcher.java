@@ -39,7 +39,7 @@ class Dispatcher {
         Logger.d("Peek history scope : %s", top.scopeName);
 
         // default direction is FORWARD, unless we find previous scope in history
-        Direction direction = Direction.FORWARD;
+        Direction direction;
 
         MortarScope currentScope = navigator.presenter.getCurrentScope();
         if (currentScope != null) {
@@ -61,6 +61,8 @@ class Dispatcher {
                 existingEntry.state = navigator.presenter.getCurrentViewState();
                 direction = Direction.FORWARD;
             }
+        } else {
+            direction = Direction.REPLACE;
         }
 
         MortarScope newScope = navigator.getScope().findChild(top.scopeName);
@@ -101,6 +103,6 @@ class Dispatcher {
     }
 
     enum Direction {
-        FORWARD, BACKWARD
+        FORWARD, BACKWARD, REPLACE
     }
 }
