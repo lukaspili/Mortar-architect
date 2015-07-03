@@ -17,7 +17,6 @@ import mortar.MortarScope;
 class Presenter {
 
     private final Transitions transitions;
-    //    private final TransitionExecutor transitionExecutor;
     private NavigatorView view;
     private Dispatcher.Callback dispatchingCallback;
     private boolean active;
@@ -31,13 +30,12 @@ class Presenter {
      * negative value means there is no session (like during config changes)
      */
     private int sessionId = 0;
-
-    //    private final SparseArray<String> scopesInView = new SparseArray<>();
-    private final List<String> scopesInView = new ArrayList<>();
+    private boolean firstDispatch;
+    private final List<History.Entry> entriesInView = new ArrayList<>();
+    private final List<MortarScope> scopesInView = new ArrayList<>();
 
     Presenter(Transitions transitions) {
         this.transitions = transitions;
-//        transitionExecutor = new TransitionExecutor();
     }
 
     void newSession() {
@@ -51,19 +49,17 @@ class Presenter {
         sessionId *= -1;
     }
 
-    boolean isCurrentSession(int sessionId) {
-        return this.sessionId == sessionId;
-    }
-
     void attach(NavigatorView view) {
         Preconditions.checkNotNull(view, "Cannot attach null navigator view");
         Preconditions.checkNull(this.view, "Current navigator view not null, did you forget to detach the previous view?");
         Preconditions.checkArgument(!active, "Navigator view must be inactive before attaching");
         Preconditions.checkNull(dispatchingCallback, "Dispatching callback must be null before attaching");
+        Preconditions.checkArgument(!firstDispatch, "First dispatch true");
 
         newSession();
         this.view = view;
         this.view.sessionId = sessionId;
+        firstDispatch = true;
     }
 
     void detach() {
@@ -73,6 +69,7 @@ class Presenter {
 
         invalidateSession();
         view = null;
+        firstDispatch = false;
     }
 
     void activate() {
@@ -95,6 +92,34 @@ class Presenter {
 
         Logger.d("Present new scope: %s - with direction: %s", newScope.getName(), direction);
 
+        if (firstDispatch) {
+            firstDispatch = false;
+            Logger.d("First dispatch");
+            Logger.d("Entries in view: %d", entriesInView.size());
+
+            if (!entriesInView.isEmpty()) {
+                Logger.d("### BEFORE debug scopes in view");
+                int ii = 0;
+                for (MortarScope s : scopesInView) {
+                    Logger.d("%d - %s", ii++, s);
+                }
+
+                Preconditions.checkArgument(scopesInView.get(scopesInView.size() - 1) == newScope, "The last scope in view does not match with the first scope to show");
+
+                if (entriesInView.size() > 1) {
+                    // restore all scopes in view
+                    Context existingContext;
+                    View existingView;
+                    for (int i = 0; i < entriesInView.size() - 1; ++i) {
+                        existingContext = scopesInView.get(i).createContext(view.getContext());
+                        existingView = entry.factory.createView(existingContext);
+                        view.addView(existingView);
+                        Logger.d("Add view %s", existingView);
+                    }
+                }
+            }
+        }
+
         // set and track the callback from dispatcher
         // dispatcher is waiting for the onComplete call
         // either when present is done, or when presenter is desactivated
@@ -107,7 +132,7 @@ class Presenter {
             createView = true;
         } else {
             // reuse view if it exists
-            if (!scopesInView.isEmpty() && scopesInView.contains(entry.scopeName)) {
+            if (!entriesInView.isEmpty() && entriesInView.contains(entry.scopeName)) {
                 Logger.d("Scope in view exists: %s", entry.scopeName);
                 createView = false;
             } else {
@@ -139,21 +164,23 @@ class Presenter {
 
         // remove previous scope if backward / replace with not empty scope (empty means first init) / forward with transition remove exitview
         if (direction == Dispatcher.Direction.BACKWARD ||
-                (direction == Dispatcher.Direction.REPLACE && !scopesInView.isEmpty()) ||
+                (direction == Dispatcher.Direction.REPLACE && !entriesInView.isEmpty()) ||
                 (direction == Dispatcher.Direction.FORWARD && transition != null && transition.removeExitView())) {
-            String scope = scopesInView.remove(scopesInView.size() - 1);
-            Logger.d("Remove scope in view: %s", scope);
+            entriesInView.remove(entriesInView.size() - 1);
+            MortarScope removed = scopesInView.remove(scopesInView.size() - 1);
+            Logger.d("Remove scope in view: %s", removed.getName());
         }
 
         if (createView) {
-            scopesInView.add(entry.scopeName);
-            Logger.d("Add scope in view: %s", entry.scopeName);
+            entriesInView.add(entry);
+            scopesInView.add(newScope);
+            Logger.d("Add scope in view: %s", newScope.getName());
         }
 
         Logger.d("### debug scopes in view");
         int i = 0;
-        for (String string : scopesInView) {
-            Logger.d("%d - %s", i++, string);
+        for (MortarScope s : scopesInView) {
+            Logger.d("%d - %s", i++, s);
         }
 
         // 6. restore state if it exists
@@ -167,37 +194,6 @@ class Presenter {
                 completeDispatchingCallback();
             }
         });
-
-
-//        view.startPresentation(newView, direction, sessionId, new PresentationCallback() {
-//            @Override
-//            public void onPresentationFinished(View exitView, View enterView, PresenterSession session) {
-//                if (!isSessionValid(session)) return;
-//
-//                if (exitView == null) {
-//                    // no previous view, don't animate
-//                    view.endPresentation(true);
-//                    completeDispatchingCallback();
-//                    return;
-//                }
-//
-//                transitionExecutor.makeTransition(exitView, enterView, direction, session, new TransitionCallback() {
-//                    @Override
-//                    public void onTransitionFinished(PresenterSession session, boolean removePreviousView) {
-//                        if (!isSessionValid(session)) return;
-//
-//
-////                        if (!removePreviousView) {
-////                            int indexPreviousView = view.getChildCount() - 2;
-////                            view.getTag()
-////                        }
-//
-//                        view.endPresentation(removePreviousView); // remove previous view if transition is ScreenTransition
-//                        completeDispatchingCallback();
-//                    }
-//                });
-//            }
-//        });
     }
 
     MortarScope getCurrentScope() {
@@ -222,9 +218,9 @@ class Presenter {
         return view != null && active;
     }
 
-//    private boolean isSessionValid(PresenterSession session) {
-//        return isActive() && this.sessionId == session;
-//    }
+    boolean isCurrentSession(int sessionId) {
+        return this.sessionId == sessionId;
+    }
 
     private void completeDispatchingCallback() {
         if (dispatchingCallback == null) {
@@ -236,21 +232,8 @@ class Presenter {
         callback.onComplete();
     }
 
-//    /**
-//     * Session is the same for all events done between onAttach() and onDetach()
-//     * Once onAttach() is called again, new session is created
-//     */
-//    class PresenterSession {
-//
-//    }
-
     interface PresentationCallback {
 
         void onPresentationFinished(int sessionId);
     }
-
-//    interface TransitionCallback {
-//
-//        void onTransitionFinished(PresenterSession session, boolean removePreviousView);
-//    }
 }

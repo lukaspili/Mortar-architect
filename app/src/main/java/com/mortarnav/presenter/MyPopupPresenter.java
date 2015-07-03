@@ -35,7 +35,7 @@ public class MyPopupPresenter extends ArchitectViewPresenter<MyPopupView> {
     public void dismissClick() {
         navigator().chain(new NavigationChain()
                 .back()
-//                .push(new SubnavPath())
+                .push(new SubnavPath())
                 .push(new SlidesPath()));
     }
 }
