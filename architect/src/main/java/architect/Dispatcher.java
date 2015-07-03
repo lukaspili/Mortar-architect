@@ -38,9 +38,7 @@ class Dispatcher {
         Preconditions.checkArgument(!top.dead, "Cannot dispatch dead entry of history");
         Logger.d("Peek history scope : %s", top.scopeName);
 
-        // default direction is FORWARD, unless we find previous scope in history
         Direction direction;
-
         MortarScope currentScope = navigator.presenter.getCurrentScope();
         Logger.d("Current scope is %s", currentScope != null ? currentScope.getName() : "NULL");
         if (currentScope != null) {

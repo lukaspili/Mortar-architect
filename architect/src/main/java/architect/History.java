@@ -113,13 +113,15 @@ public class History {
     /**
      * Kill the most top entry
      */
-    void killTop() {
+    Entry killTop() {
         for (Entry entry : entries) {
             if (!entry.dead) {
                 entry.dead = true;
-                return;
+                return entry;
             }
         }
+
+        return null;
     }
 
     /**

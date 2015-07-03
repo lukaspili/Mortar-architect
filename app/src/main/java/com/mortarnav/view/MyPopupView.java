@@ -38,4 +38,9 @@ public class MyPopupView extends PresenterLinearLayout<MyPopupPresenter> {
         presenter.popupClick();
     }
 
+    @OnClick(R.id.my_popup_show_dismiss_button)
+    void dismissClick() {
+        presenter.dismissClick();
+    }
+
 }

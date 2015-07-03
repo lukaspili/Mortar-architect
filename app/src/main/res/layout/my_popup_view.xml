@@ -38,4 +38,13 @@
             android:text="Show new popup"
             android:textColor="@android:color/black"/>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/my_popup_show_dismiss_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/white"
+        android:text="Dismiss and show view pager"
+        android:textColor="@android:color/black"/>
 </LinearLayout>

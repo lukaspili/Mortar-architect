@@ -5,7 +5,6 @@ import android.view.View;
 
 import mortar.MortarScope;
 import mortar.Scoped;
-import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -76,6 +75,26 @@ public class Navigator implements Scoped {
     }
 
     public boolean back() {
+        return back(true);
+    }
+
+    public void chain(NavigationChain chain) {
+        Preconditions.checkArgument(!chain.chains.isEmpty(), "Navigation chain cannot be empty");
+
+        boolean first = true;
+        for (NavigationChain.Chain c : chain.chains) {
+            if (c.path == null) {
+                // dispatch directly the first back
+                back(first);
+            } else {
+                history.push(c.path);
+            }
+            first = false;
+        }
+        dispatcher.dispatch();
+    }
+
+    private boolean back(boolean dispatch) {
         Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
 
         if (!history.canKill()) {
@@ -83,7 +102,9 @@ public class Navigator implements Scoped {
         }
 
         history.killTop();
-        dispatcher.dispatch();
+        if (dispatch) {
+            dispatcher.dispatch();
+        }
 
         return true;
     }

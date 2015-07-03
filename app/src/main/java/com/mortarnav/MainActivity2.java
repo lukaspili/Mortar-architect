@@ -11,8 +11,8 @@ import architect.TransitionsMapping;
 import architect.autostack.DaggerService;
 import architect.commons.ArchitectActivity;
 import architect.transition.Config;
+import architect.transition.FadeModalTransition;
 import architect.transition.LateralViewTransition;
-import architect.transition.NoAnimationModalTransition;
 import autodagger.AutoComponent;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
@@ -65,7 +65,8 @@ public class MainActivity2 extends ArchitectActivity {
     protected TransitionsMapping getTransitionsMapping() {
         return new TransitionsMapping()
                 .byDefault(new LateralViewTransition(new Config().duration(300)))
-                .show(MyPopupView.class).withTransition(new NoAnimationModalTransition(false));
+//                .show(MyPopupView.class).withTransition(new NoAnimationModalTransition(false));
+                .show(MyPopupView.class).withTransition(new FadeModalTransition(false));
     }
 
     @Override
