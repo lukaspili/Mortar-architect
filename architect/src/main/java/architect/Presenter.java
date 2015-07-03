@@ -132,23 +132,23 @@ class Presenter {
         // 3. find transition
         ViewTransition transition;
         if (view.hasCurrentView()) {
-            Logger.d("Find transition %s - %s - %s", newView, view.getCurrentView(), direction);
-            transition = transitions.findTransition(newView, view.getCurrentView(), direction);
+            transition = transitions.findTransition(view.getCurrentView(), newView, direction);
         } else {
             transition = null;
         }
 
-        // 4. remove previous scope
-        if (!scopesInView.isEmpty()) {
-            if (direction != Dispatcher.Direction.FORWARD ||
-                    (transition == null || transition.removeExitView())) {
-                String scope = scopesInView.remove(scopesInView.size() - 1);
-                Logger.d("Remove scope in view: %s", scope);
-            }
+        // remove previous scope if backward / replace with not empty scope (empty means first init) / forward with transition remove exitview
+        if (direction == Dispatcher.Direction.BACKWARD ||
+                (direction == Dispatcher.Direction.REPLACE && !scopesInView.isEmpty()) ||
+                (direction == Dispatcher.Direction.FORWARD && transition != null && transition.removeExitView())) {
+            String scope = scopesInView.remove(scopesInView.size() - 1);
+            Logger.d("Remove scope in view: %s", scope);
         }
 
-        // 5. add new scope in view
-        scopesInView.add(entry.scopeName);
+        if (createView) {
+            scopesInView.add(entry.scopeName);
+            Logger.d("Add scope in view: %s", entry.scopeName);
+        }
 
         Logger.d("### debug scopes in view");
         int i = 0;

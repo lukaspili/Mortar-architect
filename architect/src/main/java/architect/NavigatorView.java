@@ -52,9 +52,17 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         Preconditions.checkArgument(newViewIndex == -1 || newViewIndex <= getChildCount() - 2, "newViewIndex out of bounds of navigator child views, must be -1 or at least the before last, but is %d", newViewIndex);
         interactionsDisabled = true;
 
+        Logger.d("Show view %s with index %d", newView.getClass(), newViewIndex);
+
+        Logger.d("## Views before");
+        for (int i = 0; i < getChildCount(); ++i) {
+            Logger.d("%d = %s", i, getChildAt(i));
+        }
+
         final View currentView = getCurrentView();
 
         if (currentView == null) {
+            Preconditions.checkArgument(newViewIndex == -1, "No current view, but new view index != -1");
             // no previous view, add and show directly
             addView(newView);
             end(callback);
@@ -64,6 +72,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         if (transition == null) {
             // no transition
             removeView(currentView);
+            Logger.d("Remove view %s", currentView.getClass().getName());
 
             if (newViewIndex == -1) {
                 addView(newView);
@@ -85,23 +94,35 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
     }
 
     private void end(Presenter.PresentationCallback callback) {
+        Logger.d("## Views after");
+        for (int i = 0; i < getChildCount(); ++i) {
+            Logger.d("%d = %s", i, getChildAt(i));
+        }
+
         interactionsDisabled = false;
         callback.onPresentationFinished(sessionId);
     }
 
     private void removeInBetweenViews(int index, View view, boolean keepLast) {
         int lastViewIndex = getChildCount() - 1;
-        int length = lastViewIndex - index - (keepLast ? 2 : 1);
-        removeViews(index + 1, length);
+        int length = lastViewIndex - index - (keepLast ? 1 : 0);
+        if (length > 0) {
+            removeViews(index + 1, length);
+            Logger.d("Remove views at %d - %d", index + 1, length);
+        }
 
         Preconditions.checkArgument(getChildAt(getChildCount() - (keepLast ? 2 : 1)) == view, "Remove view in between mismatch, newView is not at the expected position in its container");
     }
 
-    private void transition(View originView, View destinationView, Dispatcher.Direction direction, ViewTransition transition, final Presenter.PresentationCallback callback) {
+    private void transition(final View originView, View destinationView, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
         AnimatorSet set = new AnimatorSet();
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                if (direction != Dispatcher.Direction.FORWARD || transition.removeExitView()) {
+                    Logger.d("Remove view %s", originView.getClass().getName());
+                    removeView(originView);
+                }
                 end(callback);
             }
         });

@@ -42,6 +42,7 @@ class Dispatcher {
         Direction direction;
 
         MortarScope currentScope = navigator.presenter.getCurrentScope();
+        Logger.d("Current scope is %s", currentScope != null ? currentScope.getName() : "NULL");
         if (currentScope != null) {
             if (currentScope.getName().equals(top.scopeName)) {
                 // history in sync with current element, work is done

@@ -5,6 +5,7 @@ import android.view.View;
 
 import mortar.MortarScope;
 import mortar.Scoped;
+import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

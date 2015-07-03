@@ -67,7 +67,7 @@ public class Transitions {
         return findTransition(target, from);
     }
 
-    ViewTransition findTransition(View targetView, View fromView) {
+    private ViewTransition findTransition(View targetView, View fromView) {
         Key targetKey = getBestMatchKey(targetView.getClass(), transitions.keySet());
         if (targetKey == null) {
             return null;
