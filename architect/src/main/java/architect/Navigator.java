@@ -78,6 +78,12 @@ public class Navigator implements Scoped {
         return back(true);
     }
 
+    /**
+     * Chain several navigation
+     * Only the last transition of the chain is executed
+     * The only exception being if the first chain is a back,
+     * then its transition will be executed first, and then the last one
+     */
     public void chain(NavigationChain chain) {
         Preconditions.checkArgument(!chain.chains.isEmpty(), "Navigation chain cannot be empty");
 
