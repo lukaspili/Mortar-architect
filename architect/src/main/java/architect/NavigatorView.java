@@ -45,14 +45,13 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         return hasCurrentView() ? getChildAt(getChildCount() - 1) : null;
     }
 
-    void show(final View newView, int newViewIndex, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
+    void show(View newView, boolean addNewView, boolean removePreviousView, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
         Preconditions.checkArgument(!interactionsDisabled, "Start presentation but previous one did not end");
         Preconditions.checkArgument(sessionId > 0, "Cannot show while session is not valid");
         Preconditions.checkNotNull(newView, "New view cannot be null");
-        Preconditions.checkArgument(newViewIndex == -1 || newViewIndex <= getChildCount() - 2, "newViewIndex out of bounds of navigator child views, must be -1 or at least the before last, but is %d", newViewIndex);
         interactionsDisabled = true;
 
-        Logger.d("Show view %s with index %d", newView.getClass(), newViewIndex);
+        Logger.d("Show view: %s", newView.getClass());
 
         Logger.d("## Views before");
         for (int i = 0; i < getChildCount(); ++i) {
@@ -62,34 +61,26 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         final View currentView = getCurrentView();
 
         if (currentView == null) {
-            Preconditions.checkArgument(newViewIndex == -1, "No current view, but new view index != -1");
+            Preconditions.checkNotNull(newView, "New view cannot be null if current view is null");
             // no previous view, add and show directly
             addView(newView);
             end(callback);
             return;
         }
 
-        if (transition == null) {
-            // no transition
-            removeView(currentView);
-            Logger.d("Remove view %s", currentView.getClass().getName());
-
-            if (newViewIndex == -1) {
-                addView(newView);
-            } else {
-                // newView already exist
-                removeInBetweenViews(newViewIndex, newView, false);
-            }
-            end(callback);
-            return;
+        if (addNewView) {
+            addView(newView);
+            Logger.d("Add view %s", newView.getClass());
         }
 
-        if (newViewIndex == -1) {
-            addView(newView);
-            measureAndTransition(newView, currentView, direction, transition, callback);
+        if (transition == null) {
+            if (removePreviousView) {
+                removeView(currentView);
+                Logger.d("Remove view %s", currentView.getClass());
+            }
+            end(callback);
         } else {
-            removeInBetweenViews(newViewIndex, newView, true);
-            transition(currentView, newView, direction, transition, callback);
+            measureAndTransition(newView, getChildAt(getChildCount() - (addNewView ? 2 : 1)), removePreviousView, direction, transition, callback);
         }
     }
 
@@ -103,25 +94,14 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         callback.onPresentationFinished(sessionId);
     }
 
-    private void removeInBetweenViews(int index, View view, boolean keepLast) {
-        int lastViewIndex = getChildCount() - 1;
-        int length = lastViewIndex - index - (keepLast ? 1 : 0);
-        if (length > 0) {
-            removeViews(index + 1, length);
-            Logger.d("Remove views at %d - %d", index + 1, length);
-        }
-
-        Preconditions.checkArgument(getChildAt(getChildCount() - (keepLast ? 2 : 1)) == view, "Remove view in between mismatch, newView is not at the expected position in its container");
-    }
-
-    private void transition(final View originView, View destinationView, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
+    private void transition(final View originView, View destinationView, final boolean removePreviousView, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
         AnimatorSet set = new AnimatorSet();
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                if (direction != Dispatcher.Direction.FORWARD || transition.removeExitView()) {
-                    Logger.d("Remove view %s", originView.getClass().getName());
+                if (removePreviousView) {
                     removeView(originView);
+                    Logger.d("Remove view %s", originView.getClass());
                 }
                 end(callback);
             }
@@ -138,12 +118,12 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         set.start();
     }
 
-    private void measureAndTransition(final View newView, final View previousView, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
+    private void measureAndTransition(final View newView, final View previousView, final boolean removePreviousView, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
         int width = newView.getWidth();
         int height = newView.getHeight();
 
         if (width > 0 && height > 0) {
-            transition(previousView, newView, direction, transition, callback);
+            transition(previousView, newView, removePreviousView, direction, transition, callback);
             return;
         }
 
@@ -155,7 +135,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
                     observer.removeOnPreDrawListener(this);
                 }
 
-                transition(previousView, newView, direction, transition, callback);
+                transition(previousView, newView, removePreviousView, direction, transition, callback);
                 return true;
             }
         });

@@ -62,6 +62,6 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     }
 
     public void showPopupClick() {
-        Navigator.get(getView()).push(new MyPopupPath());
+        Navigator.get(getView()).show(new MyPopupPath());
     }
 }

@@ -22,9 +22,4 @@ public abstract class BaseViewTransition<T_Origin extends View, T_Destination ex
     public void configure(AnimatorSet set) {
         config.configure(set);
     }
-
-    @Override
-    public boolean removeExitView() {
-        return true;
-    }
 }

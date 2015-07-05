@@ -13,6 +13,4 @@ public interface ViewTransition<T_Origin extends View, T_Destination extends Vie
     void backward(T_Origin enterView, T_Destination exitView, AnimatorSet set);
 
     void configure(AnimatorSet set);
-
-    boolean removeExitView();
 }

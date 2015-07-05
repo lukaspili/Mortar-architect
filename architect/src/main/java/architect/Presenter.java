@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.util.SparseArray;
 import android.view.View;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import architect.transition.ViewTransition;
@@ -31,8 +30,9 @@ class Presenter {
      */
     private int sessionId = 0;
     private boolean firstDispatch;
-    private final List<History.Entry> entriesInView = new ArrayList<>();
-    private final List<MortarScope> scopesInView = new ArrayList<>();
+//    private final List<History.Entry> entriesInView = new ArrayList<>();
+//    private final List<MortarScope> scopesInView = new ArrayList<>();
+//    private final List<String> presentedModalScopes = new ArrayList<>();
 
     Presenter(Transitions transitions) {
         this.transitions = transitions;
@@ -86,75 +86,65 @@ class Presenter {
         completeDispatchingCallback();
     }
 
-    void present(final History.Entry entry, MortarScope newScope, final Dispatcher.Direction direction, final Dispatcher.Callback callback) {
+    void restore(List<Dispatcher.Dispatch> modals) {
+        Logger.d("Restore modals");
+        for (Dispatcher.Dispatch modal : modals) {
+            Logger.d("Modal: %s", modal.entry.scopeName);
+        }
+
+        if (modals.isEmpty()) {
+            return;
+        }
+
+//        for (int i = 0; i < modals.size(); i++) {
+//            Dispatcher.Dispatch m = modals.get(i);
+//            Logger.d("For modal %s", m.entry.scopeName);
+//            int index = modalScopes.indexOf(m.entry.scopeName);
+//            if (index == -1) {
+//                views.add(m.entry.factory.createView(m.scope.createContext(view.getContext())));
+//                Logger.d("Create restore view");
+//            } else {
+//                Preconditions.checkArgument(index == i, "Modal scope index does not match");
+//                indexes.add(index);
+//                Logger.d("Keep existing modal scope");
+//            }
+//        }
+    }
+
+    void present(final Dispatcher.Dispatch newDispatch, final History.Entry previousEntry, final Dispatcher.Direction direction, final Dispatcher.Callback callback) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
 
-        Logger.d("Present new scope: %s - with direction: %s", newScope.getName(), direction);
-
-        if (firstDispatch) {
-            firstDispatch = false;
-            Logger.d("First dispatch");
-            Logger.d("Entries in view: %d", entriesInView.size());
-
-            if (!entriesInView.isEmpty()) {
-                Logger.d("### BEFORE debug scopes in view");
-                int ii = 0;
-                for (MortarScope s : scopesInView) {
-                    Logger.d("%d - %s", ii++, s);
-                }
-
-                Preconditions.checkArgument(scopesInView.get(scopesInView.size() - 1) == newScope, "The last scope in view does not match with the first scope to show");
-
-                if (entriesInView.size() > 1) {
-                    // restore all scopes in view
-                    Context existingContext;
-                    View existingView;
-                    for (int i = 0; i < entriesInView.size() - 1; ++i) {
-                        existingContext = scopesInView.get(i).createContext(view.getContext());
-                        existingView = entry.factory.createView(existingContext);
-                        view.addView(existingView);
-                        Logger.d("Add view %s", existingView);
-                    }
-                }
-            }
+        if (direction == Dispatcher.Direction.BACKWARD) {
+            Preconditions.checkNotNull(previousEntry, "Previous entry null cannot be null in backward presentation");
         }
+
+        Logger.d("Present new dispatch: %s - with direction: %s", newDispatch.entry.scopeName, direction);
+        Logger.d("Previous entry: %s", previousEntry != null ? previousEntry.scopeName : "NULL");
 
         // set and track the callback from dispatcher
         // dispatcher is waiting for the onComplete call
         // either when present is done, or when presenter is desactivated
         dispatchingCallback = callback;
 
-        // 1. define if we have to create the view of the new scope
-        boolean createView;
-        if (direction == Dispatcher.Direction.FORWARD || direction == Dispatcher.Direction.REPLACE) {
-            // always create when forward and replace
-            createView = true;
-        } else {
-            // reuse view if it exists
-            if (!entriesInView.isEmpty() && entriesInView.contains(entry.scopeName)) {
-                Logger.d("Scope in view exists: %s", entry.scopeName);
-                createView = false;
-            } else {
-                createView = true;
-            }
-        }
-
-        // 2. create or reuse view
+        // create or reuse view
         View newView;
-        int newViewIndex;
-        if (createView) {
-            Logger.d("Create new view for %s", entry.scopeName);
-            Context context = newScope.createContext(view.getContext());
-            newView = entry.factory.createView(context);
-            newViewIndex = -1;
+        boolean addNewView;
+        if ((direction == Dispatcher.Direction.FORWARD || direction == Dispatcher.Direction.REPLACE) ||
+                (direction == Dispatcher.Direction.BACKWARD && !previousEntry.isModal())) {
+            // create new view when forward and replace
+            // or when backward if previous entry is not modal
+            Logger.d("Create new view for %s", newDispatch.entry.scopeName);
+            Context context = newDispatch.scope.createContext(view.getContext());
+            newView = newDispatch.entry.factory.createView(context);
+            addNewView = true;
         } else {
-            Logger.d("Reuse previous view for %s", entry.scopeName);
+            Logger.d("Reuse previous view for %s", newDispatch.entry.scopeName);
             newView = view.getChildAt(view.getChildCount() - 2);
-            newViewIndex = view.getChildCount() - 2;
+            addNewView = false;
         }
 
-        // 3. find transition
+        // find transition
         ViewTransition transition;
         if (view.hasCurrentView()) {
             transition = transitions.findTransition(view.getCurrentView(), newView, direction);
@@ -162,33 +152,15 @@ class Presenter {
             transition = null;
         }
 
-        // remove previous scope if backward / replace with not empty scope (empty means first init) / forward with transition remove exitview
-        if (direction == Dispatcher.Direction.BACKWARD ||
-                (direction == Dispatcher.Direction.REPLACE && !entriesInView.isEmpty()) ||
-                (direction == Dispatcher.Direction.FORWARD && transition != null && transition.removeExitView())) {
-            entriesInView.remove(entriesInView.size() - 1);
-            MortarScope removed = scopesInView.remove(scopesInView.size() - 1);
-            Logger.d("Remove scope in view: %s", removed.getName());
+        // restore state if it exists
+        if (newDispatch.entry.state != null) {
+            newView.restoreHierarchyState(newDispatch.entry.state);
         }
 
-        if (createView) {
-            entriesInView.add(entry);
-            scopesInView.add(newScope);
-            Logger.d("Add scope in view: %s", newScope.getName());
-        }
+        boolean keepPreviousView = direction == Dispatcher.Direction.FORWARD && newDispatch.entry.isModal();
+        Logger.d("Keep previous view: %b", keepPreviousView);
 
-        Logger.d("### debug scopes in view");
-        int i = 0;
-        for (MortarScope s : scopesInView) {
-            Logger.d("%d - %s", i++, s);
-        }
-
-        // 6. restore state if it exists
-        if (entry.state != null) {
-            newView.restoreHierarchyState(entry.state);
-        }
-
-        view.show(newView, newViewIndex, direction, transition, new PresentationCallback() {
+        view.show(newView, addNewView, !keepPreviousView, direction, transition, new PresentationCallback() {
             @Override
             public void onPresentationFinished(int sessionId) {
                 completeDispatchingCallback();

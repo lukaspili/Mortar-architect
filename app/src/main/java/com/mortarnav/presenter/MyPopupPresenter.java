@@ -25,7 +25,7 @@ import autodagger.AutoComponent;
 public class MyPopupPresenter extends ArchitectViewPresenter<MyPopupView> {
 
     public void popupClick() {
-        navigator().push(new MyPopupPath());
+        navigator().show(new MyPopupPath());
     }
 
     public void homeClick() {

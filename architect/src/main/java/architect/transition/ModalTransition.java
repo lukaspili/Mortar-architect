@@ -38,11 +38,6 @@ public abstract class ModalTransition<T extends View> implements ViewTransition<
         hide(exitView, set);
     }
 
-    @Override
-    public boolean removeExitView() {
-        return false;
-    }
-
     public abstract void show(T view, AnimatorSet set);
 
     public abstract void hide(T view, AnimatorSet set);

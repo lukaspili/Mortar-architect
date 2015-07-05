@@ -1,5 +1,8 @@
 package architect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import mortar.MortarScope;
 
 /**
@@ -10,6 +13,7 @@ import mortar.MortarScope;
 class Dispatcher {
 
     private final Navigator navigator;
+    private final List<History.Entry> entries = new ArrayList<>();
     private boolean dispatching;
     private boolean killed;
 
@@ -26,30 +30,55 @@ class Dispatcher {
         killed = true;
     }
 
+    void dispatch(List<History.Entry> e) {
+        entries.addAll(e);
+        startDispatch();
+    }
+
+    void dispatch(History.Entry entry) {
+        entries.add(entry);
+        startDispatch();
+    }
 
     void dispatch() {
-        if (killed || dispatching || !navigator.presenter.isActive()) return;
+        History.Entry entry = navigator.history.getLastAlive();
+        if (entry != null) {
+            entries.add(entry);
+            startDispatch();
+        }
+    }
+
+    private void startDispatch() {
+        if (killed || dispatching || !navigator.presenter.isActive() || entries.isEmpty()) return;
         dispatching = true;
         Preconditions.checkNotNull(navigator.getScope(), "Dispatcher navigator scope cannot be null");
         Preconditions.checkArgument(!navigator.history.isEmpty(), "Cannot dispatch empty history");
 
-        final History.Entry top = navigator.history.peekAlive();
-        Preconditions.checkNotNull(top, "Cannot peek at least one alive entry from history");
-        Preconditions.checkArgument(!top.dead, "Cannot dispatch dead entry of history");
-        Logger.d("Peek history scope : %s", top.scopeName);
+        final History.Entry nextEntry = entries.remove(0);
+        Preconditions.checkArgument(navigator.history.existInHistory(nextEntry), "Entry does not exist in history");
+        Logger.d("Get next entry with scope: %s", nextEntry.scopeName);
+
+        if (nextEntry.dead) {
+            Logger.d("Next entry already dead, remove directly");
+            removeDeadEntry(nextEntry);
+            endDispatch();
+            return;
+        }
 
         Direction direction;
         MortarScope currentScope = navigator.presenter.getCurrentScope();
-        Logger.d("Current scope is %s", currentScope != null ? currentScope.getName() : "NULL");
+        final History.Entry previousEntry;
+        Logger.d("Current container scope is: %s", currentScope != null ? currentScope.getName() : "NULL");
         if (currentScope != null) {
-            if (currentScope.getName().equals(top.scopeName)) {
-                // history in sync with current element, work is done
+            if (currentScope.getName().equals(nextEntry.scopeName)) {
+                Logger.d("Current scope match new entry");
                 endDispatch();
                 return;
             }
 
-            History.Entry existingEntry = navigator.history.find(currentScope.getName());
-            if (existingEntry == null || existingEntry.dead) {
+            previousEntry = navigator.history.getAdjacent(nextEntry, currentScope.getName());
+            Preconditions.checkNotNull(previousEntry, "Cannot find previous entry");
+            if (previousEntry.dead) {
                 // a scope already exists for the current view, but not anymore in history
                 // destroy it
                 // => backward navigation
@@ -57,39 +86,42 @@ class Dispatcher {
             } else {
                 // scope still exists in history, save view state
                 // => forward navigation
-                existingEntry.state = navigator.presenter.getCurrentViewState();
+                previousEntry.state = navigator.presenter.getCurrentViewState();
                 direction = Direction.FORWARD;
             }
         } else {
             direction = Direction.REPLACE;
+            previousEntry = null;
         }
 
-        MortarScope newScope = navigator.getScope().findChild(top.scopeName);
+        MortarScope newScope = navigator.getScope().findChild(nextEntry.scopeName);
         if (newScope == null) {
-            newScope = StackFactory.createScope(navigator.getScope(), top.scope, top.scopeName);
+            newScope = StackFactory.createScope(navigator.getScope(), nextEntry.scope, nextEntry.scopeName);
         }
 
-        navigator.presenter.present(top, newScope, direction, new Callback() {
+        navigator.presenter.present(new Dispatch(nextEntry, newScope), previousEntry, direction, new Callback() {
             @Override
             public void onComplete() {
-                if (navigator.getScope() != null) {
-                    // remove dead entries from real top until the dispatching top
-                    navigator.history.removeDeadUntil(top, new History.Processor() {
-                        @Override
-                        public void process(History.Entry entry) {
-                            MortarScope scope = navigator.getScope().findChild(entry.scopeName);
-                            if (scope != null) {
-                                Logger.d("Destroy scope %s", entry.scopeName);
-                                scope.destroy();
-                            }
-                        }
-                    });
+                if (previousEntry != null && previousEntry.dead) {
+                    removeDeadEntry(previousEntry);
                 }
 
                 endDispatch();
-                dispatch();
+                startDispatch();
             }
         });
+    }
+
+    private void removeDeadEntry(History.Entry entry) {
+        Logger.d("Remove dead entry: %s", entry.scopeName);
+        navigator.history.remove(entry);
+        if (navigator.getScope() != null) {
+            MortarScope scope = navigator.getScope().findChild(entry.scopeName);
+            if (scope != null) {
+                Logger.d("Destroy scope %s", entry.scopeName);
+                scope.destroy();
+            }
+        }
     }
 
     private void endDispatch() {
@@ -103,5 +135,16 @@ class Dispatcher {
 
     enum Direction {
         FORWARD, BACKWARD, REPLACE
+    }
+
+    static class Dispatch {
+        History.Entry entry;
+        MortarScope scope;
+
+        public Dispatch(History.Entry entry, MortarScope scope) {
+            Preconditions.checkArgument(entry.scopeName.equals(scope.getName()), "Dispatch entry scope name does not match");
+            this.entry = entry;
+            this.scope = scope;
+        }
     }
 }

@@ -6,10 +6,9 @@ import android.os.Parcelable;
 import android.util.SparseArray;
 import android.view.View;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * An history of scopes...
@@ -28,12 +27,18 @@ public class History {
     private static final String SCOPE_KEY = "SCOPE_STATE";
     private static final String STATE_KEY = "VIEW_STATE";
     private static final String SCOPES_NAMER_KEY = "SCOPES_IDS";
+    private static final String NAV_TYPE_KEY = "NAV_TYPE";
+
+    static final int NAV_TYPE_PUSH = 1;
+    static final int NAV_TYPE_MODAL = 2;
 
     static History fromBundle(Bundle bundle) {
         ArrayList<Bundle> entryBundles = bundle.getParcelableArrayList(ENTRIES_KEY);
-        Deque<Entry> entries = new ArrayDeque<>(entryBundles.size());
-        for (Bundle entryBundle : entryBundles) {
-            entries.add(Entry.fromBundle(entryBundle));
+        List<Entry> entries = new ArrayList<>(entryBundles.size());
+        if (!entryBundles.isEmpty()) {
+            for (int i = 0; i < entryBundles.size(); i++) {
+                entries.add(Entry.fromBundle(entryBundles.get(i)));
+            }
         }
 
         ScopeNamer scopeNamer = bundle.getParcelable(SCOPES_NAMER_KEY);
@@ -56,18 +61,17 @@ public class History {
         return historyBundle;
     }
 
-    private final Deque<Entry> entries;
+    private final List<Entry> entries;
     private final ScopeNamer scopeNamer;
 
     History() {
-        this(new ArrayDeque<Entry>(), new ScopeNamer());
+        this(new ArrayList<Entry>(), new ScopeNamer());
     }
 
-    private History(Deque<Entry> entries, ScopeNamer scopeNamer) {
+    private History(List<Entry> entries, ScopeNamer scopeNamer) {
         this.entries = entries;
         this.scopeNamer = scopeNamer;
     }
-
 
     boolean isEmpty() {
         return entries.isEmpty();
@@ -78,45 +82,117 @@ public class History {
         entries.addAll(history.entries);
     }
 
-    Entry find(String scope) {
-        for (Entry entry : entries) {
-            if (entry.scopeName.equals(scope)) {
-                return entry;
+    Entry getAdjacent(Entry entry, String scopeName) {
+        Preconditions.checkArgument(entries.size() > 1, "Get adjacent requires at least 2 entries");
+
+        int index = entries.indexOf(entry);
+        Preconditions.checkArgument(index >= 0, "Get adjacent of an entry that does not exist");
+        Entry adjacent;
+        if (index > 0) {
+            adjacent = entries.get(index - 1);
+            if (adjacent.scopeName.equals(scopeName)) {
+                return adjacent;
+            }
+        }
+
+        if (index < entries.size() - 1) {
+            adjacent = entries.get(index + 1);
+            if (adjacent.scopeName.equals(scopeName)) {
+                return adjacent;
             }
         }
 
         return null;
     }
 
-    void push(StackPath stackPath) {
+    Entry add(StackPath stackPath, int navType) {
+        if (navType == NAV_TYPE_MODAL) {
+            // modal
+            Preconditions.checkArgument(!entries.isEmpty(), "Cannot add modal on empty history");
+        } else {
+            // push and history not empty
+            Entry lastAlive = getLastAlive();
+            Preconditions.checkArgument(lastAlive == null || !lastAlive.isModal(), "Cannot push new path on modal");
+        }
+
         StackScope scope = stackPath.withScope();
 
-        Entry entry = new Entry(scopeNamer.getName(scope), scope, stackPath);
+        Entry entry = new Entry(scopeNamer.getName(scope), scope, navType, stackPath);
         Preconditions.checkArgument(!entries.contains(entry), "An entry with the same navigation path is already present in history");
-        entries.addFirst(entry);
+        entries.add(entry);
+
+        return entry;
     }
 
     /**
      * At least 2 alive entries
      */
     boolean canKill() {
+        if (entries.size() < 2) {
+            return false;
+        }
+
         int notdead = 0;
-        for (Entry entry : entries) {
-            if (!entry.dead) {
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            if (!entries.get(i).dead) {
                 notdead++;
             }
+
+            if (notdead > 1) {
+                return true;
+            }
         }
 
-        return notdead > 1;
+        return false;
     }
 
     /**
-     * Kill the most top entry
+     * Kill the latest alive entry
+     * Guarantee to work only if canKill() returns true
+     *
+     * @return the previous entry of the killed one
      */
-    Entry killTop() {
-        for (Entry entry : entries) {
+    Entry kill() {
+        Entry entry;
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            entry = entries.get(i);
             if (!entry.dead) {
                 entry.dead = true;
+                return entries.get(i - 1);
+            }
+        }
+
+        throw new IllegalStateException("There is no entry to kill");
+    }
+
+//    /**
+//     * Return the first entry that is alive and not dispatched
+//     */
+//    Entry getNextToDispatch() {
+//        if (entries.isEmpty()) {
+//            return null;
+//        }
+//
+//        Entry entry;
+//        for (int i = 0; i < entries.size(); i++) {
+//            entry = entries.get(i);
+//            if (!entry.dead && !entry.dispatched) {
+//                return entry;
+//            }
+//        }
+//
+//        return null;
+//    }
+
+    Entry getLastAlive() {
+        if (entries.isEmpty()) {
+            return null;
+        }
+
+        Entry entry;
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            entry = entries.get(i);
+            if (!entry.dead) {
                 return entry;
             }
         }
@@ -124,17 +200,9 @@ public class History {
         return null;
     }
 
-    /**
-     * Return the most top entry that is alive
-     */
-    Entry peekAlive() {
-        for (Entry entry : entries) {
-            if (!entry.dead) {
-                return entry;
-            }
-        }
-
-        return null;
+    void remove(Entry entry) {
+        boolean remove = entries.remove(entry);
+        Preconditions.checkArgument(remove, "Entry to remove does not exist");
     }
 
     /**
@@ -160,20 +228,32 @@ public class History {
         throw new IllegalStateException("Entry until is not present in history");
     }
 
+    public boolean existInHistory(Entry entry) {
+        return entries.contains(entry);
+    }
+
     static class Entry {
         final String scopeName;
         final Factory factory;
         final StackScope scope;
+        final int navType;
         SparseArray<Parcelable> state;
         boolean dead;
+//        boolean dispatched;
 
-        public Entry(String scopeName, StackScope scope, Factory factory) {
+        public Entry(String scopeName, StackScope scope, int navType, Factory factory) {
             Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");
             Preconditions.checkNotNull(scope, "Scope cannot be null");
             Preconditions.checkNotNull(factory, "Factory cannot be null");
+            Preconditions.checkArgument(navType == NAV_TYPE_PUSH || navType == NAV_TYPE_MODAL, "Nav type invalid");
             this.scopeName = scopeName;
             this.scope = scope;
             this.factory = factory;
+            this.navType = navType;
+        }
+
+        boolean isModal() {
+            return navType == NAV_TYPE_MODAL;
         }
 
         private Bundle toBundle() {
@@ -187,6 +267,7 @@ public class History {
             bundle.putString(SCOPE_KEY, scopeName);
             bundle.putParcelable(PATH_KEY, factory);
             bundle.putSparseParcelableArray(STATE_KEY, state);
+            bundle.putInt(NAV_TYPE_KEY, navType);
             return bundle;
         }
 
@@ -194,7 +275,7 @@ public class History {
             Factory factory = bundle.getParcelable(PATH_KEY);
 
             // new entry with new scope instance, but preserving previous scope name
-            Entry entry = new Entry(bundle.getString(SCOPE_KEY), factory.createScope(), factory);
+            Entry entry = new Entry(bundle.getString(SCOPE_KEY), factory.createScope(), bundle.getInt(NAV_TYPE_KEY), factory);
             entry.state = bundle.getSparseParcelableArray(STATE_KEY);
             return entry;
         }
@@ -217,7 +298,7 @@ public class History {
 
         /**
          * Attached to History entry and persisted
-         * Allow to create and recreate instances of scopes & views
+         * Factory is responsible to create and recreate instances of scopes & views for an entry
          */
         interface Factory extends Parcelable {
             StackScope createScope();

@@ -36,7 +36,7 @@ public class NavigatorLifecycleDelegate {
             if (history != null) {
                 navigator.history.copy(history);
             } else {
-                navigator.history.push(defaultPath);
+                navigator.history.add(defaultPath, History.NAV_TYPE_PUSH);
             }
         }
 

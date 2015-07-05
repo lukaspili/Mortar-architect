@@ -3,6 +3,9 @@ package architect;
 import android.content.Context;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import mortar.MortarScope;
 import mortar.Scoped;
 
@@ -68,36 +71,42 @@ public class Navigator implements Scoped {
     }
 
     public void push(StackPath path) {
-        Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
+        add(path, History.NAV_TYPE_PUSH, true);
+    }
 
-        history.push(path);
-        dispatcher.dispatch();
+    public void show(StackPath path) {
+        add(path, History.NAV_TYPE_MODAL, true);
     }
 
     public boolean back() {
         return back(true);
     }
 
-    /**
-     * Chain several navigation
-     * Only the last transition of the chain is executed
-     * The only exception being if the first chain is a back,
-     * then its transition will be executed first, and then the last one
-     */
     public void chain(NavigationChain chain) {
         Preconditions.checkArgument(!chain.chains.isEmpty(), "Navigation chain cannot be empty");
 
-        boolean first = true;
-        for (NavigationChain.Chain c : chain.chains) {
+        List<History.Entry> entries = new ArrayList<>(chain.chains.size());
+        for (int i = 0; i < chain.chains.size(); i++) {
+            NavigationChain.Chain c = chain.chains.get(i);
             if (c.path == null) {
-                // dispatch directly the first back
-                back(first);
+                if (history.canKill()) {
+                    entries.add(history.kill());
+                }
             } else {
-                history.push(c.path);
+                entries.add(history.add(c.path, History.NAV_TYPE_PUSH));
             }
-            first = false;
         }
-        dispatcher.dispatch();
+
+        dispatcher.dispatch(entries);
+    }
+
+    private void add(StackPath path, int navType, boolean dispatch) {
+        Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
+
+        History.Entry next = history.add(path, navType);
+        if (dispatch) {
+            dispatcher.dispatch(next);
+        }
     }
 
     private boolean back(boolean dispatch) {
@@ -107,9 +116,9 @@ public class Navigator implements Scoped {
             return false;
         }
 
-        history.killTop();
+        History.Entry previous = history.kill();
         if (dispatch) {
-            dispatcher.dispatch();
+            dispatcher.dispatch(previous);
         }
 
         return true;
