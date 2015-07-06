@@ -9,7 +9,14 @@ import android.view.View;
  */
 public class FadeModalTransition extends BaseModalTransition<View> {
 
-    private boolean hideExitView;
+    protected boolean hideExitView;
+
+    public FadeModalTransition() {
+    }
+
+    public FadeModalTransition(Config config) {
+        super(config);
+    }
 
     /**
      * @param hideExitView should the transition hide the exit view?
@@ -18,9 +25,12 @@ public class FadeModalTransition extends BaseModalTransition<View> {
         this.hideExitView = hideExitView;
     }
 
-    @Override
-    public void configure(AnimatorSet set) {
-
+    /**
+     * @param hideExitView should the transition hide the exit view?
+     */
+    public FadeModalTransition(boolean hideExitView, Config config) {
+        super(config);
+        this.hideExitView = hideExitView;
     }
 
     @Override

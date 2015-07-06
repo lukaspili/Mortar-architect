@@ -9,11 +9,28 @@ import android.view.View;
  */
 public class BottomAppearTransition extends BaseModalTransition {
 
+    protected boolean hideExitView = true;
+
     public BottomAppearTransition() {
     }
 
     public BottomAppearTransition(Config config) {
         super(config);
+    }
+
+    /**
+     * @param hideExitView should the transition hide the exit view?
+     */
+    public BottomAppearTransition(boolean hideExitView) {
+        this.hideExitView = hideExitView;
+    }
+
+    /**
+     * @param hideExitView should the transition hide the exit view?
+     */
+    public BottomAppearTransition(boolean hideExitView, Config config) {
+        super(config);
+        this.hideExitView = hideExitView;
     }
 
     @Override
@@ -28,6 +45,6 @@ public class BottomAppearTransition extends BaseModalTransition {
 
     @Override
     public boolean hideExitView() {
-        return true;
+        return hideExitView;
     }
 }
