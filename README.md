@@ -103,6 +103,8 @@ Architect-commons provides some base classes to work with architect stack. See t
 
 ## Installation
 
+Library is divided in several dependencies, allowing to use only specific features if you don't want to use the whole package. Only core library is required.
+
 ```groovy
 buildscript {
     repositories {
@@ -145,7 +147,6 @@ dependencies {
     apt 'com.github.lukaspili.mortar-architect:autoscope-compiler:' + architect_version
 
     // Auto scope requires dagger2 and auto dagger2 deps
-
     // Dagger2
     compile 'com.google.dagger:dagger:2.0.1'
     apt 'com.google.dagger:dagger-compiler:2.0.1'
