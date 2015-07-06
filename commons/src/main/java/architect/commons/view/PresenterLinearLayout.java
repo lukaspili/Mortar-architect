@@ -18,20 +18,20 @@ public abstract class PresenterLinearLayout<T extends ViewPresenter> extends Lin
 
     public PresenterLinearLayout(Context context) {
         super(context);
-        init(context);
+        init(context, null, -1);
     }
 
     public PresenterLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init(context, attrs, -1);
     }
 
     public PresenterLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        init(context, attrs, defStyleAttr);
     }
 
-    protected void init(Context context) {
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr) {
 
     }
 

@@ -8,11 +8,11 @@ import android.view.View;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class ModalTransition<T extends View> implements ScreenTransition<View, T> {
+public abstract class ModalTransition<T extends View> implements ViewTransition<View, T> {
 
     @Override
     public final void forward(T enterView, final View exitView, AnimatorSet set) {
-        if (hideViewBelow()) {
+        if (hideExitView()) {
             set.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -26,7 +26,7 @@ public abstract class ModalTransition<T extends View> implements ScreenTransitio
 
     @Override
     public final void backward(final View enterView, T exitView, AnimatorSet set) {
-        if (hideViewBelow()) {
+        if (hideExitView()) {
             set.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -42,5 +42,5 @@ public abstract class ModalTransition<T extends View> implements ScreenTransitio
 
     public abstract void hide(T view, AnimatorSet set);
 
-    public abstract boolean hideViewBelow();
+    public abstract boolean hideExitView();
 }

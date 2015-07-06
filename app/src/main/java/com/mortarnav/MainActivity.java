@@ -7,17 +7,15 @@ import android.os.Bundle;
 import com.mortarnav.path.HomePath;
 import com.mortarnav.view.MyPopupView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import architect.Navigator;
 import architect.NavigatorView;
-import architect.Transition;
+import architect.TransitionsMapping;
 import architect.autostack.DaggerService;
 import architect.transition.Config;
-import architect.transition.HorizontalScreenTransition;
+import architect.transition.FadeModalTransition;
+import architect.transition.LateralViewTransition;
 import autodagger.AutoComponent;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
@@ -41,7 +39,7 @@ public class MainActivity extends Activity {
     private Navigator navigator;
 
     @Inject
-    List<Transition> navigatorTransitions;
+    TransitionsMapping transitionsMapping;
 
     @InjectView(R.id.navigator_container)
     protected NavigatorView containerView;
@@ -76,7 +74,7 @@ public class MainActivity extends Activity {
                     .build(scopeName);
 
             Navigator navigator = Navigator.create(scope);
-            navigator.transitions().register(navigatorTransitions);
+            navigator.transitions().register(transitionsMapping);
         }
 
         BundleServiceRunner.getBundleServiceRunner(scope).onCreate(savedInstanceState);
@@ -140,16 +138,10 @@ public class MainActivity extends Activity {
 
         @Provides
         @DaggerScope(MainActivity.class)
-        public List<Transition> providesTransitions() {
-            List<Transition> transitions = new ArrayList<>();
-            transitions.add(Transition.defaultTransition(new HorizontalScreenTransition(new Config().duration(300))));
-
-            // add custom transition for showing and hiding MyPopupView
-            transitions.add(Transition.forView(MyPopupView.class).fromAny().withTransition(new NoAnimationModalTransition(false)));
-
-//            transitions.add(Transition.forView(ViewC.class).fromAny().withTransition(new BottomAppearTransition()));
-
-            return transitions;
+        public TransitionsMapping providesTransitionsMapping() {
+            return new TransitionsMapping()
+                    .byDefault(new LateralViewTransition(new Config().duration(300)))
+                    .show(MyPopupView.class).withTransition(new FadeModalTransition());
         }
     }
 }

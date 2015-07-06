@@ -19,20 +19,20 @@ public abstract class PresentedFrameLayout<T extends ViewPresenter> extends Fram
 
     public PresentedFrameLayout(Context context) {
         super(context);
-        init(context);
+        init(context, null, -1);
     }
 
     public PresentedFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init(context, attrs, -1);
     }
 
     public PresentedFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        init(context, attrs, defStyleAttr);
     }
 
-    protected void init(Context context) {
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr) {
 
     }
 

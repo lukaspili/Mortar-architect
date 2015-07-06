@@ -3,6 +3,9 @@ package architect;
 import android.content.Context;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import mortar.MortarScope;
 import mortar.Scoped;
 
@@ -68,10 +71,42 @@ public class Navigator implements Scoped {
     }
 
     public void push(StackPath path) {
+        add(path, History.NAV_TYPE_PUSH);
+    }
+
+    public void show(StackPath path) {
+        add(path, History.NAV_TYPE_MODAL);
+    }
+
+    public void replace(StackPath path) {
+        history.kill();
+        History.Entry entry = history.add(path, History.NAV_TYPE_PUSH);
+        dispatcher.dispatch(entry);
+    }
+
+    public void chain(NavigationChain chain) {
+        Preconditions.checkArgument(!chain.chains.isEmpty(), "Navigation chain cannot be empty");
+
+        List<History.Entry> entries = new ArrayList<>(chain.chains.size());
+        for (int i = 0; i < chain.chains.size(); i++) {
+            NavigationChain.Chain c = chain.chains.get(i);
+            if (c.path == null) {
+                if (history.canKill()) {
+                    entries.add(history.kill());
+                }
+            } else {
+                entries.add(history.add(c.path, History.NAV_TYPE_PUSH));
+            }
+        }
+
+        dispatcher.dispatch(entries);
+    }
+
+    private void add(StackPath path, int navType) {
         Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
 
-        history.push(path);
-        dispatcher.dispatch();
+        History.Entry next = history.add(path, navType);
+        dispatcher.dispatch(next);
     }
 
     public boolean back() {
@@ -81,8 +116,8 @@ public class Navigator implements Scoped {
             return false;
         }
 
-        history.killTop();
-        dispatcher.dispatch();
+        History.Entry entry = history.kill();
+        dispatcher.dispatch(entry);
 
         return true;
     }

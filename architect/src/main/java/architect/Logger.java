@@ -7,7 +7,11 @@ import android.util.Log;
  */
 class Logger {
 
+    private static final boolean DEBUG = true;
+
     public static void d(String message, Object... format) {
+        if (!DEBUG) return;
+
         if (format != null) {
             message = String.format(message, format);
         }

@@ -5,6 +5,9 @@ import android.os.Parcelable;
 import android.util.SparseArray;
 import android.view.View;
 
+import java.util.List;
+
+import architect.transition.ViewTransition;
 import mortar.MortarScope;
 
 /**
@@ -12,35 +15,57 @@ import mortar.MortarScope;
  */
 class Presenter {
 
-    private final TransitionExecutor transitionExecutor;
+    private final Transitions transitions;
     private NavigatorView view;
-    private PresenterSession session; // 1 session <=> 1 view
     private Dispatcher.Callback dispatchingCallback;
     private boolean active;
 
+    /**
+     * Track the session
+     * Each session lives during the lifespan of a navigation view instance
+     * When a new view is provided, new unique session id is set
+     *
+     * id starts at 1
+     * negative value means there is no session (like during config changes)
+     */
+    private int sessionId = 0;
+//    private final List<History.Entry> entriesInView = new ArrayList<>();
+//    private final List<MortarScope> scopesInView = new ArrayList<>();
+//    private final List<String> presentedModalScopes = new ArrayList<>();
+
     Presenter(Transitions transitions) {
-        transitionExecutor = new TransitionExecutor(transitions);
+        this.transitions = transitions;
+    }
+
+    void newSession() {
+        Preconditions.checkArgument(sessionId <= 0, "New session while session id is valid");
+        sessionId *= -1;
+        sessionId++;
+    }
+
+    void invalidateSession() {
+        Preconditions.checkArgument(sessionId > 0, "Invalidate session while session id is invalid");
+        sessionId *= -1;
     }
 
     void attach(NavigatorView view) {
         Preconditions.checkNotNull(view, "Cannot attach null navigator view");
         Preconditions.checkNull(this.view, "Current navigator view not null, did you forget to detach the previous view?");
-        Preconditions.checkNull(session, "Session must be null before attaching");
         Preconditions.checkArgument(!active, "Navigator view must be inactive before attaching");
         Preconditions.checkNull(dispatchingCallback, "Dispatching callback must be null before attaching");
 
+        newSession();
         this.view = view;
-        session = new PresenterSession();
+        this.view.sessionId = sessionId;
     }
 
     void detach() {
         Preconditions.checkNotNull(view, "Cannot detach null navigator view");
-        Preconditions.checkNotNull(session, "Session must be not null before detaching");
         Preconditions.checkArgument(!active, "Navigator view must be inactive before detaching");
         Preconditions.checkNull(dispatchingCallback, "Dispatching callback must be null before detaching");
 
+        invalidateSession();
         view = null;
-        session = null;
     }
 
     void activate() {
@@ -57,44 +82,85 @@ class Presenter {
         completeDispatchingCallback();
     }
 
-    void present(History.Entry entry, MortarScope newScope, final Dispatcher.Direction direction, final Dispatcher.Callback callback) {
+    void restore(List<Dispatcher.Dispatch> modals) {
+        Preconditions.checkNotNull(view, "Container view cannot be null");
+        Preconditions.checkArgument(view.getChildCount() == 0, "Restore requires view with no children");
+        if (modals.isEmpty()) {
+            return;
+        }
+
+        Dispatcher.Dispatch dispatch;
+        View child;
+        for (int i = 0; i < modals.size(); i++) {
+            dispatch = modals.get(i);
+            Logger.d("Restore modal: %s", dispatch.entry.scopeName);
+            child = dispatch.entry.factory.createView(dispatch.scope.createContext(view.getContext()));
+            if (dispatch.entry.state != null) {
+                view.restoreHierarchyState(dispatch.entry.state);
+            }
+
+            view.addView(child);
+        }
+    }
+
+    void present(final Dispatcher.Dispatch newDispatch, final History.Entry previousEntry, final Dispatcher.Direction direction, final Dispatcher.Callback callback) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
 
-        Logger.d("Present new scope: %s - with direction: %s", newScope.getName(), direction);
+        Logger.d("Present new dispatch: %s - with direction: %s", newDispatch.entry.scopeName, direction);
+        Logger.d("Previous entry: %s", previousEntry.scopeName);
 
         // set and track the callback from dispatcher
         // dispatcher is waiting for the onComplete call
         // either when present is done, or when presenter is desactivated
         dispatchingCallback = callback;
 
-        Context context = newScope.createContext(view.getContext());
-        View newView = entry.factory.createView(context);
-
-        if (entry.state != null) {
-            newView.restoreHierarchyState(entry.state);
+        if (direction == Dispatcher.Direction.FORWARD && !previousEntry.dead) {
+            // forward, save previous view state
+            Logger.d("Save view state for: %s", previousEntry.scopeName);
+            previousEntry.state = getCurrentViewState();
         }
 
-        view.startPresentation(newView, direction, session, new PresentationCallback() {
+        // create or reuse view
+        View newView;
+        boolean addNewView;
+        if (direction == Dispatcher.Direction.FORWARD ||
+                (direction == Dispatcher.Direction.BACKWARD && !previousEntry.isModal())) {
+            // create new view when forward and replace
+            // or when backward if previous entry is not modal
+            Logger.d("Create new view for %s", newDispatch.entry.scopeName);
+            Context context = newDispatch.scope.createContext(view.getContext());
+            newView = newDispatch.entry.factory.createView(context);
+            addNewView = true;
+        } else {
+            Logger.d("Reuse previous view for %s", newDispatch.entry.scopeName);
+            newView = view.getChildAt(view.getChildCount() - 2);
+            addNewView = false;
+        }
+
+        // find transition
+        ViewTransition transition;
+        if (view.hasCurrentView()) {
+            transition = transitions.findTransition(view.getCurrentView(), newView, direction);
+        } else {
+            transition = null;
+        }
+
+        // restore state if it exists
+        if (newDispatch.entry.state != null) {
+            Logger.d("Restore view state for: %s", newDispatch.entry.scopeName);
+            newView.restoreHierarchyState(newDispatch.entry.state);
+        }
+
+        boolean keepPreviousView = direction == Dispatcher.Direction.FORWARD && newDispatch.entry.isModal();
+        Logger.d("Keep previous view: %b", keepPreviousView);
+
+        view.show(newView, addNewView, !keepPreviousView, direction, transition, new PresentationCallback() {
             @Override
-            public void onPresentationFinished(View exitView, View enterView, PresenterSession session) {
-                if (!isSessionValid(session)) return;
-
-                if (exitView == null) {
-                    // no previous view, don't animate
-                    view.endPresentation();
+            public void onPresentationFinished(int sessionId) {
+                if (isCurrentSession(sessionId)) {
                     completeDispatchingCallback();
-                    return;
                 }
-
-                transitionExecutor.makeTransition(exitView, enterView, direction, session, new TransitionCallback() {
-                    @Override
-                    public void onTransitionFinished(PresenterSession session) {
-                        if (!isSessionValid(session)) return;
-                        view.endPresentation();
-                        completeDispatchingCallback();
-                    }
-                });
             }
         });
     }
@@ -107,7 +173,7 @@ class Presenter {
         return view != null && view.onBackPressed();
     }
 
-    SparseArray<Parcelable> getCurrentViewState() {
+    private SparseArray<Parcelable> getCurrentViewState() {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkArgument(view.hasCurrentView(), "Save view state requires current view");
 
@@ -121,8 +187,8 @@ class Presenter {
         return view != null && active;
     }
 
-    private boolean isSessionValid(PresenterSession session) {
-        return isActive() && this.session == session;
+    boolean isCurrentSession(int sessionId) {
+        return this.sessionId == sessionId;
     }
 
     private void completeDispatchingCallback() {
@@ -130,25 +196,13 @@ class Presenter {
             return;
         }
 
-        dispatchingCallback.onComplete();
-        dispatchingCallback = null;
-    }
-
-    /**
-     * Session is the same for all events done between onAttach() and onDetach()
-     * Once onAttach() is called again, new session is created
-     */
-    class PresenterSession {
-
+        Dispatcher.Callback callback = dispatchingCallback;
+        dispatchingCallback = null;  // onComplete redispatches direclty so we need to remove ref now
+        callback.onComplete();
     }
 
     interface PresentationCallback {
 
-        void onPresentationFinished(View exitView, View enterView, PresenterSession session);
-    }
-
-    interface TransitionCallback {
-
-        void onTransitionFinished(PresenterSession session);
+        void onPresentationFinished(int sessionId);
     }
 }

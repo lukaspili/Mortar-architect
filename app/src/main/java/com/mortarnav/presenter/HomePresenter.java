@@ -2,8 +2,6 @@ package com.mortarnav.presenter;
 
 import android.os.Bundle;
 
-import com.mortarnav.deps.RestClient;
-import com.mortarnav.deps.UserManager;
 import com.mortarnav.path.HomePath;
 import com.mortarnav.presenter.scope.path.MyPopupPath;
 import com.mortarnav.presenter.scope.path.SlidesPath;
@@ -62,6 +60,10 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     }
 
     public void showPopupClick() {
-        Navigator.get(getView()).push(new MyPopupPath());
+        Navigator.get(getView()).show(new MyPopupPath());
+    }
+
+    public void replaceNewHomeClick() {
+        Navigator.get(getView()).replace(new HomePath("Replaced!"));
     }
 }

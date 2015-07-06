@@ -7,40 +7,40 @@ import android.view.View;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class BottomAppearTransition extends BaseModalTransition {
+public class FadeModalTransition extends BaseModalTransition<View> {
 
-    protected boolean hideExitView = true;
+    protected boolean hideExitView;
 
-    public BottomAppearTransition() {
+    public FadeModalTransition() {
     }
 
-    public BottomAppearTransition(Config config) {
+    public FadeModalTransition(Config config) {
         super(config);
     }
 
     /**
      * @param hideExitView should the transition hide the exit view?
      */
-    public BottomAppearTransition(boolean hideExitView) {
+    public FadeModalTransition(boolean hideExitView) {
         this.hideExitView = hideExitView;
     }
 
     /**
      * @param hideExitView should the transition hide the exit view?
      */
-    public BottomAppearTransition(boolean hideExitView, Config config) {
+    public FadeModalTransition(boolean hideExitView, Config config) {
         super(config);
         this.hideExitView = hideExitView;
     }
 
     @Override
     public void show(View view, AnimatorSet set) {
-        set.play(ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, view.getHeight(), 0));
+        set.play(ObjectAnimator.ofFloat(view, View.ALPHA, 0, 1));
     }
 
     @Override
     public void hide(View view, AnimatorSet set) {
-        set.play(ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0, view.getHeight()));
+        set.play(ObjectAnimator.ofFloat(view, View.ALPHA, 1, 0));
     }
 
     @Override

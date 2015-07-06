@@ -25,9 +25,7 @@ public abstract class StackedLinearLayout<T extends ViewPresenter> extends Prese
     }
 
     @Override
-    protected void init(Context context) {
-        super.init(context);
-
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr) {
         Context newContext = StackFactory.createContext(context, getScope(), getScopeIdentifier());
         initWithContext(newContext);
     }

@@ -11,6 +11,7 @@ import architect.autostack.DaggerService;
 import architect.commons.view.PresenterLinearLayout;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -26,4 +27,15 @@ public class MyPopupView extends PresenterLinearLayout<MyPopupPresenter> {
         View view = View.inflate(context, R.layout.my_popup_view, this);
         ButterKnife.inject(view);
     }
+
+    @OnClick(R.id.my_popup_show_popup_button)
+    void popupClick() {
+        presenter.popupClick();
+    }
+
+    @OnClick(R.id.my_popup_show_dismiss_button)
+    void dismissClick() {
+        presenter.dismissClick();
+    }
+
 }

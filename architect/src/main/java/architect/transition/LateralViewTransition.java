@@ -5,17 +5,17 @@ import android.animation.ObjectAnimator;
 import android.view.View;
 
 /**
- * Horizontal left to write transition
+ * Left / right transition
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class HorizontalScreenTransition extends BaseScreenTransition {
+public class LateralViewTransition extends BaseViewTransition {
 
-    public HorizontalScreenTransition() {
+    public LateralViewTransition() {
 
     }
 
-    public HorizontalScreenTransition(Config config) {
+    public LateralViewTransition(Config config) {
         super(config);
     }
 

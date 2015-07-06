@@ -2,8 +2,7 @@ package architect.commons.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import javax.inject.Inject;
 
@@ -12,22 +11,22 @@ import mortar.ViewPresenter;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class PresentedRelativeLayout<T extends ViewPresenter> extends RelativeLayout {
+public abstract class PresentedScrollView<T extends ViewPresenter> extends ScrollView {
 
     @Inject
     protected T presenter;
 
-    public PresentedRelativeLayout(Context context) {
+    public PresentedScrollView(Context context) {
         super(context);
         init(context, null, -1);
     }
 
-    public PresentedRelativeLayout(Context context, AttributeSet attrs) {
+    public PresentedScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs, -1);
     }
 
-    public PresentedRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PresentedScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
     }
