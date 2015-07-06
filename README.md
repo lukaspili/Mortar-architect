@@ -123,7 +123,37 @@ repositories {
 }
 
 dependencies {
-    // TODO
+    // local var convinience for architect version
+    def architect_version = '0.10-SNAPSHOT'
+
+    // Core library
+    compile 'com.github.lukaspili.mortar-architect:architect:' + architect_version
+
+    // Commons
+    compile 'com.github.lukaspili.mortar-architect:commons:' + architect_version
+
+    // Auto path
+    compile 'com.github.lukaspili.mortar-architect:autopath:' + architect_version
+    apt 'com.github.lukaspili.mortar-architect:autopath-compiler:' + architect_version
+
+    // Auto path requires parcelable please deps
+    compile 'com.hannesdorfmann.parcelableplease:annotation:1.0.1'
+    apt 'com.hannesdorfmann.parcelableplease:processor:1.0.1'
+
+    // Auto scope
+    compile 'com.github.lukaspili.mortar-architect:autoscope:' + architect_version
+    apt 'com.github.lukaspili.mortar-architect:autoscope-compiler:' + architect_version
+
+    // Auto scope requires dagger2 and auto dagger2 deps
+
+    // Dagger2
+    compile 'com.google.dagger:dagger:2.0.1'
+    apt 'com.google.dagger:dagger-compiler:2.0.1'
+    provided 'javax.annotation:jsr250-api:1.0'
+
+    // Autodagger2
+    compile 'com.github.lukaspili.autodagger2:autodagger2:1.1'
+    apt 'com.github.lukaspili.autodagger2:autodagger2-compiler:1.1'
 }
 ```
 
