@@ -78,9 +78,11 @@ public class Navigator implements Scoped {
         add(path, History.NAV_TYPE_MODAL);
     }
 
-//    public boolean back() {
-//        return back(true);
-//    }
+    public void replace(StackPath path) {
+        history.kill();
+        History.Entry entry = history.add(path, History.NAV_TYPE_PUSH);
+        dispatcher.dispatch(entry);
+    }
 
     public void chain(NavigationChain chain) {
         Preconditions.checkArgument(!chain.chains.isEmpty(), "Navigation chain cannot be empty");

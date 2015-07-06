@@ -8,6 +8,7 @@ import com.mortarnav.R;
 import com.mortarnav.stack.HomeStackScope;
 import com.mortarnav.presenter.HomePresenter;
 
+import architect.commons.view.PresentedScrollView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -17,7 +18,7 @@ import architect.commons.view.PresenterLinearLayout;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class HomeView extends PresenterLinearLayout<HomePresenter> {
+public class HomeView extends PresentedScrollView<HomePresenter> {
 
     @InjectView(R.id.home_title)
     public TextView titleTextView;
@@ -52,5 +53,10 @@ public class HomeView extends PresenterLinearLayout<HomePresenter> {
     @OnClick(R.id.show_popup)
     void showPopupClick() {
         presenter.showPopupClick();
+    }
+
+    @OnClick(R.id.replace_new_home)
+    void replaceNewHomeClick() {
+        presenter.replaceNewHomeClick();
     }
 }

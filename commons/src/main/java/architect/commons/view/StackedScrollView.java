@@ -9,18 +9,18 @@ import mortar.ViewPresenter;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class StackedFrameLayout<T extends ViewPresenter> extends PresentedFrameLayout<T>
+public abstract class StackedScrollView<T extends ViewPresenter> extends PresentedScrollView<T>
         implements StackedContainer {
 
-    public StackedFrameLayout(Context context) {
+    public StackedScrollView(Context context) {
         super(context);
     }
 
-    public StackedFrameLayout(Context context, AttributeSet attrs) {
+    public StackedScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public StackedFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public StackedScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

@@ -90,10 +90,16 @@ class Presenter {
         }
 
         Dispatcher.Dispatch dispatch;
+        View child;
         for (int i = 0; i < modals.size(); i++) {
             dispatch = modals.get(i);
             Logger.d("Restore modal: %s", dispatch.entry.scopeName);
-            view.addView(dispatch.entry.factory.createView(dispatch.scope.createContext(view.getContext())));
+            child = dispatch.entry.factory.createView(dispatch.scope.createContext(view.getContext()));
+            if (dispatch.entry.state != null) {
+                view.restoreHierarchyState(dispatch.entry.state);
+            }
+
+            view.addView(child);
         }
     }
 
@@ -101,22 +107,24 @@ class Presenter {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
 
-        if (direction == Dispatcher.Direction.BACKWARD) {
-            Preconditions.checkNotNull(previousEntry, "Previous entry null cannot be null in backward presentation");
-        }
-
         Logger.d("Present new dispatch: %s - with direction: %s", newDispatch.entry.scopeName, direction);
-        Logger.d("Previous entry: %s", previousEntry != null ? previousEntry.scopeName : "NULL");
+        Logger.d("Previous entry: %s", previousEntry.scopeName);
 
         // set and track the callback from dispatcher
         // dispatcher is waiting for the onComplete call
         // either when present is done, or when presenter is desactivated
         dispatchingCallback = callback;
 
+        if (direction == Dispatcher.Direction.FORWARD && !previousEntry.dead) {
+            // forward, save previous view state
+            Logger.d("Save view state for: %s", previousEntry.scopeName);
+            previousEntry.state = getCurrentViewState();
+        }
+
         // create or reuse view
         View newView;
         boolean addNewView;
-        if ((direction == Dispatcher.Direction.FORWARD || direction == Dispatcher.Direction.REPLACE) ||
+        if (direction == Dispatcher.Direction.FORWARD ||
                 (direction == Dispatcher.Direction.BACKWARD && !previousEntry.isModal())) {
             // create new view when forward and replace
             // or when backward if previous entry is not modal
@@ -140,6 +148,7 @@ class Presenter {
 
         // restore state if it exists
         if (newDispatch.entry.state != null) {
+            Logger.d("Restore view state for: %s", newDispatch.entry.scopeName);
             newView.restoreHierarchyState(newDispatch.entry.state);
         }
 
@@ -149,7 +158,7 @@ class Presenter {
         view.show(newView, addNewView, !keepPreviousView, direction, transition, new PresentationCallback() {
             @Override
             public void onPresentationFinished(int sessionId) {
-                if (Presenter.this.sessionId == sessionId) {
+                if (isCurrentSession(sessionId)) {
                     completeDispatchingCallback();
                 }
             }
@@ -164,7 +173,7 @@ class Presenter {
         return view != null && view.onBackPressed();
     }
 
-    SparseArray<Parcelable> getCurrentViewState() {
+    private SparseArray<Parcelable> getCurrentViewState() {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkArgument(view.hasCurrentView(), "Save view state requires current view");
 

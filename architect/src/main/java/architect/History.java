@@ -147,8 +147,29 @@ public class History {
     }
 
     /**
+     * At least 1 alive entry
+     */
+    boolean canReplace() {
+        if (entries.isEmpty()) {
+            return false;
+        }
+
+        int notdead = 0;
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            if (!entries.get(i).dead) {
+                notdead++;
+            }
+
+            if (notdead > 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Kill the latest alive entry
-     * Guarantee to work only if canKill() returns true
      *
      * @return the killed entry
      */

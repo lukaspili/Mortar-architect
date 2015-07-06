@@ -187,7 +187,7 @@ class Dispatcher {
     }
 
     enum Direction {
-        FORWARD, BACKWARD, REPLACE
+        FORWARD, BACKWARD
     }
 
     static class Dispatch {
