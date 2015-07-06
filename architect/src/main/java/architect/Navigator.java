@@ -71,16 +71,16 @@ public class Navigator implements Scoped {
     }
 
     public void push(StackPath path) {
-        add(path, History.NAV_TYPE_PUSH, true);
+        add(path, History.NAV_TYPE_PUSH);
     }
 
     public void show(StackPath path) {
-        add(path, History.NAV_TYPE_MODAL, true);
+        add(path, History.NAV_TYPE_MODAL);
     }
 
-    public boolean back() {
-        return back(true);
-    }
+//    public boolean back() {
+//        return back(true);
+//    }
 
     public void chain(NavigationChain chain) {
         Preconditions.checkArgument(!chain.chains.isEmpty(), "Navigation chain cannot be empty");
@@ -100,26 +100,22 @@ public class Navigator implements Scoped {
         dispatcher.dispatch(entries);
     }
 
-    private void add(StackPath path, int navType, boolean dispatch) {
+    private void add(StackPath path, int navType) {
         Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
 
         History.Entry next = history.add(path, navType);
-        if (dispatch) {
-            dispatcher.dispatch(next);
-        }
+        dispatcher.dispatch(next);
     }
 
-    private boolean back(boolean dispatch) {
+    public boolean back() {
         Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
 
         if (!history.canKill()) {
             return false;
         }
 
-        History.Entry previous = history.kill();
-        if (dispatch) {
-            dispatcher.dispatch(previous);
-        }
+        History.Entry entry = history.kill();
+        dispatcher.dispatch(entry);
 
         return true;
     }

@@ -29,7 +29,6 @@ class Presenter {
      * negative value means there is no session (like during config changes)
      */
     private int sessionId = 0;
-    private boolean firstDispatch;
 //    private final List<History.Entry> entriesInView = new ArrayList<>();
 //    private final List<MortarScope> scopesInView = new ArrayList<>();
 //    private final List<String> presentedModalScopes = new ArrayList<>();
@@ -54,12 +53,10 @@ class Presenter {
         Preconditions.checkNull(this.view, "Current navigator view not null, did you forget to detach the previous view?");
         Preconditions.checkArgument(!active, "Navigator view must be inactive before attaching");
         Preconditions.checkNull(dispatchingCallback, "Dispatching callback must be null before attaching");
-        Preconditions.checkArgument(!firstDispatch, "First dispatch true");
 
         newSession();
         this.view = view;
         this.view.sessionId = sessionId;
-        firstDispatch = true;
     }
 
     void detach() {
@@ -69,7 +66,6 @@ class Presenter {
 
         invalidateSession();
         view = null;
-        firstDispatch = false;
     }
 
     void activate() {
@@ -87,28 +83,18 @@ class Presenter {
     }
 
     void restore(List<Dispatcher.Dispatch> modals) {
-        Logger.d("Restore modals");
-        for (Dispatcher.Dispatch modal : modals) {
-            Logger.d("Modal: %s", modal.entry.scopeName);
-        }
-
+        Preconditions.checkNotNull(view, "Container view cannot be null");
+        Preconditions.checkArgument(view.getChildCount() == 0, "Restore requires view with no children");
         if (modals.isEmpty()) {
             return;
         }
 
-//        for (int i = 0; i < modals.size(); i++) {
-//            Dispatcher.Dispatch m = modals.get(i);
-//            Logger.d("For modal %s", m.entry.scopeName);
-//            int index = modalScopes.indexOf(m.entry.scopeName);
-//            if (index == -1) {
-//                views.add(m.entry.factory.createView(m.scope.createContext(view.getContext())));
-//                Logger.d("Create restore view");
-//            } else {
-//                Preconditions.checkArgument(index == i, "Modal scope index does not match");
-//                indexes.add(index);
-//                Logger.d("Keep existing modal scope");
-//            }
-//        }
+        Dispatcher.Dispatch dispatch;
+        for (int i = 0; i < modals.size(); i++) {
+            dispatch = modals.get(i);
+            Logger.d("Restore modal: %s", dispatch.entry.scopeName);
+            view.addView(dispatch.entry.factory.createView(dispatch.scope.createContext(view.getContext())));
+        }
     }
 
     void present(final Dispatcher.Dispatch newDispatch, final History.Entry previousEntry, final Dispatcher.Direction direction, final Dispatcher.Callback callback) {
@@ -163,7 +149,9 @@ class Presenter {
         view.show(newView, addNewView, !keepPreviousView, direction, transition, new PresentationCallback() {
             @Override
             public void onPresentationFinished(int sessionId) {
-                completeDispatchingCallback();
+                if (Presenter.this.sessionId == sessionId) {
+                    completeDispatchingCallback();
+                }
             }
         });
     }

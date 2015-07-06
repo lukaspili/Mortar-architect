@@ -28,11 +28,6 @@ public class MyPopupView extends PresenterLinearLayout<MyPopupPresenter> {
         ButterKnife.inject(view);
     }
 
-    @OnClick(R.id.my_popup_show_home_button)
-    void homeClick() {
-        presenter.homeClick();
-    }
-
     @OnClick(R.id.my_popup_show_popup_button)
     void popupClick() {
         presenter.popupClick();

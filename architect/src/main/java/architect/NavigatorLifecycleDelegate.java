@@ -41,6 +41,7 @@ public class NavigatorLifecycleDelegate {
         }
 
         navigator.presenter.attach(containerView);
+        navigator.dispatcher.activate();
     }
 
     //TODO: copy past from Flow, but not tested
@@ -63,7 +64,7 @@ public class NavigatorLifecycleDelegate {
     public void onStart() {
         Logger.d("Lifecycle onStart");
         navigator.presenter.activate();
-        navigator.dispatcher.dispatch();
+        navigator.dispatcher.startDispatch();
     }
 
     public void onStop() {
@@ -72,6 +73,7 @@ public class NavigatorLifecycleDelegate {
     }
 
     public void onDestroy() {
+        navigator.dispatcher.desactivate();
         navigator.presenter.detach();
     }
 

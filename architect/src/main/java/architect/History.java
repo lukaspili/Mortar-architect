@@ -150,7 +150,7 @@ public class History {
      * Kill the latest alive entry
      * Guarantee to work only if canKill() returns true
      *
-     * @return the previous entry of the killed one
+     * @return the killed entry
      */
     Entry kill() {
         Entry entry;
@@ -158,31 +158,12 @@ public class History {
             entry = entries.get(i);
             if (!entry.dead) {
                 entry.dead = true;
-                return entries.get(i - 1);
+                return entry;
             }
         }
 
         throw new IllegalStateException("There is no entry to kill");
     }
-
-//    /**
-//     * Return the first entry that is alive and not dispatched
-//     */
-//    Entry getNextToDispatch() {
-//        if (entries.isEmpty()) {
-//            return null;
-//        }
-//
-//        Entry entry;
-//        for (int i = 0; i < entries.size(); i++) {
-//            entry = entries.get(i);
-//            if (!entry.dead && !entry.dispatched) {
-//                return entry;
-//            }
-//        }
-//
-//        return null;
-//    }
 
     Entry getLastAlive() {
         if (entries.isEmpty()) {
@@ -204,6 +185,45 @@ public class History {
         boolean remove = entries.remove(entry);
         Preconditions.checkArgument(remove, "Entry to remove does not exist");
     }
+
+    List<Entry> removeAllDead() {
+        if (entries.isEmpty()) {
+            return null;
+        }
+
+        List<Entry> dead = new ArrayList<>(entries.size());
+        Entry entry;
+        for (int i = 0; i < entries.size(); i++) {
+            entry = entries.get(i);
+            if (entry.dead) {
+                dead.add(entry);
+                entries.remove(i);
+            }
+        }
+
+        return dead;
+    }
+
+    Entry getLeftOf(Entry entry) {
+        int index = entries.indexOf(entry);
+        Preconditions.checkArgument(index >= 0, "Get left of an entry that does not exist in history");
+        if (index == 0) {
+            return null;
+        }
+
+        return entries.get(index - 1);
+    }
+
+    Entry getRightOf(Entry entry) {
+        int index = entries.indexOf(entry);
+        Preconditions.checkArgument(index >= 0, "Get right of an entry that does not exist in history");
+        if (index == entries.size() - 1) {
+            return null;
+        }
+
+        return entries.get(index + 1);
+    }
+
 
     /**
      * Iterate from top, until it reach "until"
@@ -228,8 +248,26 @@ public class History {
         throw new IllegalStateException("Entry until is not present in history");
     }
 
-    public boolean existInHistory(Entry entry) {
+    boolean existInHistory(Entry entry) {
         return entries.contains(entry);
+    }
+
+    List<Entry> getPreviousOfModal(Entry entry) {
+        int index = entries.indexOf(entry);
+        Preconditions.checkArgument(index > 0, "Invalid entry modal index in history");
+
+        List<Entry> previous = new ArrayList<>(entries.size() - index);
+        Entry e;
+        for (int i = index - 1; i >= 0; i--) {
+            e = entries.get(i);
+            previous.add(e);
+            if (!e.isModal()) {
+                // when we encounter non modal, return the previous stack
+                return previous;
+            }
+        }
+
+        throw new IllegalStateException("Invalid reach");
     }
 
     static class Entry {
@@ -239,7 +277,6 @@ public class History {
         final int navType;
         SparseArray<Parcelable> state;
         boolean dead;
-//        boolean dispatched;
 
         public Entry(String scopeName, StackScope scope, int navType, Factory factory) {
             Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");
