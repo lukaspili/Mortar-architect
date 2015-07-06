@@ -65,8 +65,7 @@ public class MainActivity2 extends ArchitectActivity {
     protected TransitionsMapping getTransitionsMapping() {
         return new TransitionsMapping()
                 .byDefault(new LateralViewTransition(new Config().duration(300)))
-//                .show(MyPopupView.class).withTransition(new NoAnimationModalTransition(false));
-                .show(MyPopupView.class).withoutTransition();//.withTransition(new FadeModalTransition(false));
+                .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250)));
     }
 
     @Override
