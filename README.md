@@ -283,7 +283,7 @@ Example of `ModalTransition`:
 ```java
 // BottomAppearTransition.java
 
-public class BottomAppearTransition extends BaseModalTransition {
+public class BottomAppearTransition extends BaseModalTransition<View> {
 
     public BottomAppearTransition() {
     }
