@@ -323,7 +323,7 @@ Auto-path handles it nicely. You only need to annotate the navigation parameters
 @DaggerScope(ShowUserPresenter.class)
 public class ShowUserPresenter extends ViewPresenter<ShowUserView> {
 
-    // id is provided by the navigation
+    // username is provided by the navigation
     private final String username;
 
     // some dependencies provided by dagger
@@ -351,7 +351,7 @@ Auto-path and auto-stack will generate the appropriate `ShowUserScope` and `Show
 Before using `Navigator`, you need to configure and hook it to the root activity.  
 You need to call the `Navigator.delegate()` methods at the proper place.
 
-You can find an example of configuration in the `[MainActivity](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/MainActivity.java)` class.  
+You can find an example of configuration in the [`MainActivity`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/MainActivity.java) class.  
 The second option is to use the `architect-commons` subproject, make the activity extends from `ArchitectActivity` and implements the several required methods. You can find an example in `[MainActivity2](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/MainActivity2.java)` class.
 
 The same applies for the Application class, check out the `[App](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/App.java)` and `[App2](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/App.java)` (which extends from `ArchitectApp`) classes.
