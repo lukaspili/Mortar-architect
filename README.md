@@ -352,9 +352,9 @@ Before using `Navigator`, you need to configure and hook it to the root activity
 You need to call the `Navigator.delegate()` methods at the proper place.
 
 You can find an example of configuration in the [`MainActivity`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/MainActivity.java) class.  
-The second option is to use the `architect-commons` subproject, make the activity extends from `ArchitectActivity` and implements the several required methods. You can find an example in `[MainActivity2](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/MainActivity2.java)` class.
+The second option is to use the `architect-commons` subproject, make the activity extends from `ArchitectActivity` and implements the several required methods. You can find an example in [`MainActivity2`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/MainActivity2.java) class.
 
-The same applies for the Application class, check out the `[App](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/App.java)` and `[App2](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/App.java)` (which extends from `ArchitectApp`) classes.
+The same applies for the Application class, check out the [`App`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/App.java) and [`App2`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/App.java) (which extends from `ArchitectApp`) classes.
 
 
 ### Don't restore navigation stack after process kill
@@ -378,7 +378,7 @@ To enable the option, provide a custom configuration when creating the `Navigato
 
 Architect is very flexible and you can use several `Navigator` instances at the same time. It allows to provide sub navigation in your app.
 
-You can find an example of a sub navigator configured in a ViewPresenter in the **SubnavPresenter.java** class.
+You can find an example of a sub navigator configured in a ViewPresenter in the [`SubnavPresenter`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/presenter/SubnavPresenter.java) class.
 
 
 ## Composition
@@ -458,11 +458,11 @@ You can then directly use the `HomeMenuView` in the `HomeView` layout:
 
 Commons is a facultative sub project that provides some base class you can extend from, in order to save some boilerplate code.
 
- * `[ArchitectApp](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/ArchitectApp.java)`
- * `[ArchitectActivity](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/ArchitectActivity.java)`
- * `PresentedXXX`, like `[PresentedFrameLayout](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/PresentedFrameLayout.java)`, `[PresentedLinearLayout](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/PresenterLinearLayout.java)`, etc. Base class for a View associated to a ViewPresenter.
- * `StackedXXX`, like `[StackedFrameLayout](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/StackedFrameLayout.java)`, `[StackedLinearLayout](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/StackedLinearLayout.java)`, etc. Base class for the a View associated to a ViewPresenter, and that will be included (stacked) in another one (like the `HomeMenuView`)
- * `[StackPagerAdapter](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/adapter/StackPagerAdapter.java)`, an implementation of `ViewPager` that manages a set of `StackPath`
+ * [`ArchitectApp`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/ArchitectApp.java)
+ * [`ArchitectActivity`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/ArchitectActivity.java)
+ * `PresentedXXX`, like [`PresentedFrameLayout`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/PresentedFrameLayout.java), [`PresentedLinearLayout`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/PresenterLinearLayout.java), etc. Base class for a View associated to a ViewPresenter.
+ * `StackedXXX`, like [`StackedFrameLayout`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/StackedFrameLayout.java), [`StackedLinearLayout`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/StackedLinearLayout.java), etc. Base class for the a View associated to a ViewPresenter, and that will be included (stacked) in another one (like the `HomeMenuView`)
+ * [`StackPagerAdapter`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/adapter/StackPagerAdapter.java), an implementation of `ViewPager` that manages a set of `StackPath`
 
 The commons project is here both for easing the integration and providing an example of implementations that work well with Mortar and Architect. The code is very simple and straightforward.
 
