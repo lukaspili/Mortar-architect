@@ -72,7 +72,7 @@ public class HomeStackScope implements StackScope {
 
 ## Auto Stack & Auto Dagger2
 
-Because writing a class that implements `StackScope` for every ViewPresenter is boring and usually boilerpate, Architect provides an annotation processor that can generates the `StackScope` class for you. It also relies on [https://github.com/lukaspili/Auto-Dagger2](Auto Dagger2) for generating the Dagger2 components.
+Because writing a class that implements `StackScope` for every ViewPresenter is boring and usually boilerpate, Architect provides an annotation processor that can generates the `StackScope` class for you. It also relies on [Auto Dagger2](https://github.com/lukaspili/Auto-Dagger2) for generating the Dagger2 components.
 
 ```java
 // HomePresenter.java
