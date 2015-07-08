@@ -14,13 +14,13 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import architect.autostack.DaggerService;
 import architect.commons.adapter.StackPagerAdapter;
-import architect.commons.view.PresenterLinearLayout;
+import architect.commons.view.PresentedLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(SlidesPresenter.class)
-public class SlidesView extends PresenterLinearLayout<SlidesPresenter> {
+public class SlidesView extends PresentedLinearLayout<SlidesPresenter> {
 
     @InjectView(R.id.pager)
     public ViewPager viewPager;

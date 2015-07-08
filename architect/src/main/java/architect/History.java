@@ -298,6 +298,8 @@ public class History {
         final int navType;
         SparseArray<Parcelable> state;
         boolean dead;
+        Object returnsResult;
+        Object receivedResult;
 
         public Entry(String scopeName, StackScope scope, int navType, Factory factory) {
             Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");

@@ -7,12 +7,13 @@ import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
+import architect.view.HasPresenter;
 import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class PresentedFrameLayout<T extends ViewPresenter> extends FrameLayout {
+public abstract class PresentedFrameLayout<T extends ViewPresenter> extends FrameLayout implements HasPresenter<T> {
 
     @Inject
     protected T presenter;
@@ -46,5 +47,10 @@ public abstract class PresentedFrameLayout<T extends ViewPresenter> extends Fram
     protected void onDetachedFromWindow() {
         presenter.dropView(this);
         super.onDetachedFromWindow();
+    }
+
+    @Override
+    public T getPresenter() {
+        return presenter;
     }
 }

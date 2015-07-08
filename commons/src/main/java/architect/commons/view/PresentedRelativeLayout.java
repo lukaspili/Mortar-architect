@@ -2,17 +2,17 @@ package architect.commons.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import javax.inject.Inject;
 
+import architect.view.HasPresenter;
 import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class PresentedRelativeLayout<T extends ViewPresenter> extends RelativeLayout {
+public abstract class PresentedRelativeLayout<T extends ViewPresenter> extends RelativeLayout implements HasPresenter<T> {
 
     @Inject
     protected T presenter;
@@ -46,5 +46,10 @@ public abstract class PresentedRelativeLayout<T extends ViewPresenter> extends R
     protected void onDetachedFromWindow() {
         presenter.dropView(this);
         super.onDetachedFromWindow();
+    }
+
+    @Override
+    public T getPresenter() {
+        return presenter;
     }
 }

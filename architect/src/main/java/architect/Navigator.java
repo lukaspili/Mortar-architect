@@ -95,7 +95,14 @@ public class Navigator implements Scoped {
                     entries.add(history.kill());
                 }
             } else {
-                entries.add(history.add(c.path, History.NAV_TYPE_PUSH));
+                if (c.type == NavigationChain.Chain.TYPE_REPLACE) {
+                    history.kill();
+                }
+
+                // push type for push and replace, modal for show
+                int type = c.type == NavigationChain.Chain.TYPE_PUSH || c.type == NavigationChain.Chain.TYPE_REPLACE ?
+                        History.NAV_TYPE_PUSH : History.NAV_TYPE_MODAL;
+                entries.add(history.add(c.path, type));
             }
         }
 
@@ -110,6 +117,10 @@ public class Navigator implements Scoped {
     }
 
     public boolean back() {
+        return back(null);
+    }
+
+    public boolean back(Object withResult) {
         Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
 
         if (!history.canKill()) {
@@ -117,9 +128,19 @@ public class Navigator implements Scoped {
         }
 
         History.Entry entry = history.kill();
+        if (withResult != null) {
+            entry.returnsResult = withResult;
+        }
+
         dispatcher.dispatch(entry);
 
         return true;
+    }
+
+    public <T> T takeResult() {
+        MortarScope scope = presenter.getCurrentScope();
+
+        return (T) new Object();
     }
 
     /**

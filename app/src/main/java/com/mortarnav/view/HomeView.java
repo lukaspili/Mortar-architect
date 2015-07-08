@@ -13,7 +13,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import architect.autostack.DaggerService;
-import architect.commons.view.PresenterLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -58,5 +57,10 @@ public class HomeView extends PresentedScrollView<HomePresenter> {
     @OnClick(R.id.replace_new_home)
     void replaceNewHomeClick() {
         presenter.replaceNewHomeClick();
+    }
+
+    @OnClick(R.id.show_returns_result)
+    void showReturnsResultClick() {
+        presenter.showReturnsResultClick();
     }
 }

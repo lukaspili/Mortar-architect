@@ -13,6 +13,4 @@ public abstract class ArchitectViewPresenter<V extends View> extends ViewPresent
     protected Navigator navigator() {
         return Navigator.get(getView());
     }
-
-
 }

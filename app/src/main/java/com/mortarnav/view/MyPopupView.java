@@ -8,7 +8,7 @@ import com.mortarnav.presenter.MyPopupPresenter;
 import com.mortarnav.presenter.scope.MyPopupScopeComponent;
 
 import architect.autostack.DaggerService;
-import architect.commons.view.PresenterLinearLayout;
+import architect.commons.view.PresentedLinearLayout;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -17,7 +17,7 @@ import butterknife.OnClick;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(MyPopupPresenter.class)
-public class MyPopupView extends PresenterLinearLayout<MyPopupPresenter> {
+public class MyPopupView extends PresentedLinearLayout<MyPopupPresenter> {
 
     public MyPopupView(Context context) {
         super(context);

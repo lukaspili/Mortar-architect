@@ -145,6 +145,12 @@ class Dispatcher {
         Preconditions.checkNotNull(nextEntry, "Next entry cannot be null");
         Preconditions.checkNotNull(previousEntry, "Previous entry cannot be null");
         Preconditions.checkArgument(previousEntry.scopeName.equals(currentScope.getName()), "Current scope name must match the previous entry scope name");
+        Preconditions.checkNull(nextEntry.receivedResult, "Next entry cannot have already a result");
+
+        if (direction == Direction.BACKWARD && previousEntry.returnsResult != null) {
+            nextEntry.receivedResult = previousEntry.returnsResult;
+            previousEntry.returnsResult = null;
+        }
 
         MortarScope nextScope = navigator.getScope().findChild(nextEntry.scopeName);
         if (nextScope == null) {

@@ -6,27 +6,29 @@ import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
+import architect.view.HasPresenter;
 import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class PresenterLinearLayout<T extends ViewPresenter> extends LinearLayout {
+public abstract class PresentedLinearLayout<T extends ViewPresenter> extends LinearLayout
+        implements HasPresenter<T> {
 
     @Inject
     protected T presenter;
 
-    public PresenterLinearLayout(Context context) {
+    public PresentedLinearLayout(Context context) {
         super(context);
         init(context, null, -1);
     }
 
-    public PresenterLinearLayout(Context context, AttributeSet attrs) {
+    public PresentedLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs, -1);
     }
 
-    public PresenterLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PresentedLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
     }
@@ -45,5 +47,10 @@ public abstract class PresenterLinearLayout<T extends ViewPresenter> extends Lin
     protected void onDetachedFromWindow() {
         presenter.dropView(this);
         super.onDetachedFromWindow();
+    }
+
+    @Override
+    public T getPresenter() {
+        return presenter;
     }
 }

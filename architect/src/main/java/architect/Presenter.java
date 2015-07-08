@@ -8,7 +8,9 @@ import android.view.View;
 import java.util.List;
 
 import architect.transition.ViewTransition;
+import architect.view.HasPresenter;
 import mortar.MortarScope;
+import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -150,6 +152,17 @@ class Presenter {
         if (newDispatch.entry.state != null) {
             Logger.d("Restore view state for: %s", newDispatch.entry.scopeName);
             newView.restoreHierarchyState(newDispatch.entry.state);
+        }
+
+        if (newDispatch.entry.receivedResult != null) {
+            if (newView instanceof HasPresenter) {
+                // put result
+                ViewPresenter viewPresenter = ((HasPresenter) newView).getPresenter();
+                if (viewPresenter instanceof ReceivesResult) {
+                    ((ReceivesResult) viewPresenter).onReceivedResult(newDispatch.entry.receivedResult);
+                }
+            }
+            newDispatch.entry.receivedResult = null;
         }
 
         boolean keepPreviousView = direction == Dispatcher.Direction.FORWARD && newDispatch.entry.isModal();

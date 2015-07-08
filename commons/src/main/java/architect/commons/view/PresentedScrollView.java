@@ -6,12 +6,13 @@ import android.widget.ScrollView;
 
 import javax.inject.Inject;
 
+import architect.view.HasPresenter;
 import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class PresentedScrollView<T extends ViewPresenter> extends ScrollView {
+public abstract class PresentedScrollView<T extends ViewPresenter> extends ScrollView implements HasPresenter<T> {
 
     @Inject
     protected T presenter;
@@ -45,5 +46,10 @@ public abstract class PresentedScrollView<T extends ViewPresenter> extends Scrol
     protected void onDetachedFromWindow() {
         presenter.dropView(this);
         super.onDetachedFromWindow();
+    }
+
+    @Override
+    public T getPresenter() {
+        return presenter;
     }
 }

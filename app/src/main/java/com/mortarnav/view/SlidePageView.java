@@ -12,13 +12,13 @@ import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import architect.autostack.DaggerService;
-import architect.commons.view.PresenterLinearLayout;
+import architect.commons.view.PresentedLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(SlidePagePresenter.class)
-public class SlidePageView extends PresenterLinearLayout<SlidePagePresenter> {
+public class SlidePageView extends PresentedLinearLayout<SlidePagePresenter> {
 
     @InjectView(R.id.page_title)
     public TextView textView;

@@ -9,7 +9,7 @@ import mortar.ViewPresenter;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class StackedLinearLayout<T extends ViewPresenter> extends PresenterLinearLayout<T>
+public abstract class StackedLinearLayout<T extends ViewPresenter> extends PresentedLinearLayout<T>
         implements StackedContainer {
 
     public StackedLinearLayout(Context context) {
