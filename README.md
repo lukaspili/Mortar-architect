@@ -1,6 +1,6 @@
 # Mortar Architect
 
-Mortar Architect provides a flexible stack for navigating and displaying views and their presenters. 
+Mortar Architect provides a flexible stack for navigating and displaying views and their presenters, using the MVP pattern with [Mortar](https://github.com/square/mortar).
 
 Architect is Mortar scope-centric. A Mortar scope is the glue between a View and its ViewPresenter. Architect will create a Mortar scope for each View & ViewPresenter association. A `StackScope` is a class that Architect will look for when building a Mortar scope, and its role is to configure the Mortar scope.  
 
@@ -72,7 +72,7 @@ public class HomeStackScope implements StackScope {
 
 ## Auto Stack & Auto Dagger2
 
-Because writing a class that implements `StackScope` for every ViewPresenter is boring and usually boilerpate, Architect provides an annotation processor that can generates the `StackScope` class for you. It also relies on [Auto Dagger2](https://github.com/lukaspili/Auto-Dagger2) for generating the Dagger2 components.
+Because writing a class that implements `StackScope` for every ViewPresenter is boring and usually boilerpate, Architect provides an annotation processor that generates the `StackScope` class for you. It also relies on [Auto Dagger2](https://github.com/lukaspili/Auto-Dagger2) for generating the Dagger2 components.
 
 ```java
 // HomePresenter.java
@@ -229,6 +229,10 @@ It means that the previous view won't be in the history stack.
 It goes back into the history stack.  
 It will perform the `backward()` view transition, and then remove the old view and destroy its Mortar scope.
 
+### Navigator.chain()
+
+Lets you execute several navigation event, in a sequential order.
+
 
 ## View Transitions
 
@@ -343,6 +347,57 @@ Auto-path and auto-stack will generate the appropriate `ShowUserScope` and `Show
 
 ```java
     Navigator.get(getView()).push(new ShowUserPath("lukasz"));
+```
+
+
+## Returns result
+
+A ViewPresenter can return a result to the previous ViewPresenter in the history. A kind of `onActivityResult()` between ViewPresenters.
+
+Let's say you navigated from PresenterA to PresenterB, and now PresenterB wants to return a String result to PresenterA:
+
+```java
+// PresenterB.java
+Navigator.get(getView()).back("My result!");
+```
+
+PresenterA must implement the `ReceivesResult` interface:
+
+```java
+// PresenterA.java
+public class PresenterA extends ViewPresenter<AView> implements ReceivesResult<String> {
+
+    private String result;
+
+    @Override
+    public void onReceivedResult(String result) {
+        this.result = result;
+        // beware that this is called before onLoad() and getView() returns null here
+    }
+
+    @Override
+    protected void onLoad(Bundle savedInstanceState) {
+        // onLoad() is called when we go back from PresenterB to PresenterA
+        if(result != null) {
+            getView().getTitleTextView().setText(result);
+        }
+    }
+}
+```
+
+You must also ensures that the View associated to the ViewPresenter that receives the result implements `HasPresenter` interface. It is already the case for all the base views of the **architect-commons** subproject.
+
+```java
+public class AView extends LinearLayout implements HasPresenter<PresenterA> {
+    
+    @Inject
+    protected PresenterA presenter;
+
+    @Override
+    public PresenterA getPresenter() {
+        return presenter;
+    }
+}
 ```
 
 
@@ -510,7 +565,7 @@ repositories {
 
 dependencies {
     // local var convinience for architect version
-    def architect_version = '0.10-SNAPSHOT'
+    def architect_version = '0.11-SNAPSHOT'
 
     // Core library
     compile 'com.github.lukaspili.mortar-architect:architect:' + architect_version
