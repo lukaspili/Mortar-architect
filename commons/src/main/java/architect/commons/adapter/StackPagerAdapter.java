@@ -2,18 +2,17 @@ package architect.commons.adapter;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import architect.StackFactory;
+import architect.StackPath;
 import architect.StackScope;
 import mortar.MortarScope;
-import architect.StackPath;
-import architect.StackFactory;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -22,12 +21,16 @@ public class StackPagerAdapter extends PagerAdapter {
 
     private final Context context;
     private final List<StackPath> paths;
-    private final Map<StackPath, StackScope> scopes;
+    private final SparseArray<StackScope> scopes;
 
     public StackPagerAdapter(Context context, StackPath... paths) {
+        this(context, Arrays.asList(paths));
+    }
+
+    public StackPagerAdapter(Context context, List<StackPath> paths) {
         this.context = context;
-        this.paths = Arrays.asList(paths);
-        scopes = new HashMap<>();
+        this.paths = paths;
+        scopes = new SparseArray<>(paths.size());
     }
 
     @Override
@@ -38,10 +41,10 @@ public class StackPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         StackPath path = paths.get(position);
-        StackScope scope = scopes.get(path);
+        StackScope scope = scopes.get(position);
         if (scope == null) {
             scope = path.createScope();
-            scopes.put(path, scope);
+            scopes.put(position, scope);
         }
 
         Context pageContext = StackFactory.createContext(context, scope, String.valueOf(position));
@@ -56,6 +59,7 @@ public class StackPagerAdapter extends PagerAdapter {
         MortarScope scope = MortarScope.getScope(view.getContext());
         container.removeView(view);
         scope.destroy();
+        scopes.remove(position);
     }
 
     @Override
