@@ -1,5 +1,9 @@
 # Changelog
 
+## Mortar Architect 0.12 *07/08/15*
+
+ * Improvements in `StackPagerAdapter`
+
 ## Mortar Architect 0.11 *07/08/15*
 
  * Improve `NavigationChain` with `Navigator.chain()`
