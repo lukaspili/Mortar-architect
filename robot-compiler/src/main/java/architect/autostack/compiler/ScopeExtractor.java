@@ -1,14 +1,12 @@
 package architect.autostack.compiler;
 
 import com.google.auto.common.MoreElements;
-import com.google.auto.common.MoreTypes;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Scope;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
@@ -16,8 +14,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import architect.autostack.AutoStack;
-import autodagger.AutoComponent;
+import architect.robot.AutoStackable;
+import architect.robot.FromPath;
 import autodagger.compiler.utils.AutoComponentExtractorUtil;
 import processorworkflow.AbstractExtractor;
 import processorworkflow.Errors;
@@ -30,12 +28,13 @@ import processorworkflow.Logger;
 public class ScopeExtractor extends AbstractExtractor {
 
     private static final String COMPONENT = "component";
-    private static final String PATH = "path";
+    private static final String PATH_VIEW = "pathWithView";
 
     private AnnotationMirror scopeAnnotationTypeMirror;
     private AnnotationMirror componentAnnotationTypeMirror;
-    private AnnotationMirror pathAnnotationTypeMirror;
     private TypeMirror componentDependency;
+    private TypeMirror pathViewTypeMirror;
+//    private List<VariableElement> fromPathFieldsElements;
     private List<VariableElement> constructorsParamtersElements;
 
     public ScopeExtractor(Element element, Types types, Elements elements, Errors errors) {
@@ -47,7 +46,7 @@ public class ScopeExtractor extends AbstractExtractor {
 
     @Override
     public void extract() {
-        componentAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStack.class, COMPONENT);
+        componentAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStackable.class, COMPONENT);
         if (componentAnnotationTypeMirror == null) {
             errors.addMissing("@AutoComponent");
             return;
@@ -61,12 +60,19 @@ public class ScopeExtractor extends AbstractExtractor {
         }
         componentDependency = deps.get(0);
 
-        pathAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStack.class, PATH);
+        pathViewTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStackable.class, PATH_VIEW);
         scopeAnnotationTypeMirror = findScope();
 
+//        fromPathFieldsElements = new ArrayList<>();
         constructorsParamtersElements = new ArrayList<>();
         int constructorsCount = 0;
         for (Element enclosedElement : element.getEnclosedElements()) {
+//            if (enclosedElement.getKind() == ElementKind.FIELD &&
+//                    MoreElements.isAnnotationPresent(enclosedElement, FromPath.class)) {
+//                Logger.d("Get field : %s", enclosedElement.getSimpleName());
+//                fromPathFieldsElements.add(MoreElements.asVariable(enclosedElement));
+//            } else
+
             if (enclosedElement.getKind() == ElementKind.CONSTRUCTOR) {
                 constructorsCount++;
                 for (VariableElement variableElement : MoreElements.asExecutable(enclosedElement).getParameters()) {
@@ -114,13 +120,17 @@ public class ScopeExtractor extends AbstractExtractor {
         return componentAnnotationTypeMirror;
     }
 
-    public AnnotationMirror getPathAnnotationTypeMirror() {
-        return pathAnnotationTypeMirror;
+    public TypeMirror getPathViewTypeMirror() {
+        return pathViewTypeMirror;
     }
 
     public TypeMirror getComponentDependency() {
         return componentDependency;
     }
+
+//    public List<VariableElement> getFromPathFieldsElements() {
+//        return fromPathFieldsElements;
+//    }
 
     public List<VariableElement> getConstructorsParamtersElements() {
         return constructorsParamtersElements;

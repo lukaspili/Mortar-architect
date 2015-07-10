@@ -2,19 +2,20 @@ package com.mortarnav;
 
 import android.app.Application;
 
+import com.mortarnav.deps.WithAppDependencies;
+
+import architect.robot.DaggerService;
 import autodagger.AutoComponent;
 import mortar.MortarScope;
-import architect.autostack.DaggerService;
 import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoComponent
+@AutoComponent(superinterfaces = WithAppDependencies.class)
 @DaggerScope(App.class)
 public class App extends Application {
 
-    //    private AppComponent component;
     private MortarScope scope;
 
     @Override
@@ -36,8 +37,4 @@ public class App extends Application {
                 .withService(DaggerService.SERVICE_NAME, component)
                 .build("Root");
     }
-
-//    public static AppComponent getComponent(Application application) {
-//        return ((App) application).component;
-//    }
 }

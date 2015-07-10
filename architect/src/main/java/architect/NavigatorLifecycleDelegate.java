@@ -19,24 +19,24 @@ public class NavigatorLifecycleDelegate {
         this.navigator = navigator;
     }
 
-    public void onCreate(Intent intent, Bundle savedInstanceState, NavigatorView containerView, StackPath defaultPath) {
+    public void onCreate(Intent intent, Bundle savedInstanceState, NavigatorView containerView, StackablePath defaultPath) {
         Preconditions.checkNotNull(containerView, "Container view cannot not be null");
         Preconditions.checkNotNull(defaultPath, "Default path cannot not be null");
 
-        if (navigator.history.isEmpty()) {
-            History history = null;
+        if (navigator.history.shouldInit()) {
+            Bundle bundle = null;
             if (!navigator.config.dontRestoreStackAfterKill) {
                 if (intent != null && intent.hasExtra(HISTORY_KEY)) {
-                    history = History.fromBundle(intent.getBundleExtra(HISTORY_KEY));
+                    bundle = intent.getBundleExtra(HISTORY_KEY);
                 } else if (savedInstanceState != null && savedInstanceState.containsKey(HISTORY_KEY)) {
-                    history = History.fromBundle(savedInstanceState.getBundle(HISTORY_KEY));
+                    bundle = savedInstanceState.getBundle(HISTORY_KEY);
                 }
             }
 
-            if (history != null) {
-                navigator.history.copy(history);
+            if (bundle != null) {
+                navigator.history.init(bundle);
             } else {
-                navigator.history.add(defaultPath, History.NAV_TYPE_PUSH);
+                navigator.history.init(defaultPath);
             }
         }
 
@@ -47,9 +47,8 @@ public class NavigatorLifecycleDelegate {
     //TODO: copy past from Flow, but not tested
     public void onNewIntent(Intent intent) {
         Preconditions.checkNotNull(intent, "Intent may not be null");
-        if (navigator.history.isEmpty() && intent.hasExtra(HISTORY_KEY)) {
-            History history = History.fromBundle(intent.getBundleExtra(HISTORY_KEY));
-            navigator.history.copy(history);
+        if (navigator.history.shouldInit() && intent.hasExtra(HISTORY_KEY)) {
+            navigator.history.init(intent.getBundleExtra(HISTORY_KEY));
         }
     }
 

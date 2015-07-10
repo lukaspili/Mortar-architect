@@ -32,10 +32,13 @@ android {
 dependencies {
     compile project(':architect')
     compile project(':commons')
-    compile project(':autopath')
-    apt project(':autopath-compiler')
-    compile project(':autostack')
-    apt project(':autostack-compiler')
+    compile project(':robot')
+    apt project(':robot-compiler')
+
+//    compile project(':autopath')
+//    apt project(':autopath-compiler')
+//    compile project(':autostack')
+//    apt project(':autostack-compiler')
 
     compile deps.autodagger2
     apt deps.autodagger2_compiler
@@ -44,12 +47,15 @@ dependencies {
     apt deps.dagger2_compiler
     provided deps.javax_annotation_jsr250
 
-    compile deps.parcelablepls
-    apt deps.parcelablepls_compiler
+    compile deps.parceler_api
+    apt deps.parceler
+
+//    compile deps.parcelablepls
+//    apt deps.parcelablepls_compiler
 
     compile deps.mortar
     compile deps.appcompat_v7
 
-    compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.jakewharton.timber:timber:2.7.1'
 }

@@ -96,7 +96,7 @@ class Presenter {
         for (int i = 0; i < modals.size(); i++) {
             dispatch = modals.get(i);
             Logger.d("Restore modal: %s", dispatch.entry.scopeName);
-            child = dispatch.entry.factory.createView(dispatch.scope.createContext(view.getContext()));
+            child = dispatch.entry.path.createView(dispatch.scope.createContext(view.getContext()));
             if (dispatch.entry.state != null) {
                 view.restoreHierarchyState(dispatch.entry.state);
             }
@@ -132,7 +132,7 @@ class Presenter {
             // or when backward if previous entry is not modal
             Logger.d("Create new view for %s", newDispatch.entry.scopeName);
             Context context = newDispatch.scope.createContext(view.getContext());
-            newView = newDispatch.entry.factory.createView(context);
+            newView = newDispatch.entry.path.createView(context);
             addNewView = true;
         } else {
             Logger.d("Reuse previous view for %s", newDispatch.entry.scopeName);

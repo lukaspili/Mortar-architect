@@ -5,33 +5,33 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.mortarnav.R;
-import com.mortarnav.stack.HomeStackScope;
+import com.mortarnav.stackable.HomePath;
 import com.mortarnav.presenter.HomePresenter;
 
 import architect.commons.view.PresentedScrollView;
+import architect.robot.DaggerService;
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
-import architect.autostack.DaggerService;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class HomeView extends PresentedScrollView<HomePresenter> {
 
-    @InjectView(R.id.home_title)
+    @Bind(R.id.home_title)
     public TextView titleTextView;
 
-    @InjectView(R.id.home_subtitle)
+    @Bind(R.id.home_subtitle)
     public TextView subtitleTextView;
 
     public HomeView(Context context) {
         super(context);
 
-        DaggerService.<HomeStackScope.Component>get(context).inject(this);
+        DaggerService.<HomePath.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.home_view, this);
-        ButterKnife.inject(view);
+        ButterKnife.bind(view);
     }
 
     @OnClick(R.id.next_home_button)
@@ -39,28 +39,29 @@ public class HomeView extends PresentedScrollView<HomePresenter> {
         presenter.nextHomeClick();
     }
 
+
     @OnClick(R.id.pager_button)
     void pagerClick() {
         presenter.pagerClick();
     }
-
-    @OnClick(R.id.subnav_button)
-    void subnavClick() {
-        presenter.subnavClick();
-    }
-
-    @OnClick(R.id.show_popup)
-    void showPopupClick() {
-        presenter.showPopupClick();
-    }
-
-    @OnClick(R.id.replace_new_home)
-    void replaceNewHomeClick() {
-        presenter.replaceNewHomeClick();
-    }
-
-    @OnClick(R.id.show_returns_result)
-    void showReturnsResultClick() {
-        presenter.showReturnsResultClick();
-    }
+//
+//    @OnClick(R.id.subnav_button)
+//    void subnavClick() {
+//        presenter.subnavClick();
+//    }
+//
+//    @OnClick(R.id.show_popup)
+//    void showPopupClick() {
+//        presenter.showPopupClick();
+//    }
+//
+//    @OnClick(R.id.replace_new_home)
+//    void replaceNewHomeClick() {
+//        presenter.replaceNewHomeClick();
+//    }
+//
+//    @OnClick(R.id.show_returns_result)
+//    void showReturnsResultClick() {
+//        presenter.showReturnsResultClick();
+//    }
 }

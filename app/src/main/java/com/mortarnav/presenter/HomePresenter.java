@@ -2,18 +2,14 @@ package com.mortarnav.presenter;
 
 import android.os.Bundle;
 
-import com.mortarnav.path.HomePath;
-import com.mortarnav.presenter.scope.path.MyPopupPath;
-import com.mortarnav.presenter.scope.path.ReturnsResultPath;
-import com.mortarnav.presenter.scope.path.SlidesPath;
-import com.mortarnav.presenter.scope.path.SubnavPath;
+import com.mortarnav.stackable.HomePath;
+import com.mortarnav.presenter.stackable.SlidesStackable;
 import com.mortarnav.view.HomeView;
 
 import java.util.Random;
 
 import architect.Navigator;
 import architect.ReceivesResult;
-import architect.autostack.StackParam;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
@@ -27,7 +23,7 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     private final String name;
     private final int random;
 
-    public HomePresenter(@StackParam String name) {
+    public HomePresenter(String name) {
         this.name = name;
         random = new Random().nextInt(100);
     }
@@ -55,27 +51,28 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
         Navigator.get(getView()).push(new HomePath("Home " + ++count));
     }
 
-    public void subnavClick() {
-        Navigator.get(getView()).push(new SubnavPath());
-    }
-
+    //
+//    public void subnavClick() {
+//        Navigator.get(getView()).push(new SubnavPath());
+//    }
+//
     public void customViewClick() {
         Timber.d("Click from custom view");
     }
 
     public void pagerClick() {
-        Navigator.get(getView()).push(new SlidesPath());
+        Navigator.get(getView()).push(new SlidesStackable());
     }
-
-    public void showPopupClick() {
-        Navigator.get(getView()).show(new MyPopupPath());
-    }
-
-    public void replaceNewHomeClick() {
-        Navigator.get(getView()).replace(new HomePath("Replaced!"));
-    }
-
-    public void showReturnsResultClick() {
-        Navigator.get(getView()).push(new ReturnsResultPath());
-    }
+//
+//    public void showPopupClick() {
+//        Navigator.get(getView()).show(new MyPopupPath());
+//    }
+//
+//    public void replaceNewHomeClick() {
+//        Navigator.get(getView()).replace(new HomePath("Replaced!"));
+//    }
+//
+//    public void showReturnsResultClick() {
+//        Navigator.get(getView()).push(new ReturnsResultPath());
+//    }
 }

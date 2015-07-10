@@ -26,12 +26,12 @@ public abstract class StackedLinearLayout<T extends ViewPresenter> extends Prese
 
     @Override
     protected void init(Context context, AttributeSet attrs, int defStyleAttr) {
-        Context newContext = StackFactory.createContext(context, getScope(), getScopeIdentifier());
+        Context newContext = StackFactory.createContext(context, getStackable(), getStackableIdentifier());
         initWithContext(newContext);
     }
 
     @Override
-    public String getScopeIdentifier() {
+    public String getStackableIdentifier() {
         return null;
     }
 }

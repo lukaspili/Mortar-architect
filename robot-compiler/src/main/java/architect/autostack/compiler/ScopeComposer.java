@@ -9,13 +9,16 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 
+import org.parceler.Parcel;
+import org.parceler.ParcelConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.Modifier;
 
-import architect.autostack.DaggerService;
+import architect.robot.DaggerService;
 import dagger.Module;
 import dagger.Provides;
 import mortar.MortarScope;
@@ -26,9 +29,10 @@ import processorworkflow.AbstractComposer;
  */
 public class ScopeComposer extends AbstractComposer<ScopeSpec> {
 
-    private static final ClassName NAVIGATIONSCOPE_CLS = ClassName.get("architect", "StackScope");
-    private static final ClassName SERVICES_CLS = ClassName.get("architect", "StackScope.Services");
+    private static final ClassName STACKABLE_CLS = ClassName.get("architect", "Stackable");
+    private static final ClassName PATH_CLS = ClassName.get("architect", "StackablePath");
     private static final ClassName DAGGERSERVICE_CLS = ClassName.get(DaggerService.class);
+    private static final ClassName CONTEXT_CLS = ClassName.get("android.content", "Context");
 
     public ScopeComposer(List<ScopeSpec> specs) {
         super(specs);
@@ -41,14 +45,13 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
     }
 
     private TypeSpec build(ScopeSpec spec) {
-
-        MethodSpec servicesMethodSpec = MethodSpec.methodBuilder("withServices")
+        MethodSpec configureScopeSpec = MethodSpec.methodBuilder("configureScope")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
-                .returns(SERVICES_CLS)
+                .addParameter(ClassName.get(MortarScope.Builder.class), "builder")
                 .addParameter(ClassName.get(MortarScope.class), "parentScope")
                 .addCode(CodeBlock.builder()
-                        .add("return new $T().with($T.SERVICE_NAME, $T.builder()\n", SERVICES_CLS, DAGGERSERVICE_CLS, spec.getDaggerComponentTypeName())
+                        .add("builder.withService($T.SERVICE_NAME, $T.builder()\n", DAGGERSERVICE_CLS, spec.getDaggerComponentTypeName())
                         .indent()
                         .add(".$L(parentScope.<$T>getService($T.SERVICE_NAME))\n", spec.getDaggerComponentBuilderDependencyMethodName(), spec.getDaggerComponentBuilderDependencyTypeName(), DAGGERSERVICE_CLS)
                         .add(".module(new Module())\n")
@@ -57,15 +60,16 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
                         .build())
                 .build();
 
+
         List<FieldSpec> fieldSpecs = new ArrayList<>();
         for (ParameterSpec parameterSpec : spec.getModuleSpec().getInternalParameters()) {
             fieldSpecs.add(FieldSpec.builder(parameterSpec.type, parameterSpec.name)
-                    .addModifiers(Modifier.PRIVATE)
                     .build());
         }
 
         MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(AnnotationSpec.builder(ParcelConstructor.class).build())
                 .addParameters(spec.getModuleSpec().getInternalParameters());
         for (ParameterSpec parameterSpec : spec.getModuleSpec().getInternalParameters()) {
             constructorBuilder.addStatement("this.$L = $L", parameterSpec.name, parameterSpec.name);
@@ -73,20 +77,31 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
 
         TypeSpec.Builder builder = TypeSpec.classBuilder(spec.getClassName().simpleName())
                 .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(NAVIGATIONSCOPE_CLS)
                 .addAnnotation(AnnotationSpec.builder(Generated.class).addMember("value", "$S", architect.autostack.compiler.AnnotationProcessor.class.getName()).build())
                 .addAnnotation(spec.getComponentAnnotationSpec())
+                .addAnnotation(AnnotationSpec.builder(Parcel.class).addMember("parcelsIndex", "false").build())
                 .addType(buildModule(spec.getModuleSpec()))
                 .addMethod(constructorBuilder.build())
-                .addMethod(servicesMethodSpec)
+                .addMethod(configureScopeSpec)
                 .addFields(fieldSpecs);
 
         if (spec.getScopeAnnotationSpec() != null) {
             builder.addAnnotation(spec.getScopeAnnotationSpec());
         }
 
-        if (spec.getPathAnnotationSpec() != null) {
-            builder.addAnnotation(spec.getPathAnnotationSpec());
+        if (spec.getPathViewTypeName() != null) {
+            builder.addSuperinterface(PATH_CLS);
+            MethodSpec createViewSpec = MethodSpec.methodBuilder("createView")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(spec.getPathViewTypeName())
+                    .addAnnotation(Override.class)
+                    .addParameter(CONTEXT_CLS, "context")
+                    .addStatement("return new $T(context)", spec.getPathViewTypeName())
+                    .build();
+
+            builder.addMethod(createViewSpec);
+        } else {
+            builder.addSuperinterface(STACKABLE_CLS);
         }
 
         return builder.build();

@@ -34,7 +34,7 @@ public class ScopeNamer implements Parcelable {
         }
 
         ids.put(name, ++id);
-        return String.format("%s_%d", name, id);
+        return String.format("ARCHITECT_SCOPE_%s_%d", name, id);
     }
 
     @Override

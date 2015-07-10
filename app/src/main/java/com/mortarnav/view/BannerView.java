@@ -6,20 +6,20 @@ import android.view.View;
 
 import com.mortarnav.R;
 import com.mortarnav.presenter.BannerPresenter;
-import com.mortarnav.stack.BannerStackScope;
-import com.mortarnav.stack.BannerStackScopeComponent;
+import com.mortarnav.stackable.BannerStackable;
+import com.mortarnav.stackable.BannerStackableComponent;
 
+import architect.Stackable;
+import architect.commons.view.StackedLinearLayout;
+import architect.robot.DaggerService;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import architect.StackScope;
-import architect.autostack.DaggerService;
-import architect.commons.view.StackedLinearLayout;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoInjector(BannerStackScope.class)
+@AutoInjector(BannerPresenter.class)
 public class BannerView extends StackedLinearLayout<BannerPresenter> {
 
     public BannerView(Context parentContext, AttributeSet attrs) {
@@ -27,16 +27,16 @@ public class BannerView extends StackedLinearLayout<BannerPresenter> {
     }
 
     @Override
-    public StackScope getScope() {
-        return new BannerStackScope();
+    public Stackable getStackable() {
+        return new BannerStackable();
     }
 
     @Override
     public void initWithContext(Context context) {
-        DaggerService.<BannerStackScopeComponent>get(context).inject(this);
+        DaggerService.<BannerStackableComponent>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.banner_view, this);
-        ButterKnife.inject(view);
+        ButterKnife.bind(view);
     }
 
     @OnClick

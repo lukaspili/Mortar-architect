@@ -7,15 +7,15 @@ import android.widget.TextView;
 
 import com.mortarnav.R;
 import com.mortarnav.presenter.HomeSubcontentPresenter;
-import com.mortarnav.presenter.scope.HomeSubcontentScope;
-import com.mortarnav.presenter.scope.HomeSubcontentScopeComponent;
+import com.mortarnav.presenter.stackable.HomeSubcontentStackable;
+import com.mortarnav.presenter.stackable.HomeSubcontentStackableComponent;
 
-import architect.StackScope;
-import architect.autostack.DaggerService;
+import architect.Stackable;
 import architect.commons.view.StackedLinearLayout;
+import architect.robot.DaggerService;
 import autodagger.AutoInjector;
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 
 /**
@@ -24,7 +24,7 @@ import butterknife.OnClick;
 @AutoInjector(HomeSubcontentPresenter.class)
 public class HomeSubcontentView extends StackedLinearLayout<HomeSubcontentPresenter> {
 
-    @InjectView(R.id.home_sub_random)
+    @Bind(R.id.home_sub_random)
     public TextView randomTextView;
 
     public HomeSubcontentView(Context context, AttributeSet attrs) {
@@ -32,16 +32,17 @@ public class HomeSubcontentView extends StackedLinearLayout<HomeSubcontentPresen
     }
 
     @Override
-    public StackScope getScope() {
-        return new HomeSubcontentScope();
+    public Stackable getStackable() {
+        return new HomeSubcontentStackable();
     }
+
 
     @Override
     public void initWithContext(Context context) {
-        DaggerService.<HomeSubcontentScopeComponent>get(context).inject(this);
+        DaggerService.<HomeSubcontentStackableComponent>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.home_subcontent_view, this);
-        ButterKnife.inject(view);
+        ButterKnife.bind(view);
     }
 
     @OnClick

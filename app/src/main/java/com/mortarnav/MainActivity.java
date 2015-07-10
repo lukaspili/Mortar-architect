@@ -4,32 +4,32 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.mortarnav.path.HomePath;
-import com.mortarnav.view.MyPopupView;
-
-import javax.inject.Inject;
+import com.mortarnav.deps.WithAppDependencies;
+import com.mortarnav.stackable.HomePath;
 
 import architect.Navigator;
 import architect.NavigatorView;
 import architect.TransitionsMapping;
-import architect.autostack.DaggerService;
+import architect.commons.ActivityArchitector;
+import architect.commons.Architected;
+import architect.robot.DaggerService;
 import architect.transition.Config;
-import architect.transition.FadeModalTransition;
 import architect.transition.LateralViewTransition;
 import autodagger.AutoComponent;
 import autodagger.AutoInjector;
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
-import dagger.Provides;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 
 /**
- * Root activity example, without using ArchitectActivity base class
+ * Root activity
+ *
+ * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoComponent(
         dependencies = App.class,
-        modules = MainActivity.NavigatorModule.class
+        superinterfaces = WithAppDependencies.class
 )
 @AutoInjector
 @DaggerScope(MainActivity.class)
@@ -38,10 +38,7 @@ public class MainActivity extends Activity {
     private MortarScope scope;
     private Navigator navigator;
 
-    @Inject
-    TransitionsMapping transitionsMapping;
-
-    @InjectView(R.id.navigator_container)
+    @Bind(R.id.navigator_container)
     protected NavigatorView containerView;
 
     @Override
@@ -57,33 +54,31 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String scopeName = getLocalClassName() + "-task-" + getTaskId();
-        scope = MortarScope.findChild(getApplicationContext(), scopeName);
-        if (scope == null) {
-            MortarScope parentScope = MortarScope.getScope(getApplicationContext());
+        scope = ActivityArchitector.onCreateScope(this, savedInstanceState, new Architected() {
+            @Override
+            public Navigator createNavigator(MortarScope scope) {
+                Navigator navigator = Navigator.create(scope, new Parceler());
+                navigator.transitions().register(new TransitionsMapping()
+                        .byDefault(new LateralViewTransition(new Config().duration(300))));
+//                        .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250))));
+                return navigator;
+            }
 
-            MainActivityComponent component = DaggerMainActivityComponent.builder()
-                    .appComponent(parentScope.<AppComponent>getService(DaggerService.SERVICE_NAME))
-                    .navigatorModule(new NavigatorModule())
-                    .build();
-            component.inject(this);
+            @Override
+            public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
+                MainActivityComponent component = DaggerMainActivityComponent.builder()
+                        .appComponent(parentScope.<AppComponent>getService(DaggerService.SERVICE_NAME))
+                        .build();
+                component.inject(MainActivity.this);
 
-            scope = parentScope.buildChild()
-                    .withService(BundleServiceRunner.SERVICE_NAME, new BundleServiceRunner())
-                    .withService(DaggerService.SERVICE_NAME, component)
-                    .build(scopeName);
-
-            Navigator navigator = Navigator.create(scope);
-            navigator.transitions().register(transitionsMapping);
-        }
-
-        BundleServiceRunner.getBundleServiceRunner(scope).onCreate(savedInstanceState);
+                builder.withService(DaggerService.SERVICE_NAME, component);
+            }
+        });
 
         setContentView(R.layout.activity_main);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
-        navigator = Navigator.find(this);
-        navigator.delegate().onCreate(getIntent(), savedInstanceState, containerView, new HomePath("Initial home"));
+        navigator = ActivityArchitector.onCreateNavigator(this, savedInstanceState, containerView, new HomePath("Default home path"));
     }
 
     @Override
@@ -131,17 +126,5 @@ public class MainActivity extends Activity {
         }
 
         super.onBackPressed();
-    }
-
-    @dagger.Module
-    public static class NavigatorModule {
-
-        @Provides
-        @DaggerScope(MainActivity.class)
-        public TransitionsMapping providesTransitionsMapping() {
-            return new TransitionsMapping()
-                    .byDefault(new LateralViewTransition(new Config().duration(300)))
-                    .show(MyPopupView.class).withTransition(new FadeModalTransition());
-        }
     }
 }

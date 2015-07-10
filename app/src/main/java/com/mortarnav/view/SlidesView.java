@@ -6,15 +6,15 @@ import android.view.View;
 
 import com.mortarnav.R;
 import com.mortarnav.presenter.SlidesPresenter;
-import com.mortarnav.presenter.scope.SlidesScopeComponent;
-import com.mortarnav.presenter.scope.path.SlidePagePath;
+import com.mortarnav.presenter.stackable.SlidePageStackable;
+import com.mortarnav.presenter.stackable.SlidesStackableComponent;
 
-import autodagger.AutoInjector;
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-import architect.autostack.DaggerService;
-import architect.commons.adapter.StackPagerAdapter;
+import architect.commons.adapter.StackablePagerAdapter;
 import architect.commons.view.PresentedLinearLayout;
+import architect.robot.DaggerService;
+import autodagger.AutoInjector;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -22,22 +22,22 @@ import architect.commons.view.PresentedLinearLayout;
 @AutoInjector(SlidesPresenter.class)
 public class SlidesView extends PresentedLinearLayout<SlidesPresenter> {
 
-    @InjectView(R.id.pager)
+    @Bind(R.id.pager)
     public ViewPager viewPager;
 
-    public StackPagerAdapter adapter;
+    public StackablePagerAdapter adapter;
 
     public SlidesView(Context context) {
         super(context);
 
-        DaggerService.<SlidesScopeComponent>get(context).inject(this);
+        DaggerService.<SlidesStackableComponent>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.slides_view, this);
-        ButterKnife.inject(view);
+        ButterKnife.bind(view);
     }
 
-    public void show(SlidePagePath[] pagePaths) {
-        adapter = new StackPagerAdapter(getContext(), pagePaths);
+    public void show(SlidePageStackable[] pages) {
+        adapter = new StackablePagerAdapter(getContext(), pages);
         viewPager.setAdapter(adapter);
     }
 }

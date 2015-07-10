@@ -35,15 +35,18 @@ public class Navigator implements Scoped {
         return scope != null ? scope.<Navigator>getService(SERVICE_NAME) : null;
     }
 
-    public static Navigator create(MortarScope containerScope) {
-        return create(containerScope, null);
+    public static Navigator create(MortarScope containerScope, StackableParceler parceler) {
+        return create(containerScope, parceler, null);
     }
 
-    public static Navigator create(MortarScope containerScope, Config config) {
+    public static Navigator create(MortarScope containerScope, StackableParceler parceler, Config config) {
+        Preconditions.checkNotNull(containerScope, "Mortar scope for Navigator cannot be null");
+        Preconditions.checkNotNull(parceler, "PathParceler for Navigator cannot be null");
+
         if (config == null) {
             config = new Config();
         }
-        Navigator navigator = new Navigator(config);
+        Navigator navigator = new Navigator(parceler, config);
 
         MortarScope scope = containerScope.buildChild()
                 .withService(SERVICE_NAME, navigator)
@@ -61,24 +64,24 @@ public class Navigator implements Scoped {
     final Dispatcher dispatcher;
     private MortarScope scope;
 
-    private Navigator(Config config) {
+    private Navigator(StackableParceler parceler, Config config) {
         this.config = config;
-        history = new History();
+        history = new History(parceler);
         transitions = new Transitions();
         delegate = new NavigatorLifecycleDelegate(this);
         dispatcher = new Dispatcher(this);
         presenter = new Presenter(transitions);
     }
 
-    public void push(StackPath path) {
+    public void push(StackablePath path) {
         add(path, History.NAV_TYPE_PUSH);
     }
 
-    public void show(StackPath path) {
+    public void show(StackablePath path) {
         add(path, History.NAV_TYPE_MODAL);
     }
 
-    public void replace(StackPath path) {
+    public void replace(StackablePath path) {
         history.kill();
         History.Entry entry = history.add(path, History.NAV_TYPE_PUSH);
         dispatcher.dispatch(entry);
@@ -109,7 +112,7 @@ public class Navigator implements Scoped {
         dispatcher.dispatch(entries);
     }
 
-    private void add(StackPath path, int navType) {
+    private void add(StackablePath path, int navType) {
         Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
 
         History.Entry next = history.add(path, navType);
@@ -135,12 +138,6 @@ public class Navigator implements Scoped {
         dispatcher.dispatch(entry);
 
         return true;
-    }
-
-    public <T> T takeResult() {
-        MortarScope scope = presenter.getCurrentScope();
-
-        return (T) new Object();
     }
 
     /**

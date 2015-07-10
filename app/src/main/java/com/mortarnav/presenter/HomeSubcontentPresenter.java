@@ -3,23 +3,23 @@ package com.mortarnav.presenter;
 import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.stack.HomeStackScope;
+import com.mortarnav.stackable.HomePath;
 import com.mortarnav.view.HomeSubcontentView;
 
 import java.util.Random;
 
 import javax.inject.Inject;
 
+import architect.robot.AutoStackable;
 import autodagger.AutoComponent;
 import mortar.ViewPresenter;
-import architect.autostack.AutoStack;
 import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoStack(
-        component = @AutoComponent(dependencies = HomeStackScope.Component.class)
+@AutoStackable(
+        component = @AutoComponent(dependencies = HomePath.Component.class)
 )
 @DaggerScope(HomeSubcontentPresenter.class)
 public class HomeSubcontentPresenter extends ViewPresenter<HomeSubcontentView> {

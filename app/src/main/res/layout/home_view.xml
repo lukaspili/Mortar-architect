@@ -58,17 +58,17 @@
             android:layout_height="wrap_content"
             android:text="Go to Returns Result"/>
 
-        <com.mortarnav.view.HomeSubcontentView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+        <!--<com.mortarnav.view.HomeSubcontentView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1"/>-->
 
         <com.mortarnav.view.HomeAdditionalCustomView
             android:layout_width="match_parent"
             android:layout_height="100dp"/>
 
-        <com.mortarnav.view.BannerView
-            android:layout_width="match_parent"
-            android:layout_height="100dp"/>
+        <!--<com.mortarnav.view.BannerView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="100dp"/>-->
     </LinearLayout>
 </ScrollView>

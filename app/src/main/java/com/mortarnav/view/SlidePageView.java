@@ -6,13 +6,13 @@ import android.widget.TextView;
 
 import com.mortarnav.R;
 import com.mortarnav.presenter.SlidePagePresenter;
-import com.mortarnav.presenter.scope.SlidePageScopeComponent;
+import com.mortarnav.presenter.stackable.SlidePageStackableComponent;
 
-import autodagger.AutoInjector;
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-import architect.autostack.DaggerService;
 import architect.commons.view.PresentedLinearLayout;
+import architect.robot.DaggerService;
+import autodagger.AutoInjector;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -20,15 +20,15 @@ import architect.commons.view.PresentedLinearLayout;
 @AutoInjector(SlidePagePresenter.class)
 public class SlidePageView extends PresentedLinearLayout<SlidePagePresenter> {
 
-    @InjectView(R.id.page_title)
+    @Bind(R.id.page_title)
     public TextView textView;
 
     public SlidePageView(Context context) {
         super(context);
 
-        DaggerService.<SlidePageScopeComponent>get(context).inject(this);
+        DaggerService.<SlidePageStackableComponent>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.slide_page_view, this);
-        ButterKnife.inject(view);
+        ButterKnife.bind(view);
     }
 }

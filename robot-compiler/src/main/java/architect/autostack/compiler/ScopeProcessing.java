@@ -18,8 +18,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import architect.autostack.AutoStack;
-import architect.autostack.StackParam;
+import architect.robot.AutoStackable;
+import architect.robot.FromPath;
 import autodagger.AutoComponent;
 import autodagger.compiler.utils.AutoComponentClassNameUtil;
 import processorworkflow.AbstractComposer;
@@ -38,7 +38,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
 
     @Override
     public Set<Class<? extends Annotation>> supportedAnnotations() {
-        Set set = ImmutableSet.of(AutoStack.class);
+        Set set = ImmutableSet.of(AutoStackable.class);
         return set;
     }
 
@@ -71,7 +71,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
 
         @Override
         protected ScopeSpec build() {
-            architect.autostack.compiler.ScopeSpec spec = new architect.autostack.compiler.ScopeSpec(buildClassName(extractor.getElement()));
+            architect.autostack.compiler.ScopeSpec spec = new ScopeSpec(buildClassName(extractor.getElement()));
             spec.setParentComponentTypeName(TypeName.get(extractor.getComponentDependency()));
 
             TypeName presenterTypeName = TypeName.get(extractor.getElement().asType());
@@ -91,7 +91,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
             String methodName;
             TypeName typeName;
             Element daggerDependencyElement = MoreTypes.asElement(extractor.getComponentDependency());
-            if (MoreElements.isAnnotationPresent(daggerDependencyElement, AutoStack.class)) {
+            if (MoreElements.isAnnotationPresent(daggerDependencyElement, AutoStackable.class)) {
                 ClassName daggerDependencyScopeClassName = buildClassName(daggerDependencyElement);
                 ClassName daggerDependencyClassName = AutoComponentClassNameUtil.getComponentClassName(daggerDependencyScopeClassName);
                 methodName = StringUtils.uncapitalize(daggerDependencyClassName.simpleName());
@@ -110,8 +110,8 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
                 spec.setScopeAnnotationSpec(AnnotationSpec.get(extractor.getScopeAnnotationTypeMirror()));
             }
 
-            if (extractor.getPathAnnotationTypeMirror() != null) {
-                spec.setPathAnnotationSpec(AnnotationSpec.get(extractor.getPathAnnotationTypeMirror()));
+            if (extractor.getPathViewTypeMirror() != null) {
+                spec.setPathViewTypeName(TypeName.get(extractor.getPathViewTypeMirror()));
             }
 
             ModuleSpec moduleSpec = new ModuleSpec(moduleClassName);
@@ -122,7 +122,9 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
                 ParameterSpec parameterSpec = ParameterSpec.builder(TypeName.get(e.asType()), e.getSimpleName().toString()).build();
                 moduleSpec.getPresenterArgs().add(parameterSpec);
 
-                if (MoreElements.isAnnotationPresent(e, StackParam.class)) {
+//              not supported for now:
+//              || extractor.getFromPathFieldsElements().contains(e)
+                if (MoreElements.isAnnotationPresent(e, FromPath.class)) {
                     moduleSpec.getInternalParameters().add(parameterSpec);
                 } else {
                     moduleSpec.getProvideParameters().add(parameterSpec);
@@ -147,9 +149,9 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
             if (StringUtils.isBlank(pkg)) {
                 errors.addInvalid("Package name " + pkg);
             }
-            pkg = pkg + ".scope";
+            pkg = pkg + ".stackable";
 
-            return ClassName.get(pkg, newName + "Scope");
+            return ClassName.get(pkg, newName + "Stackable");
         }
 
         private String removeEndingName(String text, String term) {

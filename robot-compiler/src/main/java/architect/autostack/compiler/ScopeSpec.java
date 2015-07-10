@@ -7,7 +7,7 @@ import com.squareup.javapoet.TypeName;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScopeSpec  {
+public class ScopeSpec {
 
     private ClassName className;
     private ModuleSpec moduleSpec;
@@ -15,9 +15,9 @@ public class ScopeSpec  {
     private TypeName daggerComponentBuilderDependencyTypeName;
     private TypeName daggerComponentTypeName;
     private TypeName parentComponentTypeName;
+    private TypeName pathViewTypeName;
     private AnnotationSpec scopeAnnotationSpec;
     private AnnotationSpec componentAnnotationSpec;
-    private AnnotationSpec pathAnnotationSpec;
 
     public ScopeSpec(ClassName className) {
         this.className = className;
@@ -67,6 +67,14 @@ public class ScopeSpec  {
         this.parentComponentTypeName = parentComponentTypeName;
     }
 
+    public TypeName getPathViewTypeName() {
+        return pathViewTypeName;
+    }
+
+    public void setPathViewTypeName(TypeName pathViewTypeName) {
+        this.pathViewTypeName = pathViewTypeName;
+    }
+
     public AnnotationSpec getScopeAnnotationSpec() {
         return scopeAnnotationSpec;
     }
@@ -81,13 +89,5 @@ public class ScopeSpec  {
 
     public void setComponentAnnotationSpec(AnnotationSpec componentAnnotationSpec) {
         this.componentAnnotationSpec = componentAnnotationSpec;
-    }
-
-    public AnnotationSpec getPathAnnotationSpec() {
-        return pathAnnotationSpec;
-    }
-
-    public void setPathAnnotationSpec(AnnotationSpec pathAnnotationSpec) {
-        this.pathAnnotationSpec = pathAnnotationSpec;
     }
 }

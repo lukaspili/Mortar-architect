@@ -26,12 +26,12 @@ public abstract class StackedScrollView<T extends ViewPresenter> extends Present
 
     @Override
     protected void init(Context context, AttributeSet attrs, int defStyleAttr) {
-        Context newContext = StackFactory.createContext(context, getScope(), getScopeIdentifier());
+        Context newContext = StackFactory.createContext(context, getStackable(), getStackableIdentifier());
         initWithContext(newContext);
     }
 
     @Override
-    public String getScopeIdentifier() {
+    public String getStackableIdentifier() {
         return null;
     }
 }

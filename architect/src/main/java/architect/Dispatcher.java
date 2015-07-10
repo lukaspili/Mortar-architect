@@ -60,7 +60,7 @@ class Dispatcher {
 
         MortarScope entryScope = navigator.getScope().findChild(entry.scopeName);
         if (entryScope == null) {
-            entryScope = StackFactory.createScope(navigator.getScope(), entry.scope, entry.scopeName);
+            entryScope = StackFactory.createScope(navigator.getScope(), entry.path, entry.scopeName);
         }
 
         List<Dispatch> dispatches = null;
@@ -76,7 +76,7 @@ class Dispatcher {
                     Logger.d("Get previous entry: %s", prevEntry.scopeName);
                     scope = navigator.getScope().findChild(prevEntry.scopeName);
                     if (scope == null) {
-                        scope = StackFactory.createScope(navigator.getScope(), prevEntry.scope, prevEntry.scopeName);
+                        scope = StackFactory.createScope(navigator.getScope(), prevEntry.path, prevEntry.scopeName);
                     }
                     dispatches.add(new Dispatch(prevEntry, scope));
                 }
@@ -154,7 +154,7 @@ class Dispatcher {
 
         MortarScope nextScope = navigator.getScope().findChild(nextEntry.scopeName);
         if (nextScope == null) {
-            nextScope = StackFactory.createScope(navigator.getScope(), nextEntry.scope, nextEntry.scopeName);
+            nextScope = StackFactory.createScope(navigator.getScope(), nextEntry.path, nextEntry.scopeName);
         }
 
         navigator.presenter.present(new Dispatch(nextEntry, nextScope), previousEntry, direction, new Callback() {

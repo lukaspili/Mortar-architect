@@ -2,16 +2,16 @@ package architect.commons.view;
 
 import android.content.Context;
 
-import architect.StackScope;
+import architect.Stackable;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public interface StackedContainer {
 
-    String getScopeIdentifier();
+    String getStackableIdentifier();
 
-    StackScope getScope();
+    Stackable getStackable();
 
     void initWithContext(Context context);
 }

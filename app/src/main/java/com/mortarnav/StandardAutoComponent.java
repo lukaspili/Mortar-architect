@@ -8,7 +8,7 @@ import autodagger.AutoComponent;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoComponent(
-        dependencies = MainActivity2.class,
+        dependencies = MainActivity.class,
         superinterfaces = WithAppDependencies.class)
 public @interface StandardAutoComponent {
 }
