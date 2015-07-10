@@ -11,9 +11,14 @@ public class NavigationChain {
     List<Chain> chains = new ArrayList<>();
 
     public NavigationChain back() {
-        chains.add(new Chain());
+        chains.add(new Chain(Chain.TYPE_BACK));
         return this;
     }
+
+//    public NavigationChain backToRoot() {
+//        chains.add(new Chain(Chain.TYPE_BACK_ROOT));
+//        return this;
+//    }
 
     public NavigationChain push(StackablePath path) {
         chains.add(new Chain(path, Chain.TYPE_PUSH));
@@ -35,11 +40,14 @@ public class NavigationChain {
         static final int TYPE_PUSH = 1;
         static final int TYPE_SHOW = 2;
         static final int TYPE_REPLACE = 3;
+        static final int TYPE_BACK = 4;
+        static final int TYPE_BACK_ROOT = 5;
 
         StackablePath path;
         int type;
 
-        public Chain() {
+        public Chain(int type) {
+            this(null, type);
         }
 
         public Chain(StackablePath path, int type) {

@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
 import com.mortarnav.stackable.HomePath;
-import com.mortarnav.view.HomeSubcontentView;
+import com.mortarnav.view.HomeNestedView;
 
 import java.util.Random;
 
@@ -21,13 +21,13 @@ import timber.log.Timber;
 @AutoStackable(
         component = @AutoComponent(dependencies = HomePath.Component.class)
 )
-@DaggerScope(HomeSubcontentPresenter.class)
-public class HomeSubcontentPresenter extends ViewPresenter<HomeSubcontentView> {
+@DaggerScope(HomeNestedPresenter.class)
+public class HomeNestedPresenter extends ViewPresenter<HomeNestedView> {
 
     private final int random;
 
     @Inject
-    public HomeSubcontentPresenter() {
+    public HomeNestedPresenter() {
         random = new Random().nextInt(100);
     }
 

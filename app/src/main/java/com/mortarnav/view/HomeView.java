@@ -5,8 +5,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.mortarnav.R;
-import com.mortarnav.stackable.HomePath;
 import com.mortarnav.presenter.HomePresenter;
+import com.mortarnav.stackable.HomePath;
 
 import architect.commons.view.PresentedScrollView;
 import architect.robot.DaggerService;
@@ -44,24 +44,24 @@ public class HomeView extends PresentedScrollView<HomePresenter> {
     void pagerClick() {
         presenter.pagerClick();
     }
-//
-//    @OnClick(R.id.subnav_button)
-//    void subnavClick() {
-//        presenter.subnavClick();
-//    }
-//
-//    @OnClick(R.id.show_popup)
-//    void showPopupClick() {
-//        presenter.showPopupClick();
-//    }
-//
-//    @OnClick(R.id.replace_new_home)
-//    void replaceNewHomeClick() {
-//        presenter.replaceNewHomeClick();
-//    }
-//
-//    @OnClick(R.id.show_returns_result)
-//    void showReturnsResultClick() {
-//        presenter.showReturnsResultClick();
-//    }
+
+    @OnClick(R.id.subnav_button)
+    void subnavClick() {
+        presenter.subnavClick();
+    }
+
+    @OnClick(R.id.show_popup)
+    void showPopupClick() {
+        presenter.showPopupClick();
+    }
+
+    @OnClick(R.id.replace_new_home)
+    void replaceNewHomeClick() {
+        presenter.replaceNewHomeClick();
+    }
+
+    @OnClick(R.id.show_returns_result)
+    void showReturnsResultClick() {
+        presenter.showReturnsResultClick();
+    }
 }

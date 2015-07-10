@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.mortarnav.deps.WithAppDependencies;
 import com.mortarnav.stackable.HomePath;
+import com.mortarnav.view.MyPopupView;
 
 import architect.Navigator;
 import architect.NavigatorView;
@@ -14,6 +15,7 @@ import architect.commons.ActivityArchitector;
 import architect.commons.Architected;
 import architect.robot.DaggerService;
 import architect.transition.Config;
+import architect.transition.FadeModalTransition;
 import architect.transition.LateralViewTransition;
 import autodagger.AutoComponent;
 import autodagger.AutoInjector;
@@ -59,8 +61,8 @@ public class MainActivity extends Activity {
             public Navigator createNavigator(MortarScope scope) {
                 Navigator navigator = Navigator.create(scope, new Parceler());
                 navigator.transitions().register(new TransitionsMapping()
-                        .byDefault(new LateralViewTransition(new Config().duration(300))));
-//                        .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250))));
+                        .byDefault(new LateralViewTransition(new Config().duration(300)))
+                        .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250))));
                 return navigator;
             }
 

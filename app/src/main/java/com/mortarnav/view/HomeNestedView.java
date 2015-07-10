@@ -6,9 +6,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.mortarnav.R;
-import com.mortarnav.presenter.HomeSubcontentPresenter;
-import com.mortarnav.presenter.stackable.HomeSubcontentStackable;
-import com.mortarnav.presenter.stackable.HomeSubcontentStackableComponent;
+import com.mortarnav.presenter.HomeNestedPresenter;
+import com.mortarnav.presenter.stackable.HomeNestedStackable;
+import com.mortarnav.presenter.stackable.HomeNestedStackableComponent;
 
 import architect.Stackable;
 import architect.commons.view.StackedLinearLayout;
@@ -21,25 +21,25 @@ import butterknife.OnClick;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoInjector(HomeSubcontentPresenter.class)
-public class HomeSubcontentView extends StackedLinearLayout<HomeSubcontentPresenter> {
+@AutoInjector(HomeNestedPresenter.class)
+public class HomeNestedView extends StackedLinearLayout<HomeNestedPresenter> {
 
     @Bind(R.id.home_sub_random)
     public TextView randomTextView;
 
-    public HomeSubcontentView(Context context, AttributeSet attrs) {
+    public HomeNestedView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     public Stackable getStackable() {
-        return new HomeSubcontentStackable();
+        return new HomeNestedStackable();
     }
 
 
     @Override
     public void initWithContext(Context context) {
-        DaggerService.<HomeSubcontentStackableComponent>get(context).inject(this);
+        DaggerService.<HomeNestedStackableComponent>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.home_subcontent_view, this);
         ButterKnife.bind(view);

@@ -2,8 +2,11 @@ package com.mortarnav.presenter;
 
 import android.os.Bundle;
 
-import com.mortarnav.stackable.HomePath;
+import com.mortarnav.presenter.stackable.MyPopupStackable;
+import com.mortarnav.presenter.stackable.ReturnsResultStackable;
 import com.mortarnav.presenter.stackable.SlidesStackable;
+import com.mortarnav.presenter.stackable.SubnavStackable;
+import com.mortarnav.stackable.HomePath;
 import com.mortarnav.view.HomeView;
 
 import java.util.Random;
@@ -51,11 +54,11 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
         Navigator.get(getView()).push(new HomePath("Home " + ++count));
     }
 
-    //
-//    public void subnavClick() {
-//        Navigator.get(getView()).push(new SubnavPath());
-//    }
-//
+
+    public void subnavClick() {
+        Navigator.get(getView()).push(new SubnavStackable());
+    }
+
     public void customViewClick() {
         Timber.d("Click from custom view");
     }
@@ -63,16 +66,16 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     public void pagerClick() {
         Navigator.get(getView()).push(new SlidesStackable());
     }
-//
-//    public void showPopupClick() {
-//        Navigator.get(getView()).show(new MyPopupPath());
-//    }
-//
-//    public void replaceNewHomeClick() {
-//        Navigator.get(getView()).replace(new HomePath("Replaced!"));
-//    }
-//
-//    public void showReturnsResultClick() {
-//        Navigator.get(getView()).push(new ReturnsResultPath());
-//    }
+
+    public void showPopupClick() {
+        Navigator.get(getView()).show(new MyPopupStackable());
+    }
+
+    public void replaceNewHomeClick() {
+        Navigator.get(getView()).replace(new HomePath("Replaced!"));
+    }
+
+    public void showReturnsResultClick() {
+        Navigator.get(getView()).push(new ReturnsResultStackable());
+    }
 }

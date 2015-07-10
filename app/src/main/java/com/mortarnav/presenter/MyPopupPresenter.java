@@ -1,41 +1,36 @@
-//package com.mortarnav.presenter;
-//
-//import com.mortarnav.DaggerScope;
-//import com.mortarnav.StandardAutoComponent;
-//import com.mortarnav.path.HomePath;
-//import com.mortarnav.presenter.scope.path.MyPopupPath;
-//import com.mortarnav.presenter.scope.path.SlidesPath;
-//import com.mortarnav.presenter.scope.path.SubnavPath;
-//import com.mortarnav.view.MyPopupView;
-//
-//import architect.NavigationChain;
-//import architect.autopath.AutoPath;
-//import architect.autostack.AutoStack;
-//import architect.commons.ArchitectViewPresenter;
-//import autodagger.AutoComponent;
-//
-///**
-// * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
-// */
-//@AutoStack(
-//        component = @AutoComponent(includes = StandardAutoComponent.class),
-//        path = @AutoPath(withView = MyPopupView.class)
-//)
-//@DaggerScope(MyPopupPresenter.class)
-//public class MyPopupPresenter extends ArchitectViewPresenter<MyPopupView> {
-//
-//    public void popupClick() {
-//        navigator().show(new MyPopupPath());
-//    }
-//
-//    public void homeClick() {
-//        navigator().push(new HomePath("from popup"));
-//    }
-//
-//    public void dismissClick() {
-//        navigator().chain(new NavigationChain()
-//                .back()
-//                .push(new SubnavPath())
-//                .push(new SlidesPath()));
-//    }
-//}
+package com.mortarnav.presenter;
+
+import com.mortarnav.DaggerScope;
+import com.mortarnav.StandardAutoComponent;
+import com.mortarnav.presenter.stackable.MyPopupStackable;
+import com.mortarnav.presenter.stackable.SlidesStackable;
+import com.mortarnav.presenter.stackable.SubnavStackable;
+import com.mortarnav.view.MyPopupView;
+
+import architect.NavigationChain;
+import architect.Navigator;
+import architect.robot.AutoStackable;
+import autodagger.AutoComponent;
+import mortar.ViewPresenter;
+
+/**
+ * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
+ */
+@AutoStackable(
+        component = @AutoComponent(includes = StandardAutoComponent.class),
+        pathWithView = MyPopupView.class
+)
+@DaggerScope(MyPopupPresenter.class)
+public class MyPopupPresenter extends ViewPresenter<MyPopupView> {
+
+    public void popupClick() {
+        Navigator.get(getView()).show(new MyPopupStackable());
+    }
+
+    public void dismissClick() {
+        Navigator.get(getView()).chain(new NavigationChain()
+                .back()
+                .push(new SubnavStackable())
+                .push(new SlidesStackable()));
+    }
+}

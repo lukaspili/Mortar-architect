@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
-    <com.mortarnav.view.HomeDoubleSubcontentView
+    <com.mortarnav.view.HomeDoubleNestedView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
