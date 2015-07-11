@@ -40,7 +40,7 @@ public class HomeStackable implements StackablePath {
 
     @Override
     public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
-        builder.withService(DaggerService.SERVICE_NAME, DaggerHomePath_Component.builder()
+        builder.withService(DaggerService.SERVICE_NAME, DaggerHomeStackable_Component.builder()
                 .mainActivityComponent(parentScope.<MainActivityComponent>getService(DaggerService.SERVICE_NAME))
                 .module(new Module())
                 .build());
