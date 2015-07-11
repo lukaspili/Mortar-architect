@@ -483,8 +483,8 @@ public class ShowUserPresenter extends ViewPresenter<ShowUserView> {
     private final RestClient restClient;
     private final UserManager userManager;
 
-    // NOTE the @StackParam on the parameter provided by the navigation
-    public ShowUserPresenter(@StackParam String username, RestClient restClient, UserManager userManager) {
+    // NOTE the @FromPath on the parameter provided by the navigation
+    public ShowUserPresenter(@FromPath String username, RestClient restClient, UserManager userManager) {
         this.username = username;
         this.restClient = restClient;
         this.userManager = userManager;
