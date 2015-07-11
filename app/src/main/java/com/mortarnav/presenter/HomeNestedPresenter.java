@@ -3,7 +3,7 @@ package com.mortarnav.presenter;
 import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.stackable.HomePath;
+import com.mortarnav.stackable.HomeStackable;
 import com.mortarnav.view.HomeNestedView;
 
 import java.util.Random;
@@ -19,7 +19,7 @@ import timber.log.Timber;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoStackable(
-        component = @AutoComponent(dependencies = HomePath.Component.class)
+        component = @AutoComponent(dependencies = HomeStackable.Component.class)
 )
 @DaggerScope(HomeNestedPresenter.class)
 public class HomeNestedPresenter extends ViewPresenter<HomeNestedView> {

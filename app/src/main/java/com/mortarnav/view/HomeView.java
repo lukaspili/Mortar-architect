@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import com.mortarnav.R;
 import com.mortarnav.presenter.HomePresenter;
-import com.mortarnav.stackable.HomePath;
+import com.mortarnav.stackable.HomeStackable;
 
 import architect.commons.view.PresentedScrollView;
 import architect.robot.DaggerService;
@@ -28,7 +28,7 @@ public class HomeView extends PresentedScrollView<HomePresenter> {
     public HomeView(Context context) {
         super(context);
 
-        DaggerService.<HomePath.Component>get(context).inject(this);
+        DaggerService.<HomeStackable.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.home_view, this);
         ButterKnife.bind(view);

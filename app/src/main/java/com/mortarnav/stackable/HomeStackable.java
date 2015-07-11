@@ -24,12 +24,12 @@ import mortar.MortarScope;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @Parcel(parcelsIndex = false)
-public class HomePath implements StackablePath {
+public class HomeStackable implements StackablePath {
 
     String name;
 
     @ParcelConstructor
-    public HomePath(String name) {
+    public HomeStackable(String name) {
         this.name = name;
     }
 
@@ -63,9 +63,5 @@ public class HomePath implements StackablePath {
         void inject(HomeView view);
 
         void inject(HomeAdditionalCustomView view);
-    }
-
-    public String getName() {
-        return name;
     }
 }

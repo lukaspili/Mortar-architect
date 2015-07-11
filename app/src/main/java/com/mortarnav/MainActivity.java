@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.mortarnav.deps.WithAppDependencies;
-import com.mortarnav.stackable.HomePath;
+import com.mortarnav.stackable.HomeStackable;
 import com.mortarnav.view.MyPopupView;
 
 import architect.Navigator;
@@ -80,7 +80,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        navigator = ActivityArchitector.onCreateNavigator(this, savedInstanceState, containerView, new HomePath("Default home path"));
+        navigator = ActivityArchitector.onCreateNavigator(this, savedInstanceState, containerView, new HomeStackable("Default home path"));
     }
 
     @Override

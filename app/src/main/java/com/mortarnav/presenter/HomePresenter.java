@@ -6,7 +6,7 @@ import com.mortarnav.presenter.stackable.MyPopupStackable;
 import com.mortarnav.presenter.stackable.ReturnsResultStackable;
 import com.mortarnav.presenter.stackable.SlidesStackable;
 import com.mortarnav.presenter.stackable.SubnavStackable;
-import com.mortarnav.stackable.HomePath;
+import com.mortarnav.stackable.HomeStackable;
 import com.mortarnav.view.HomeView;
 
 import java.util.Random;
@@ -51,7 +51,7 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     }
 
     public void nextHomeClick() {
-        Navigator.get(getView()).push(new HomePath("Home " + ++count));
+        Navigator.get(getView()).push(new HomeStackable("Home " + ++count));
     }
 
 
@@ -72,7 +72,7 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     }
 
     public void replaceNewHomeClick() {
-        Navigator.get(getView()).replace(new HomePath("Replaced!"));
+        Navigator.get(getView()).replace(new HomeStackable("Replaced!"));
     }
 
     public void showReturnsResultClick() {

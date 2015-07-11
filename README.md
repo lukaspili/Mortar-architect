@@ -1,248 +1,150 @@
 # Mortar Architect
 
-Mortar Architect provides a flexible stack for navigating and displaying views and their presenters, using the MVP pattern with [Mortar](https://github.com/square/mortar).
+Mortar Architect helps building modern Android apps, implementing the MVP pattern with [Mortar](https://github.com/square/mortar).
 
-Architect is Mortar scope-centric. A Mortar scope is the glue between a View and its ViewPresenter. Architect will create a Mortar scope for each View & ViewPresenter association. A `StackScope` is a class that Architect will look for when building a Mortar scope, and its role is to configure the Mortar scope.  
+When working with Mortar and MVP pattern, you don't create Activities and Fragments anymore, but Android Views and ViewPresenters. Each ViewPresenter is associated to a `MortarScope` that holds and provide the `ViewPresenter` to its associated `View`.
+
+If you use Dagger2, it would be the Dagger2 Component that holds and provides the `ViewPresenter` instance, and the `MortarScope` would hold and provide the Component instance.
+
+Architect provides tools for navigating between Mortar scopes, and nesting Mortar scopes. It's more feature complete and ready to use than the "official" library [Flow](https://github.com/square/flow). It also requires much less code to write and it integrates seamlessly with [Mortar](https://github.com/square/mortar).
 
 
-## Stack Scope
+## Stackable
 
-For each View & ViewPresenter association, you need to provide a `StackScope` class. 
-Below, an example of a `HomePresenter`, `HomeView` and `HomeStackScope` that uses Dagger2.
+Because Architect relies on Mortar scopes, it also require a class that setups those scopes. For each `MortarScope` that will be associated to a `View` and `ViewPresenter`, you have to provide a `Stackable` class that configures the Mortar scope.
+
+The following `Stackable` class creates a Dagger2 component, and puts it inside the `MortarScope`. The Dagger2 component provides the `HomePresenter`, which is an instance of `ViewPresenter`.
 
 ```java
-// HomePresenter.java
-public class HomePresenter extends ViewPresenter<HomeView> {
+@DaggerScope(Component.class)
+public class HomeStackable implements Stackable {
 
+    private String name;
+
+    public HomeStackable(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
+        builder.withService(DaggerService.SERVICE_NAME, DaggerHomePath_Component.builder()
+                .mainActivityComponent(parentScope.<MainActivityComponent>getService(DaggerService.SERVICE_NAME))
+                .module(new Module())
+                .build());
+    }
+
+    @dagger.Module
+    public class Module {
+        @Provides
+        @DaggerScope(Component.class)
+        public HomePresenter providesPresenter() {
+            return new HomePresenter(name);
+        }
+    }
+
+    @dagger.Component(dependencies = MainActivityComponent.class, modules = Module.class)
+    @DaggerScope(Component.class)
+    public interface Component {
+        void inject(HomeView view);
+    }
 }
+```
 
+With a `Stackable`, you can create new `Context` that contains the associated `MortarScope`. Architect takes care of the Mortar scope creation, and ensures the scope name is preserved during config changes.
 
-// HomeView.java
+```java
 public class HomeView extends FrameLayout {
-    
-    @Inject
+
     protected HomePresenter presenter;
 
-    public HomeView(Context context) {
-        super(context);
-
-        DaggerService.<HomeStackScope.Component>get(context).inject(this);
-
-        View view = View.inflate(context, R.layout.home_view, this);
-        ButterKnife.inject(view);
+    public HomeView(Context context, AttributeSet attrs) {
+        Context newContext = StackFactory.createContext(context, new HomeStackable());
+        View.inflate(newContext, R.layout.home_view, this);
+        DaggerService.<HomeStackable.Component>get(newContext).inject(this);
     }
-
-    // onAttachedToWindow()
-    // onDetachedFromWindow()
-}
-
-
-// HomeStackScope
-
-public class HomeStackScope implements StackScope {
-
-    @Override
-    public Services withServices(MortarScope parentScope) {
-        // put the Dagger2 component in the Mortar scope
-        return new Services().with(DaggerService.SERVICE_NAME,
-            DaggerHomeStackScope_Component.builder()
-                    .rootActivity(parentScope.<RootActivity.Component>getService(DaggerService.SERVICE_NAME))
-                    .module(new Module())
-                    .build());
-    }
-
-    @dagger.Module
-    public class Module {
-
-        @Provides
-        @DaggerScope(Component.class)
-        public HomePresenter providesPresenter() {
-            return new HomePresenter();
-        }
-    }
-
-    @dagger.Component(dependencies = RootActivity.Component.class, modules = Module.class)
-    @DaggerScope(Component.class)
-    public interface Component {
-
-        void inject(HomeView view);
-    }
-}
-```
-
-## Auto Stack & Auto Dagger2
-
-Because writing a class that implements `StackScope` for every ViewPresenter is boring and usually boilerpate, Architect provides an annotation processor that generates the `StackScope` class for you. It also relies on [Auto Dagger2](https://github.com/lukaspili/Auto-Dagger2) for generating the Dagger2 components.
-
-```java
-// HomePresenter.java
-@AutoStack(
-        component = @AutoComponent(dependencies = RootActivity.Component.class)
-)
-@DaggerScope(HomePresenter.class)
-public class HomePresenter extends ViewPresenter<HomeView> {
-
-}
-
-// It will generate the HomeStackScope.java for you
-// And you still have to write HomeView.java yourself
-```
-
-
-## Stack Path
-
-Architect provides a complete stack for navigation between Mortar scopes (View & ViewPresenter). However, it requires an additional class that extends from `StackPath`. The `StackPath` class contains a bunch of boilerplate, implements `Parcelable` and allows Architect to persist the parameters that you can pass between ViewPresenters. It allows then to restore the navigation stack after Android kills your application process.
-
-For the `HomeViewPresenter` above, here what looks like `HomePath`.  
-Note that we use [ParcelablePlease](https://github.com/sockeqwe/ParcelablePlease), which is an annotation processor that generates the boilerplate code required by `Parcelable`.
-
-```java
-@ParcelablePlease
-public class HomePath extends StackPath<HomeStackScope> {
-
-    public HomePath() {
-        
-    }
-
-    private HomePath(Parcel parcel) {
-        super(parcel);
-    }
-
-    @Override
-    public HomeStackScope withScope() {
-        return new HomeStackScope(name);
-    }
-
-    @Override
-    public View withView(Context context) {
-        return new HomeView(context);
-    }
-
-    @Override
-    protected void readParcel(Parcel parcel) {
-        HomePathParcelablePlease.readFromParcel(this, parcel);
-    }
-
-    @Override
-    protected void writeParcel(Parcel parcel) {
-        HomePathParcelablePlease.writeToParcel(this, parcel, 0);
-    }
-
-    public static final Parcelable.Creator<HomePath> CREATOR = new Parcelable.Creator<HomePath>() {
-        public HomePath createFromParcel(Parcel in) {
-            return new HomePath(in);
-        }
-
-        public HomePath[] newArray(int size) {
-            return new HomePath[size];
-        }
-    };
-}
-```
-
-## Auto Path
-
-In the same way that works Auto Stack, Architects provides an annotation processor that generates the `StackPath` class for you.  
-
-You can either generate a `StackPath` class from a manually written `StackScope` class, or directly from the ViewPresenter using both `@AutoStack` and `@AutoPath`.
-
-```java
-@AutoPath(withView = HomeView.class)
-public class HomeStackScope implements StackScope {
-
-    @Override
-    public Services withServices(MortarScope parentScope) {
-        // put the Dagger2 component in the Mortar scope
-        return new Services().with(DaggerService.SERVICE_NAME,
-            DaggerHomeStackScope_Component.builder()
-                    .rootActivity(parentScope.<RootActivity.Component>getService(DaggerService.SERVICE_NAME))
-                    .module(new Module())
-                    .build());
-    }
-
-    @dagger.Module
-    public class Module {
-
-        @Provides
-        @DaggerScope(Component.class)
-        public HomePresenter providesPresenter() {
-            return new HomePresenter();
-        }
-    }
-
-    @dagger.Component(dependencies = RootActivity.Component.class, modules = Module.class)
-    @DaggerScope(Component.class)
-    public interface Component {
-
-        void inject(HomeView view);
-    }
-}
-```
-
-However, the recommended way is to generate both the `StackScope` and the `StackPath` classes from the ViewPresenter:
-
-```java
-@AutoStack(
-        component = @AutoComponent(dependencies = RootActivity.Component.class),
-        path = @AutoPath(withView = HomeView.class)
-)
-@DaggerScope(HomePresenter.class)
-public class HomePresenter extends ViewPresenter<HomeView> {
-
 }
 ```
 
 
 ## Navigation
 
-Architect provides the `Navigator` class that let you navigate between paths.  
-It manages a history stack, allows you to provide custom transitions between views, and is able to survive configuration changes and process kills.
+Architect `Navigator` class allows you to navigate between Mortar scopes. It manages a history stack that preserves previous Mortar scope, allows you to provide custom transitions between views, and survives configuration changes and process kills.
 
-`Navigator` lives inside his own Mortar scope, and you can retreive its instance through a child scope, from a View or a Context wrapped by Mortar.
+`Navigator` lives inside its own Mortar scope, and you can retreive its instance through a child scope, from a View or a Context wrapped by Mortar.
 
 ```java
-    Navigator.get(getView()).push(new ShowUserPath("lukasz"));
+    Navigator.get(context).push(new ShowUserStackable("lukasz"));
 ```
+
+`Stackable` class does not specify which is the associated View to display, because you directly use the `Stackable` inside the View. For navigation, you need to implements the `StackablePath` interface, that extends from `Stackable` and declares one additional method:
+
+```java
+public interface StackablePath extends Stackable {
+
+    View createView(Context context);
+}
+```
+
+The following `HomeStackable` implements now `StackablePath`. Nothing else changed from the code above.
+
+```java
+@DaggerScope(Component.class)
+public class HomeStackable implements StackablePath {
+
+    View createView(Context context) {
+        return new HomeView(context);
+    }
+
+    // ...
+}
+```
+
+Which is now compatible with `Navigator`:
+
+```java
+    Navigator.get(getView()).push(new HomeStackable("first home"));
+```
+
 
 `Navigator` provides 4 navigation methods
 
-### Navigator.push()
+#### `Navigator.push()`
 
 The common navigation way, that push the new path in the navigation history.
 It will perform the view transition from the previous view to the new view.
 Once the transition is done, the previous view will be removed and destroyed. However, its Mortar scope won't be destroyed (and so neither its ViewPresenter).
 
-### Navigator.show()
+#### `Navigator.show()`
 
 The way when you want to show a "modal" view.  
 It works the same way as `push()`, but the difference is that the previous view won't be removed at the end of the view transition.
 
 It's useful when you want to for instance to show a View on top of the previous one, while not taking the whole screen. So you would want that the previous view is not removed and still visible.
 
-### Navigator.replace()
+#### `Navigator.replace()`
 
 It replaces the current view by the new one.  
 It means that the previous view won't be in the history stack.
 
-### Navigator.back()
+#### `Navigator.back()`
 
 It goes back into the history stack.  
 It will perform the `backward()` view transition, and then remove the old view and destroy its Mortar scope.
 
-### Navigator.chain()
+#### `Navigator.chain()`
 
 Lets you execute several navigation event, in a sequential order.
 
 
 ## View Transitions
 
-You can provide a `TransitionsMapping` to the `Navigator` that tells what view transition perform when navigating from one view to another.
+You can provide a `TransitionsMapping` to the `Navigator` that defines what view transition perform when navigating from one view to another.
 
 ```java
-TransitionsMapping()
+navigator.transitions().register(TransitionsMapping()
     .byDefault(new LateralViewTransition()) // default transition
     .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250))) // by default, it's show().fromAny()
-    .show(MyOtherScreen.class).from(HomeView.class).withTransition(new BottomAppearTransition()); // you can also specify show().from() specific view
+    .show(MyOtherScreen.class).from(HomeView.class).withTransition(new BottomAppearTransition())); // you can also specify show().from() specific view
 ```
 
 Once the mapping is provided to the `Navigator` instance, it will apply the correct view transitions automatically.
@@ -314,43 +216,7 @@ public class BottomAppearTransition extends BaseModalTransition<View> {
 ```
 
 
-## Navigation params
-
-You often would want to pass parameters when navigation from a path to another.  
-Auto-path handles it nicely. You only need to annotate the navigation parameters expected by a ViewPresenter.
-
-```java
-@AutoStack(
-        component = @AutoComponent(dependencies = RootActivity.Component.class),
-        path = @AutoPath(withView = ShowUserView.class)
-)
-@DaggerScope(ShowUserPresenter.class)
-public class ShowUserPresenter extends ViewPresenter<ShowUserView> {
-
-    // username is provided by the navigation
-    private final String username;
-
-    // some dependencies provided by dagger
-    private final RestClient restClient;
-    private final UserManager userManager;
-
-    // NOTE the @StackParam on the parameter provided by the navigation
-    public ShowUserPresenter(@StackParam String username, RestClient restClient, UserManager userManager) {
-        this.username = username;
-        this.restClient = restClient;
-        this.userManager = userManager;
-    }
-}
-```
-
-Auto-path and auto-stack will generate the appropriate `ShowUserScope` and `ShowUserPath` that requires the username parameter. When you will navigate to the `ShowUserPath`, you will have to provide the username.
-
-```java
-    Navigator.get(getView()).push(new ShowUserPath("lukasz"));
-```
-
-
-## Returns result
+## Return result
 
 A ViewPresenter can return a result to the previous ViewPresenter in the history. A kind of `onActivityResult()` between ViewPresenters.
 
@@ -407,9 +273,56 @@ Before using `Navigator`, you need to configure and hook it to the root activity
 You need to call the `Navigator.delegate()` methods at the proper place.
 
 You can find an example of configuration in the [`MainActivity`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/MainActivity.java) class.  
-The second option is to use the `architect-commons` subproject, make the activity extends from `ArchitectActivity` and implements the several required methods. You can find an example in [`MainActivity2`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/MainActivity2.java) class.
+**architect-commons** subproject provides the `ActivityArchitector` class that takes care of some boilerplate required to setup Architect in the root activity.
 
-The same applies for the Application class, check out the [`App`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/App.java) and [`App2`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/App.java) (which extends from `ArchitectApp`) classes.
+
+### StackableParceler
+
+In order to survive process kills, and restore the navigation stack, `Navigator` requires a `StackableParceler` that saves and restore the `StackablePath` from disk with the help of Android `Parcelable`.
+
+```java
+    Navigator navigator = Navigator.create(scope, new Parceler()); // Parceler is a class that implements StackableParceler
+```
+
+The most performant solution is to make your `StackablePath` classes compatible with `Parcelable`. You have several options, like:
+
+ * Making your stackable paths implement `Parcelable` which adds tons of boilerplate
+ * Use a library that takes of the boilerplate for you, like [Parceler](https://github.com/johncarl81/parceler)
+
+Below an example of the second solution:
+
+```java
+// Some StackablePath
+@Parcel(parcelsIndex = false)
+public class HomeStackable implements StackablePath {
+
+    String name;
+
+    @ParcelConstructor
+    public HomeStackable(String name) {
+        this.name = name;
+    }
+
+    ...
+}
+
+
+// StackableParceler
+public class Parceler implements StackableParceler {
+
+    @Override
+    public Parcelable wrap(StackablePath path) {
+        return Parcels.wrap(path);
+    }
+
+    @Override
+    public StackablePath unwrap(Parcelable parcelable) {
+        return Parcels.unwrap(parcelable);
+    }
+}
+```
+
+That's it! Boilerplate to the minimum.
 
 
 ### Don't restore navigation stack after process kill
@@ -425,25 +338,23 @@ In opposite, when the "don't restore navigation stack" option is enabled, `Navig
 To enable the option, provide a custom configuration when creating the `Navigator` instance:
 
 ```java
-    Navigator navigator = Navigator.create(scope, new Navigator.Config().dontRestoreStackAfterKill(true));
+    Navigator navigator = Navigator.create(scope, new Parceler(), new Navigator.Config().dontRestoreStackAfterKill(true));
 ```
 
 
-## Sub navigator
+## Nested navigator
 
-Architect is very flexible and you can use several `Navigator` instances at the same time. It allows to provide sub navigation in your app.
+Architect is very flexible and you can use several `Navigator` instances at the same time. It allows to provide nested navigation in your app.
 
 You can find an example of a sub navigator configured in a ViewPresenter in the [`SubnavPresenter`](https://github.com/lukaspili/Mortar-architect/blob/master/app/src/main/java/com/mortarnav/presenter/SubnavPresenter.java) class.
 
 
-## Composition
+## Nesting stackables
 
-With Architect, you can easily stack several Mortar scopes.  
-By stacking scopes, it means that you would for instance include a View-ViewPresenter inside another one.
+With Architect, you can easily nest several Stackables.
+You would for instance want to include a Stackable inside another one.
 
-For instance, we want to include the `HomeMenuView` (which has its `HomeMenuPresenter`) inside the `HomeView`.
-
-First let's create the `HomeMenuPresenter` and `HomeMenuView`
+The following `HomeMenuStackable` is nested in the `HomeStackable`.
 
 ```java
 // HomeMenuPresenter.java
@@ -509,17 +420,83 @@ You can then directly use the `HomeMenuView` in the `HomeView` layout:
 ```
 
 
-## Commons
+## Architect-commons
 
 Commons is a facultative sub project that provides some base class you can extend from, in order to save some boilerplate code.
 
- * [`ArchitectApp`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/ArchitectApp.java)
- * [`ArchitectActivity`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/ArchitectActivity.java)
+ * [`ActivityArchitector`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/ActivityArchitector.java)
  * `PresentedXXX`, like [`PresentedFrameLayout`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/PresentedFrameLayout.java), [`PresentedLinearLayout`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/PresenterLinearLayout.java), etc. Base class for a View associated to a ViewPresenter.
  * `StackedXXX`, like [`StackedFrameLayout`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/StackedFrameLayout.java), [`StackedLinearLayout`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/view/StackedLinearLayout.java), etc. Base class for the a View associated to a ViewPresenter, and that will be included (stacked) in another one (like the `HomeMenuView`)
- * [`StackPagerAdapter`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/adapter/StackPagerAdapter.java), an implementation of `ViewPager` that manages a set of `StackPath`
+ * [`StackablePagerAdapter`](https://github.com/lukaspili/Mortar-architect/blob/master/commons/src/main/java/architect/commons/adapter/StackablePagerAdapter.java), an implementation of `ViewPager` that manages a set of `StackablePath`
 
 The commons project is here both for easing the integration and providing an example of implementations that work well with Mortar and Architect. The code is very simple and straightforward.
+
+
+## Architect-Robot
+
+Robot is a subproject that contains an annotation processor that generates `Stackable` and `StackablePath` classes for you. Robot is opiniated, it works only with Dagger2 and uses [Auto Dagger2](https://github.com/lukaspili/Auto-Dagger2) to generate Dagger2 components.
+
+To generate a `Stackable` from a `ViewPresenter`, use the `@AutoStackable` annotation:
+
+```java
+@AutoStackable(
+        component = @AutoComponent(includes = StandardAutoComponent.class)
+)
+@DaggerScope(SlidesPresenter.class)
+public class SlidesPresenter extends ViewPresenter<SlidesView> {
+
+}
+```
+
+And provide the `pathWithView` member to generate a `StackablePath` instead:
+
+```java
+@AutoStackable(
+        component = @AutoComponent(includes = StandardAutoComponent.class),
+        pathWithView = SlidesView.class
+)
+@DaggerScope(SlidesPresenter.class)
+public class SlidesPresenter extends ViewPresenter<SlidesView> {
+
+}
+```
+
+
+## Navigation params
+
+By default, the generated `StackablePath` will have an empty constructor, and all the parameters of the `ViewPresenter`'s constructor will be provided by Dagger2 in its module.
+
+If you want some parameters to be provided by navigation, use the `@FromPath` annotation.
+
+```java
+@AutoStackable(
+        component = @AutoComponent(dependencies = RootActivity.Component.class),
+        path = @AutoPath(withView = ShowUserView.class)
+)
+@DaggerScope(ShowUserPresenter.class)
+public class ShowUserPresenter extends ViewPresenter<ShowUserView> {
+
+    // username is provided by the navigation
+    private final String username;
+
+    // some dependencies provided by dagger
+    private final RestClient restClient;
+    private final UserManager userManager;
+
+    // NOTE the @StackParam on the parameter provided by the navigation
+    public ShowUserPresenter(@StackParam String username, RestClient restClient, UserManager userManager) {
+        this.username = username;
+        this.restClient = restClient;
+        this.userManager = userManager;
+    }
+}
+```
+
+You can then navigate to the new path
+
+```java
+    Navigator.get(getView()).push(new ShowUserPath("lukasz"));
+```
 
 
 ## Demo projects
@@ -537,12 +514,10 @@ You can also checkout the following example projects using Mortar and Flow. It m
 
 The motivation behind Architect is to provide a framework for building MVP apps with Mortar, with the minimum friction and boilerplate code.  
 
-While Flow can in theory work without Mortar, Architect relies heavely on Mortar and its "scope philosophy". The practical consequence is that Mortar Architect provides an API that relies on Mortar and integrates great within it.
+While Flow can in theory work without Mortar, Architect relies heavely on Mortar and Mortar scopes. It allows to provide an API that integrates seamlessly with Mortar.
 
 
 ## Installation
-
-Library is divided in several dependencies, allowing to use only specific features if you don't want to use the whole package. Only core library is required.
 
 ```groovy
 buildscript {
@@ -565,7 +540,7 @@ repositories {
 
 dependencies {
     // local var convinience for architect version
-    def architect_version = '0.12-SNAPSHOT'
+    def architect_version = '0.13-SNAPSHOT'
 
     // Core library
     compile 'com.github.lukaspili.mortar-architect:architect:' + architect_version
@@ -573,19 +548,11 @@ dependencies {
     // Commons
     compile 'com.github.lukaspili.mortar-architect:commons:' + architect_version
 
-    // Auto path
-    compile 'com.github.lukaspili.mortar-architect:autopath:' + architect_version
-    apt 'com.github.lukaspili.mortar-architect:autopath-compiler:' + architect_version
+    // Robot
+    compile 'com.github.lukaspili.mortar-architect:robot:' + architect_version
+    apt 'com.github.lukaspili.mortar-architect:robot-compiler:' + architect_version
 
-    // Auto path requires parcelable please deps
-    compile 'com.hannesdorfmann.parcelableplease:annotation:1.0.1'
-    apt 'com.hannesdorfmann.parcelableplease:processor:1.0.1'
-
-    // Auto scope
-    compile 'com.github.lukaspili.mortar-architect:autoscope:' + architect_version
-    apt 'com.github.lukaspili.mortar-architect:autoscope-compiler:' + architect_version
-
-    // Auto scope requires dagger2 and auto dagger2 deps
+    // Robot requires dagger2 and auto dagger2 deps
     // Dagger2
     compile 'com.google.dagger:dagger:2.0.1'
     apt 'com.google.dagger:dagger-compiler:2.0.1'
@@ -600,8 +567,7 @@ dependencies {
 
 ## Status
 
-The core API is stable and tested in several soon to be in production apps.  
-Minor changes can still be expected, and there is no garantee for a backward compatibility until it reaches the 1.0 milestone. 
+The core API should be stable enough. Architect is implemented in several soon to be in production apps.  
 
 
 ## Author
