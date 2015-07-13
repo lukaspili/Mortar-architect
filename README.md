@@ -359,9 +359,8 @@ The following `HomeMenuStackable` is nested in the `HomeStackable`.
 ```java
 // HomeMenuPresenter.java
 
-@AutoStack(
+@AutoStackable(
         component = @AutoComponent(dependencies = HomePresenter.class)
-        // because we don't need HomeMenuPresenter in navigation, we don't need to generate the StackPath class
 )
 @DaggerScope(HomeMenuPresenter.class)
 public class HomeMenuPresenter extends ViewPresenter<HomeMenuView> {
@@ -492,10 +491,10 @@ public class ShowUserPresenter extends ViewPresenter<ShowUserView> {
 }
 ```
 
-You can then navigate to the new path
+You can then navigate to the new generated `StackablePath`
 
 ```java
-    Navigator.get(getView()).push(new ShowUserPath("lukasz"));
+    Navigator.get(getView()).push(new ShowUserStackable("lukasz"));
 ```
 
 
@@ -515,6 +514,23 @@ You can also checkout the following example projects using Mortar and Flow. It m
 The motivation behind Architect is to provide a framework for building MVP apps with Mortar, with the minimum friction and boilerplate code.  
 
 While Flow can in theory work without Mortar, Architect relies heavely on Mortar and Mortar scopes. It allows to provide an API that integrates seamlessly with Mortar.
+
+
+### Key differences with Flow
+
+The goal is not to say that Architect is better than Flow, but that the 2 libraries handle things differently
+
+ * Architect does not destroy the Mortar scopes in history. It means that the ViewPresenter of a previous View won't be destroyed, and a new View will be re-attached once navigation gets back to it.
+
+ * Architect provides two different ways of navigation: `push` and `show`. The latter allows to push a new View without removing the previous one (useful for showing partial views, like dialogs). Architect handles the view manipulation and restoration during config changes.
+
+ * Navigation events are applied directly on history, without waiting for the ViewTransition to finish. It means that if you rotate the screen during transition from A to B, the screen showed after rotation will be B. In opposite, Flow will start the view transition from A to B again.
+
+ * Architect provides a ViewTransition mapping that let you define how to transition from a View to another, with very little code.
+
+ * Architect allows to have nested navigation.
+
+ * Architect provides convinient methods to nest scopes and views. Like including B into A directly in view's xml.
 
 
 ## Installation
