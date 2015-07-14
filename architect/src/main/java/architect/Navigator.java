@@ -74,12 +74,12 @@ public class Navigator implements Scoped {
         presenter = new Presenter(transitions);
     }
 
-    public void push(StackablePath path) {
-        add(path, History.NAV_TYPE_PUSH);
+    public void push(StackablePath... paths) {
+        add(History.NAV_TYPE_PUSH, paths);
     }
 
     public void show(StackablePath path) {
-        add(path, History.NAV_TYPE_MODAL);
+        add(History.NAV_TYPE_MODAL, path);
     }
 
     public void replace(StackablePath path) {
@@ -117,11 +117,20 @@ public class Navigator implements Scoped {
         dispatcher.dispatch(entries);
     }
 
-    private void add(StackablePath path, int navType) {
+    private void add(int navType, StackablePath... paths) {
+        Preconditions.checkArgument(paths != null && paths.length > 0, "StackablePath cannot be null or empty");
         Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
 
-        History.Entry next = history.add(path, navType);
-        dispatcher.dispatch(next);
+        if (paths.length == 1) {
+            dispatcher.dispatch(history.add(paths[0], navType));
+            return;
+        }
+
+        List<History.Entry> entries = new ArrayList<>(paths.length);
+        for (int i = 0; i < paths.length; i++) {
+            entries.add(history.add(paths[i], navType));
+        }
+        dispatcher.dispatch(entries);
     }
 
     public boolean back() {
