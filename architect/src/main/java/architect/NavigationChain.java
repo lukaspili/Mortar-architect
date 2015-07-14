@@ -15,10 +15,10 @@ public class NavigationChain {
         return this;
     }
 
-//    public NavigationChain backToRoot() {
-//        chains.add(new Chain(Chain.TYPE_BACK_ROOT));
-//        return this;
-//    }
+    public NavigationChain backToRoot() {
+        chains.add(new Chain(Chain.TYPE_BACK_ROOT));
+        return this;
+    }
 
     public NavigationChain push(StackablePath path) {
         chains.add(new Chain(path, Chain.TYPE_PUSH));

@@ -140,6 +140,23 @@ public class History {
         throw new IllegalStateException("There is no entry to kill");
     }
 
+    /**
+     * Kill all until root
+     *
+     * @return the killed entries, in the historical order
+     */
+    List<Entry> killAll() {
+        List<Entry> killed = new ArrayList<>(entries.size() - 1);
+        Entry entry;
+        for (int i = entries.size() - 1; i > 0; i--) {
+            entry = entries.get(i);
+            entry.dead = true;
+            killed.add(entry);
+        }
+
+        return killed;
+    }
+
     Entry getLastAlive() {
         if (entries.isEmpty()) {
             return null;

@@ -78,4 +78,8 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     public void showReturnsResultClick() {
         Navigator.get(getView()).push(new ReturnsResultStackable());
     }
+
+    public void backToRootClick() {
+        Navigator.get(getView()).backToRoot();
+    }
 }

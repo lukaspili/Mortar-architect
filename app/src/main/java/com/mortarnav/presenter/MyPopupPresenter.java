@@ -29,7 +29,7 @@ public class MyPopupPresenter extends ViewPresenter<MyPopupView> {
 
     public void dismissClick() {
         Navigator.get(getView()).chain(new NavigationChain()
-                .back()
+                .backToRoot()
                 .push(new SubnavStackable())
                 .push(new SlidesStackable()));
     }

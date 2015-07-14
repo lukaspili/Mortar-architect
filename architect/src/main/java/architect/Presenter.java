@@ -84,18 +84,18 @@ class Presenter {
         completeDispatchingCallback();
     }
 
-    void restore(List<Dispatcher.Dispatch> modals) {
+    void restore(List<Dispatcher.Dispatch> dispatches) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkArgument(view.getChildCount() == 0, "Restore requires view with no children");
-        if (modals.isEmpty()) {
+        if (dispatches.isEmpty()) {
             return;
         }
 
         Dispatcher.Dispatch dispatch;
         View child;
-        for (int i = 0; i < modals.size(); i++) {
-            dispatch = modals.get(i);
-            Logger.d("Restore modal: %s", dispatch.entry.scopeName);
+        for (int i = 0; i < dispatches.size(); i++) {
+            dispatch = dispatches.get(i);
+            Logger.d("Restore scope: %s", dispatch.entry.scopeName);
             child = dispatch.entry.path.createView(dispatch.scope.createContext(view.getContext()));
             if (dispatch.entry.state != null) {
                 view.restoreHierarchyState(dispatch.entry.state);

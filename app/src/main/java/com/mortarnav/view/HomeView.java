@@ -64,4 +64,9 @@ public class HomeView extends PresentedScrollView<HomePresenter> {
     void showReturnsResultClick() {
         presenter.showReturnsResultClick();
     }
+
+    @OnClick(R.id.back_root)
+    void backRootClick() {
+        presenter.backToRootClick();
+    }
 }

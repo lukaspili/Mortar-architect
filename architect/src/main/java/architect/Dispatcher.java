@@ -40,6 +40,7 @@ class Dispatcher {
         Preconditions.checkNotNull(navigator.getScope(), "Navigator scope cannot be null");
 
         // clean dead entries that may had happen on history while dispatcher
+        // was inactive
         List<History.Entry> dead = navigator.history.removeAllDead();
         if (dead != null && !dead.isEmpty()) {
             History.Entry entry;
@@ -125,12 +126,8 @@ class Dispatcher {
         Preconditions.checkArgument(navigator.history.existInHistory(entry), "Entry does not exist in history");
         Logger.d("Get entry with scope: %s", entry.scopeName);
 
-        MortarScope currentScope = navigator.presenter.getCurrentScope();
-        Preconditions.checkNotNull(currentScope, "Current scope cannot be null");
-        Logger.d("Current container scope is: %s", currentScope.getName());
-
         Direction direction;
-        final History.Entry nextEntry;
+        History.Entry nextEntry;
         final History.Entry previousEntry;
         if (entry.dead) {
             direction = Direction.BACKWARD;
@@ -144,8 +141,40 @@ class Dispatcher {
 
         Preconditions.checkNotNull(nextEntry, "Next entry cannot be null");
         Preconditions.checkNotNull(previousEntry, "Previous entry cannot be null");
-        Preconditions.checkArgument(previousEntry.scopeName.equals(currentScope.getName()), "Current scope name must match the previous entry scope name");
         Preconditions.checkNull(nextEntry.receivedResult, "Next entry cannot have already a result");
+
+        if (!entry.isModal() && !entries.isEmpty()) {
+            // fast forward dispatch
+            // works only for non-modals
+            History.Entry nextDispatch;
+            while (!entries.isEmpty() && (nextDispatch = entries.get(0)) != null) {
+                if (nextDispatch.isModal()) {
+                    // fast forward only on non-modals
+                    break;
+                }
+
+                Logger.d("Get next dispatch: %s", nextDispatch.scopeName);
+
+                entries.remove(0);
+                nextEntry = nextDispatch;
+
+                if (nextEntry.dead) {
+                    History.Entry toDestroy = nextEntry;
+                    nextEntry = navigator.history.getLeftOf(nextEntry);
+                    removeDeadEntry(toDestroy);
+                } else {
+                    // switch to forward
+                    direction = Direction.FORWARD;
+                }
+
+                Logger.d("Fast forward to next entry: %s", nextEntry.scopeName);
+            }
+        }
+
+        MortarScope currentScope = navigator.presenter.getCurrentScope();
+        Preconditions.checkNotNull(currentScope, "Current scope cannot be null");
+        Logger.d("Current container scope is: %s", currentScope.getName());
+        Preconditions.checkArgument(previousEntry.scopeName.equals(currentScope.getName()), "Current scope name must match the previous entry scope name");
 
         if (direction == Direction.BACKWARD && previousEntry.returnsResult != null) {
             nextEntry.receivedResult = previousEntry.returnsResult;

@@ -95,7 +95,11 @@ public class Navigator implements Scoped {
             NavigationChain.Chain c = chain.chains.get(i);
             if (c.path == null) {
                 if (history.canKill()) {
-                    entries.add(history.kill());
+                    if (c.type == NavigationChain.Chain.TYPE_BACK) {
+                        entries.add(history.kill());
+                    } else {
+                        entries.addAll(history.killAll());
+                    }
                 }
             } else {
                 if (c.type == NavigationChain.Chain.TYPE_REPLACE) {
@@ -137,6 +141,17 @@ public class Navigator implements Scoped {
 
         dispatcher.dispatch(entry);
 
+        return true;
+    }
+
+    public boolean backToRoot() {
+        Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
+
+        if (!history.canKill()) {
+            return false;
+        }
+
+        dispatcher.dispatch(history.killAll());
         return true;
     }
 
