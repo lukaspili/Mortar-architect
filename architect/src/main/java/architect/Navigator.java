@@ -40,12 +40,13 @@ public class Navigator implements Scoped {
     }
 
     public static Navigator create(MortarScope containerScope, StackableParceler parceler, Config config) {
-        Preconditions.checkNotNull(containerScope, "Mortar scope for Navigator cannot be null");
-        Preconditions.checkNotNull(parceler, "PathParceler for Navigator cannot be null");
-
         if (config == null) {
             config = new Config();
         }
+
+        Preconditions.checkNotNull(containerScope, "Mortar scope for Navigator cannot be null");
+        Preconditions.checkArgument(config.dontRestoreStackAfterKill || parceler != null, "StackableParceler for Navigator cannot be null");
+
         Navigator navigator = new Navigator(parceler, config);
 
         MortarScope scope = containerScope.buildChild()
