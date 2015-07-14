@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.util.SparseArray;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import architect.transition.ViewTransition;
@@ -105,6 +106,64 @@ class Presenter {
         }
     }
 
+    /**
+     * Present several modals that will all show/hide in parallel
+     * Once all view transitions have been executed, the dispatcher callback will complete
+     */
+    void presentModals(List<Dispatcher.Dispatch> modals, final Dispatcher.Callback callback) {
+        Preconditions.checkNotNull(view, "Container view cannot be null");
+        Preconditions.checkArgument(view.hasCurrentView(), "Container view must have current view");
+        Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
+
+        Logger.d("Present modals: %d", modals.size());
+
+        // set and track the callback from dispatcher
+        // dispatcher is waiting for the onComplete call
+        // either when present is done, or when presenter is desactivated
+        dispatchingCallback = callback;
+
+        // first, build the views for new modals, or reuse old ones for existing modals
+        final List<NavigatorView.Presentation> presentations = new ArrayList<>(modals.size());
+        Dispatcher.Dispatch dispatch;
+        ViewTransition viewTransition;
+        View newView;
+        Dispatcher.Direction direction;
+        for (int i = 0; i < modals.size(); i++) {
+            dispatch = modals.get(i);
+            Logger.d("%s : %s", dispatch.entry.scopeName, dispatch.entry.dead ? "DEAD" : "ALIVE");
+
+            boolean addView;
+            if (dispatch.entry.dead) {
+                newView = view.getChildAt(0);
+                addView = false;
+                direction = Dispatcher.Direction.BACKWARD;
+                Logger.d("Reuse view");
+            } else {
+                newView = dispatch.entry.path.createView(dispatch.scope.createContext(view.getContext()));
+                addView = true;
+                direction = Dispatcher.Direction.FORWARD;
+                Logger.d("Create new view");
+            }
+
+            viewTransition = transitions.findTransition(view.getCurrentView(), newView, direction);
+            presentations.add(new NavigatorView.Presentation(newView, addView, !addView, direction, viewTransition));
+        }
+
+        // show/hide them all at once
+        // keep track of view transitions that are finished
+        // and complete dispatching callback one all are done
+        Logger.d("Show presentations: %d", presentations.size());
+        view.showModals(presentations, new PresentationCallback() {
+
+            @Override
+            public void onPresentationFinished(int sessionId) {
+                if (isCurrentSession(sessionId)) {
+                    completeDispatchingCallback();
+                }
+            }
+        });
+    }
+
     void present(final Dispatcher.Dispatch newDispatch, final History.Entry previousEntry, final Dispatcher.Direction direction, final Dispatcher.Callback callback) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
@@ -168,7 +227,7 @@ class Presenter {
         boolean keepPreviousView = direction == Dispatcher.Direction.FORWARD && newDispatch.entry.isModal();
         Logger.d("Keep previous view: %b", keepPreviousView);
 
-        view.show(newView, addNewView, !keepPreviousView, direction, transition, new PresentationCallback() {
+        view.show(new NavigatorView.Presentation(newView, addNewView, !keepPreviousView, direction, transition), new PresentationCallback() {
             @Override
             public void onPresentationFinished(int sessionId) {
                 if (isCurrentSession(sessionId)) {

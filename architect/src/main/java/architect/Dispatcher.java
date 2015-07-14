@@ -143,54 +143,122 @@ class Dispatcher {
         Preconditions.checkNotNull(previousEntry, "Previous entry cannot be null");
         Preconditions.checkNull(nextEntry.receivedResult, "Next entry cannot have already a result");
 
-        if (!entry.isModal() && !entries.isEmpty()) {
-            // fast forward dispatch
-            // works only for non-modals
-            History.Entry nextDispatch;
-            while (!entries.isEmpty() && (nextDispatch = entries.get(0)) != null) {
-                if (nextDispatch.isModal()) {
-                    // fast forward only on non-modals
-                    break;
-                }
-
-                Logger.d("Get next dispatch: %s", nextDispatch.scopeName);
-
-                entries.remove(0);
-                nextEntry = nextDispatch;
-
-                if (nextEntry.dead) {
-                    History.Entry toDestroy = nextEntry;
-                    nextEntry = navigator.history.getLeftOf(nextEntry);
-                    removeDeadEntry(toDestroy);
-                } else {
-                    // switch to forward
-                    direction = Direction.FORWARD;
-                }
-
-                Logger.d("Fast forward to next entry: %s", nextEntry.scopeName);
+        if (!entries.isEmpty()) {
+            boolean fastForwarded = fastForward2(entry, previousEntry);
+            if (fastForwarded) {
+                return;
             }
         }
-
-        MortarScope currentScope = navigator.presenter.getCurrentScope();
-        Preconditions.checkNotNull(currentScope, "Current scope cannot be null");
-        Logger.d("Current container scope is: %s", currentScope.getName());
-        Preconditions.checkArgument(previousEntry.scopeName.equals(currentScope.getName()), "Current scope name must match the previous entry scope name");
 
         if (direction == Direction.BACKWARD && previousEntry.returnsResult != null) {
             nextEntry.receivedResult = previousEntry.returnsResult;
             previousEntry.returnsResult = null;
         }
 
-        MortarScope nextScope = navigator.getScope().findChild(nextEntry.scopeName);
-        if (nextScope == null) {
-            nextScope = StackFactory.createScope(navigator.getScope(), nextEntry.path, nextEntry.scopeName);
-        }
+        present(nextEntry, previousEntry, direction);
 
-        navigator.presenter.present(new Dispatch(nextEntry, nextScope), previousEntry, direction, new Callback() {
+//
+//        if (!entries.isEmpty()) {
+//            if (entry.isModal()) {
+//
+//            } else {
+//                History.Entry fastForwarded = fastForward();
+//                if (fastForwarded != null) {
+//                    // fast-forwarded something
+//                    nextEntry = fastForwarded;
+//                    if (!nextEntry.dead) {
+//                        direction = Direction.FORWARD;
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (!entries.isEmpty()) {
+//            // fast-forward
+//            List<Dispatch> modals = null;
+//            History.Entry nextDispatch;
+//            while (!entries.isEmpty() && (nextDispatch = entries.get(0)) != null) {
+//                if (entry.isModal()) {
+//                    // fast forward for modals works only with other modals
+//                    // it will animate all the fast-forwarded modals at once (in parallel)
+//                    if (!nextDispatch.isModal()) {
+//                        break;
+//                    }
+//
+//                    if (modals == null) {
+//                        modals = new ArrayList<>();
+//                    }
+//
+//                    entries.remove(0);
+//                    modals.add(createDispatch(nextDispatch));
+//                }
+//
+//
+//                if (nextDispatch.isModal()) {
+//                    // fast forward only on non-modals
+//                    break;
+//                }
+//
+//                Logger.d("Get next dispatch: %s", nextDispatch.scopeName);
+//
+//                entries.remove(0);
+//                nextEntry = nextDispatch;
+//
+//                if (nextEntry.dead) {
+//                    History.Entry toDestroy = nextEntry;
+//                    nextEntry = navigator.history.getLeftOf(nextEntry);
+//                    removeDeadEntry(toDestroy);
+//                } else {
+//                    // switch to forward
+//                    direction = Direction.FORWARD;
+//                }
+//
+//                Logger.d("Fast forward to next entry: %s", nextEntry.scopeName);
+//            }
+//
+//            if (modals != null) {
+//                // found modals to fast-forward
+//                // let's do it
+//                // add current modal to it as well
+//                modals.add(0, createDispatch(entry));
+//                navigator.presenter.presentModals(modals);
+//                return;
+//            }
+//        }
+//
+//        MortarScope currentScope = navigator.presenter.getCurrentScope();
+//        Preconditions.checkNotNull(currentScope, "Current scope cannot be null");
+//        Logger.d("Current container scope is: %s", currentScope.getName());
+//        Preconditions.checkArgument(previousEntry.scopeName.equals(currentScope.getName()), "Current scope name must match the previous entry scope name");
+
+//        if (direction == Direction.BACKWARD && previousEntry.returnsResult != null) {
+//            nextEntry.receivedResult = previousEntry.returnsResult;
+//            previousEntry.returnsResult = null;
+//        }
+
+//        navigator.presenter.present(createDispatch(nextEntry), previousEntry, direction, new Callback() {
+//            @Override
+//            public void onComplete() {
+//                if (previousEntry.dead) {
+//                    removeDeadEntry(previousEntry);
+//                }
+//
+//                endDispatch();
+//                startDispatch();
+//            }
+//        });
+    }
+
+    private void present(History.Entry nextEntry, final History.Entry previousEntry, Direction direction) {
+        MortarScope currentScope = navigator.presenter.getCurrentScope();
+        Preconditions.checkNotNull(currentScope, "Current scope cannot be null");
+        Logger.d("Current container scope is: %s", currentScope.getName());
+
+        navigator.presenter.present(createDispatch(nextEntry), previousEntry, direction, new Callback() {
             @Override
             public void onComplete() {
                 if (previousEntry.dead) {
-                    removeDeadEntry(previousEntry);
+                    destroyDead(previousEntry);
                 }
 
                 endDispatch();
@@ -199,8 +267,140 @@ class Dispatcher {
         });
     }
 
+    private boolean fastForward2(History.Entry entry, History.Entry previousEntry) {
+        boolean fastForwarded = false;
+        List<Dispatch> modals = null;
+        History.Entry nextDispatch = null;
+        while (!entries.isEmpty() && (nextDispatch = entries.get(0)) != null) {
+            Logger.d("Get next dispatch: %s", nextDispatch.scopeName);
 
-    private void removeDeadEntry(History.Entry entry) {
+            if (entry.isModal()) {
+                // fast forward for modals works only with other modals
+                // it will animate all the fast-forwarded modals at once (in parallel)
+                if (!nextDispatch.isModal()) {
+                    break;
+                }
+
+                if (modals == null) {
+                    modals = new ArrayList<>();
+                    modals.add(createDispatch(entry));
+                }
+
+                fastForwarded = true;
+                entries.remove(0);
+                modals.add(createDispatch(nextDispatch));
+                Logger.d("Modal fast forward to next entry: %s", nextDispatch.scopeName);
+                continue;
+            }
+
+            // non-modal fast-forward
+            if (nextDispatch.isModal()) {
+                // fast forward only on non-modals
+                break;
+            }
+
+            fastForwarded = true;
+            entries.remove(0);
+
+            if (nextDispatch.dead) {
+                History.Entry toDestroy = nextDispatch;
+                nextDispatch = navigator.history.getLeftOf(nextDispatch);
+                destroyDead(toDestroy);
+            }
+
+            Logger.d("Fast forward to next entry: %s", nextDispatch.scopeName);
+        }
+
+        if (!fastForwarded) {
+            return false;
+        }
+
+        if (entry.isModal()) {
+            final List<Dispatch> finalModals = modals;
+            navigator.presenter.presentModals(modals, new Callback() {
+                @Override
+                public void onComplete() {
+                    Dispatch dispatch;
+                    for (int i = 0; i < finalModals.size(); i++) {
+                        dispatch = finalModals.get(i);
+                        if (dispatch.entry.dead) {
+                            destroyDead(dispatch.entry);
+                        }
+                    }
+
+                    endDispatch();
+                    startDispatch();
+                }
+            });
+        } else {
+            present(nextDispatch, previousEntry, nextDispatch.dead ? Direction.BACKWARD : Direction.FORWARD);
+        }
+
+        return true;
+
+//            nextEntry = nextDispatch;
+//
+//            if (nextEntry.dead) {
+//                History.Entry toDestroy = nextEntry;
+//                nextEntry = navigator.history.getLeftOf(nextEntry);
+//                removeDeadEntry(toDestroy);
+//            } else {
+//                // switch to forward
+//                direction = Direction.FORWARD;
+//            }
+//
+//            Logger.d("Fast forward to next entry: %s", nextEntry.scopeName);
+//        }
+//
+//        if (modals != null) {
+//            // found modals to fast-forward
+//            // let's do it
+//            // add current modal to it as well
+//            modals.add(0, createDispatch(entry));
+//            navigator.presenter.presentModals(modals);
+//            return;
+//        }
+
+    }
+
+
+//    private History.Entry fastForward() {
+//
+//
+//        History.Entry nextEntry = null;
+//        History.Entry nextDispatch;
+//        while (!entries.isEmpty() && (nextDispatch = entries.get(0)) != null) {
+//            if (nextDispatch.isModal()) {
+//                break;
+//            }
+//
+//            Logger.d("Get next dispatch: %s", nextDispatch.scopeName);
+//
+//            entries.remove(0);
+//            nextEntry = nextDispatch;
+//
+//            if (nextEntry.dead) {
+//                History.Entry toDestroy = nextEntry;
+//                nextEntry = navigator.history.getLeftOf(nextEntry);
+//                removeDeadEntry(toDestroy);
+//            }
+//
+//            Logger.d("Fast forward to next entry: %s", nextEntry.scopeName);
+//        }
+//
+//        return nextEntry;
+//    }
+
+    private Dispatch createDispatch(History.Entry entry) {
+        MortarScope nextScope = navigator.getScope().findChild(entry.scopeName);
+        if (nextScope == null) {
+            nextScope = StackFactory.createScope(navigator.getScope(), entry.path, entry.scopeName);
+        }
+
+        return new Dispatch(entry, nextScope);
+    }
+
+    private void destroyDead(History.Entry entry) {
         Logger.d("Remove dead entry: %s", entry.scopeName);
         navigator.history.remove(entry);
         if (navigator.getScope() != null) {
@@ -210,6 +410,15 @@ class Dispatcher {
                 scope.destroy();
             }
         }
+
+
+//        Logger.d("Destroy dead: %s", dispatch.entry.scopeName);
+//        navigator.history.remove(dispatch.entry);
+//        if (dispatch.scope != null) {
+//            dispatch.scope.destroy();
+//        } else {
+//            Logger.d("/!\\ --> Dead does not have scope do destroy");
+//        }
     }
 
     private void endDispatch() {

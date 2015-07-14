@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.mortarnav.deps.WithAppDependencies;
 import com.mortarnav.stackable.HomeStackable;
+import com.mortarnav.view.MyPopup2View;
 import com.mortarnav.view.MyPopupView;
 
 import architect.Navigator;
@@ -14,6 +15,7 @@ import architect.TransitionsMapping;
 import architect.commons.ActivityArchitector;
 import architect.commons.Architected;
 import architect.robot.DaggerService;
+import architect.transition.BottomAppearTransition;
 import architect.transition.Config;
 import architect.transition.FadeModalTransition;
 import architect.transition.LateralViewTransition;
@@ -62,7 +64,8 @@ public class MainActivity extends Activity {
                 Navigator navigator = Navigator.create(scope, new Parceler());
                 navigator.transitions().register(new TransitionsMapping()
                         .byDefault(new LateralViewTransition(new Config().duration(300)))
-                        .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250))));
+                        .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250)))
+                        .show(MyPopup2View.class).withTransition(new BottomAppearTransition(new Config().duration(250))));
                 return navigator;
             }
 

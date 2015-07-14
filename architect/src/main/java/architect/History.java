@@ -177,8 +177,8 @@ public class History {
     }
 
     void remove(Entry entry) {
-        boolean remove = entries.remove(entry);
-        Preconditions.checkArgument(remove, "Entry to remove does not exist");
+        boolean removed = entries.remove(entry);
+        Preconditions.checkArgument(removed, "Entry to remove does not exist");
     }
 
     List<Entry> removeAllDead() {
