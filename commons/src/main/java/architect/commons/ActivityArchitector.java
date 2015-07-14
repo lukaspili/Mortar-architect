@@ -33,9 +33,9 @@ public class ActivityArchitector {
         return scope;
     }
 
-    public static Navigator onCreateNavigator(Activity activity, Bundle savedInstanceState, NavigatorView navigatorView, StackablePath defaultPath) {
+    public static Navigator onCreateNavigator(Activity activity, Bundle savedInstanceState, NavigatorView navigatorView, StackablePath... defaultPaths) {
         Navigator navigator = Navigator.find(activity);
-        navigator.delegate().onCreate(activity.getIntent(), savedInstanceState, navigatorView, defaultPath);
+        navigator.delegate().onCreate(activity.getIntent(), savedInstanceState, navigatorView, defaultPaths);
         return navigator;
     }
 

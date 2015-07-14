@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 /**
- * Bridge between a navigator and Android
+ * Hook up Navigator to the Android lifecyle
+ * Can be used both in Activity (call the equivalent Activity methods) and in ViewPresenter
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
@@ -19,9 +20,9 @@ public class NavigatorLifecycleDelegate {
         this.navigator = navigator;
     }
 
-    public void onCreate(Intent intent, Bundle savedInstanceState, NavigatorView containerView, StackablePath defaultPath) {
+    public void onCreate(Intent intent, Bundle savedInstanceState, NavigatorView containerView, StackablePath... defaultPaths) {
         Preconditions.checkNotNull(containerView, "Container view cannot not be null");
-        Preconditions.checkNotNull(defaultPath, "Default path cannot not be null");
+        Preconditions.checkArgument(defaultPaths != null && defaultPaths.length > 0, "Default path cannot not be null nor empty");
 
         if (navigator.history.shouldInit()) {
             Bundle bundle = null;
@@ -36,7 +37,7 @@ public class NavigatorLifecycleDelegate {
             if (bundle != null) {
                 navigator.history.init(bundle);
             } else {
-                navigator.history.init(defaultPath);
+                navigator.history.init(defaultPaths);
             }
         }
 

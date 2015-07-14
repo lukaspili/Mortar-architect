@@ -49,10 +49,13 @@ public class History {
         scopeNamer = bundle.getParcelable(SCOPES_NAMER_KEY);
     }
 
-    void init(StackablePath path) {
+    void init(StackablePath... paths) {
         entries = new ArrayList<>();
         scopeNamer = new ScopeNamer();
-        add(path, NAV_TYPE_PUSH);
+
+        for (int i = 0; i < paths.length; i++) {
+            add(paths[i], NAV_TYPE_PUSH);
+        }
     }
 
     Bundle toBundle() {
