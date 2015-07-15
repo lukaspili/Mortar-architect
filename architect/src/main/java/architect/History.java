@@ -86,11 +86,6 @@ public class History {
         return entries == null;
     }
 
-    void copy(History history) {
-        Preconditions.checkArgument(entries.isEmpty(), "Cannot copy new history if previous one is not empty");
-        entries.addAll(history.entries);
-    }
-
     Entry add(StackablePath path, int navType) {
         if (navType == NAV_TYPE_MODAL) {
             // modal
@@ -212,16 +207,6 @@ public class History {
         }
 
         return entries.get(index - 1);
-    }
-
-    Entry getRightOf(Entry entry) {
-        int index = entries.indexOf(entry);
-        Preconditions.checkArgument(index >= 0, "Get right of an entry that does not exist in history");
-        if (index == entries.size() - 1) {
-            return null;
-        }
-
-        return entries.get(index + 1);
     }
 
     boolean existInHistory(Entry entry) {
