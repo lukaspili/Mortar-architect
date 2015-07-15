@@ -1,5 +1,18 @@
 # Changelog
 
+## Mortar Architect 0.14 *07/15/15*
+
+ * Do not make view transition for intermediate paths during navigation events
+ * Do not require a `StackableParceler` when don't restore navigation stack option is enabled
+ * Add `Navigator.backToRoot()`
+ * Modify `Navigator.push()` to be able to take a varargs of `StackablePath`
+ * Modify `Navigator.delegate().onCreate()` to be able to take a varargs of `StackablePath`
+ * Modifiy `StackablePath` to take the parent ViewGroup as paramter. It allows to inflate a view from xml.
+ * Update `@AutoStackable` by adding new member `pathWithLayout` to reflect the change above
+ * Add `Navigator.set()`
+ * Add transition direction to `NavigatorChain`
+ * Modify `Navigator.show()` to be able to show several modals at the same time
+
 ## Mortar Architect 0.13 *07/10/15*
 
  * Refactoring of core with many breaking changes, but it's mostly simplification

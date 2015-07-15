@@ -81,7 +81,9 @@ Architect `Navigator` class allows you to navigate between Mortar scopes. It man
 ```java
 public interface StackablePath extends Stackable {
 
-    View createView(Context context);
+    // Return either a new MyView(context) directly
+    // Or inflate an xml: LayoutInflater.from(context).inflate(R.layout.my_view, parent, false)
+    View createView(Context context, ViewGroup parent);
 }
 ```
 
@@ -91,7 +93,7 @@ The following `HomeStackable` implements now `StackablePath`. Nothing else chang
 @DaggerScope(Component.class)
 public class HomeStackable implements StackablePath {
 
-    View createView(Context context) {
+    View createView(Context context, ViewGroup parent) {
         return new HomeView(context);
     }
 
@@ -102,11 +104,11 @@ public class HomeStackable implements StackablePath {
 Which is now compatible with `Navigator`:
 
 ```java
-    Navigator.get(getView()).push(new HomeStackable("first home"));
+Navigator.get(getView()).push(new HomeStackable("first home"));
 ```
 
 
-`Navigator` provides 4 navigation methods
+`Navigator` provides 6 navigation methods
 
 #### `Navigator.push()`
 
@@ -133,7 +135,11 @@ It will perform the `backward()` view transition, and then remove the old view a
 
 #### `Navigator.chain()`
 
-Lets you execute several navigation event, in a sequential order.
+Lets you execute several navigation events.
+
+#### `Navigator.set()`
+
+Set new paths stack by replacing the current one.
 
 
 ## View Transitions
@@ -448,18 +454,22 @@ public class SlidesPresenter extends ViewPresenter<SlidesView> {
 }
 ```
 
-And provide the `pathWithView` member to generate a `StackablePath` instead:
+And provide either `pathWithView` or `pathWithLayout` to generate a `StackablePath` instead:
 
 ```java
 @AutoStackable(
         component = @AutoComponent(includes = StandardAutoComponent.class),
         pathWithView = SlidesView.class
+        // OR
+        // pathWithLayout = R.layout.slides_view
 )
 @DaggerScope(SlidesPresenter.class)
 public class SlidesPresenter extends ViewPresenter<SlidesView> {
 
 }
 ```
+
+`pathWithView` will generate a `StackablePath` that instanciates the View directly, while `pathWithLayout` will generate a path that inflates the layout. You cannot use both at the same time.
 
 
 ## Navigation params
