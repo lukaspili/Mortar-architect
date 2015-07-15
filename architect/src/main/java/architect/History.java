@@ -38,15 +38,17 @@ public class History {
     }
 
     void init(Bundle bundle) {
+        scopeNamer = bundle.getParcelable(SCOPES_NAMER_KEY);
+
         ArrayList<Bundle> entryBundles = bundle.getParcelableArrayList(ENTRIES_KEY);
-        entries = new ArrayList<>(entryBundles.size());
-        if (!entryBundles.isEmpty()) {
-            for (int i = 0; i < entryBundles.size(); i++) {
-                entries.add(Entry.fromBundle(entryBundles.get(i), parceler));
+        if (entryBundles != null) {
+            entries = new ArrayList<>(entryBundles.size());
+            if (!entryBundles.isEmpty()) {
+                for (int i = 0; i < entryBundles.size(); i++) {
+                    entries.add(Entry.fromBundle(entryBundles.get(i), parceler));
+                }
             }
         }
-
-        scopeNamer = bundle.getParcelable(SCOPES_NAMER_KEY);
     }
 
     void init(StackablePath... paths) {
@@ -60,15 +62,18 @@ public class History {
 
     Bundle toBundle() {
         Bundle historyBundle = new Bundle();
-        ArrayList<Bundle> entryBundles = new ArrayList<>(entries.size());
-        for (Entry entry : entries) {
-            Bundle entryBundle = entry.toBundle(parceler);
-            if (entryBundle != null) {
-                entryBundles.add(entryBundle);
-            }
-        }
-        historyBundle.putParcelableArrayList(ENTRIES_KEY, entryBundles);
         historyBundle.putParcelable(SCOPES_NAMER_KEY, scopeNamer);
+
+        if (parceler != null) {
+            ArrayList<Bundle> entryBundles = new ArrayList<>(entries.size());
+            for (Entry entry : entries) {
+                Bundle entryBundle = entry.toBundle(parceler);
+                if (entryBundle != null) {
+                    entryBundles.add(entryBundle);
+                }
+            }
+            historyBundle.putParcelableArrayList(ENTRIES_KEY, entryBundles);
+        }
 
         return historyBundle;
     }

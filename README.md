@@ -281,7 +281,7 @@ You can find an example of configuration in the [`MainActivity`](https://github.
 In order to survive process kills, and restore the navigation stack, `Navigator` requires a `StackableParceler` that saves and restore the `StackablePath` from disk with the help of Android `Parcelable`.
 
 ```java
-    Navigator navigator = Navigator.create(scope, new Parceler()); // Parceler is a class that implements StackableParceler
+Navigator navigator = Navigator.create(scope, new Parceler()); // Parceler is a class that implements StackableParceler
 ```
 
 The most performant solution is to make your `StackablePath` classes compatible with `Parcelable`. You have several options, like:
@@ -338,7 +338,8 @@ In opposite, when the "don't restore navigation stack" option is enabled, `Navig
 To enable the option, provide a custom configuration when creating the `Navigator` instance:
 
 ```java
-    Navigator navigator = Navigator.create(scope, new Parceler(), new Navigator.Config().dontRestoreStackAfterKill(true));
+// don't need to provide a parceler if dontRestoreStackAfterKill is true
+Navigator navigator = Navigator.create(scope, null, new Navigator.Config().dontRestoreStackAfterKill(true));
 ```
 
 
