@@ -39,7 +39,7 @@ public class StackablePagerAdapter extends PagerAdapter {
         StackablePath path = paths.get(position);
 
         Context pageContext = StackFactory.createContext(context, path, String.valueOf(position));
-        View newChild = path.createView(pageContext);
+        View newChild = path.createView(pageContext, container);
         container.addView(newChild);
         return newChild;
     }

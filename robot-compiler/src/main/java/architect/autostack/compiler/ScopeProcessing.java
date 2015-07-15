@@ -114,6 +114,10 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
                 spec.setPathViewTypeName(TypeName.get(extractor.getPathViewTypeMirror()));
             }
 
+            if (extractor.getPathLayout() != 0) {
+                spec.setPathLayout(extractor.getPathLayout());
+            }
+
             ModuleSpec moduleSpec = new ModuleSpec(moduleClassName);
             moduleSpec.setPresenterTypeName(presenterTypeName);
             moduleSpec.setScopeAnnotationSpec(spec.getScopeAnnotationSpec());

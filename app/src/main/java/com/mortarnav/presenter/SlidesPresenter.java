@@ -17,6 +17,7 @@ import mortar.ViewPresenter;
 @AutoStackable(
         component = @AutoComponent(includes = StandardAutoComponent.class),
         pathWithView = SlidesView.class
+//        pathWithLayout = R.layout.slides_view
 )
 @DaggerScope(SlidesPresenter.class)
 public class SlidesPresenter extends ViewPresenter<SlidesView> {

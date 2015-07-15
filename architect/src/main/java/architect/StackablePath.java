@@ -2,6 +2,7 @@ package architect;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Extension of Stackable that can create the associated view programmatically
@@ -11,5 +12,5 @@ import android.view.View;
  */
 public interface StackablePath extends Stackable {
 
-    View createView(Context context);
+    View createView(Context context, ViewGroup parent);
 }

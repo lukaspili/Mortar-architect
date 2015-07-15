@@ -2,6 +2,7 @@ package com.mortarnav.stackable;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.mortarnav.DaggerScope;
 import com.mortarnav.MainActivityComponent;
@@ -34,7 +35,7 @@ public class HomeStackable implements StackablePath {
     }
 
     @Override
-    public View createView(Context context) {
+    public View createView(Context context, ViewGroup parent) {
         return new HomeView(context);
     }
 

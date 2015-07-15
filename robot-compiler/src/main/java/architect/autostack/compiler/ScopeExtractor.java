@@ -15,7 +15,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import architect.robot.AutoStackable;
-import architect.robot.FromPath;
 import autodagger.compiler.utils.AutoComponentExtractorUtil;
 import processorworkflow.AbstractExtractor;
 import processorworkflow.Errors;
@@ -34,7 +33,8 @@ public class ScopeExtractor extends AbstractExtractor {
     private AnnotationMirror componentAnnotationTypeMirror;
     private TypeMirror componentDependency;
     private TypeMirror pathViewTypeMirror;
-//    private List<VariableElement> fromPathFieldsElements;
+    private int pathLayout;
+    //    private List<VariableElement> fromPathFieldsElements;
     private List<VariableElement> constructorsParamtersElements;
 
     public ScopeExtractor(Element element, Types types, Elements elements, Errors errors) {
@@ -61,6 +61,7 @@ public class ScopeExtractor extends AbstractExtractor {
         componentDependency = deps.get(0);
 
         pathViewTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStackable.class, PATH_VIEW);
+        pathLayout = element.getAnnotation(AutoStackable.class).pathWithLayout();
         scopeAnnotationTypeMirror = findScope();
 
 //        fromPathFieldsElements = new ArrayList<>();
@@ -128,7 +129,11 @@ public class ScopeExtractor extends AbstractExtractor {
         return componentDependency;
     }
 
-//    public List<VariableElement> getFromPathFieldsElements() {
+    public int getPathLayout() {
+        return pathLayout;
+    }
+
+    //    public List<VariableElement> getFromPathFieldsElements() {
 //        return fromPathFieldsElements;
 //    }
 

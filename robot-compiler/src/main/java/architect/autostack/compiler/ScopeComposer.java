@@ -23,6 +23,7 @@ import dagger.Module;
 import dagger.Provides;
 import mortar.MortarScope;
 import processorworkflow.AbstractComposer;
+import processorworkflow.Logger;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -33,6 +34,9 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
     private static final ClassName PATH_CLS = ClassName.get("architect", "StackablePath");
     private static final ClassName DAGGERSERVICE_CLS = ClassName.get(DaggerService.class);
     private static final ClassName CONTEXT_CLS = ClassName.get("android.content", "Context");
+    private static final ClassName VIEW_CLS = ClassName.get("android.view", "View");
+    private static final ClassName VIEWGROUP_CLS = ClassName.get("android.view", "ViewGroup");
+    private static final ClassName LAYOUTINFLATER_CLS = ClassName.get("android.view", "LayoutInflater");
 
     public ScopeComposer(List<ScopeSpec> specs) {
         super(specs);
@@ -89,17 +93,21 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
             builder.addAnnotation(spec.getScopeAnnotationSpec());
         }
 
-        if (spec.getPathViewTypeName() != null) {
+        if (spec.getPathViewTypeName() != null || spec.getPathLayout() != null) {
             builder.addSuperinterface(PATH_CLS);
-            MethodSpec createViewSpec = MethodSpec.methodBuilder("createView")
+            MethodSpec.Builder createViewSpecBuilder = MethodSpec.methodBuilder("createView")
                     .addModifiers(Modifier.PUBLIC)
-                    .returns(spec.getPathViewTypeName())
+                    .returns(spec.getPathViewTypeName() != null ? spec.getPathViewTypeName() : VIEW_CLS)
                     .addAnnotation(Override.class)
                     .addParameter(CONTEXT_CLS, "context")
-                    .addStatement("return new $T(context)", spec.getPathViewTypeName())
-                    .build();
+                    .addParameter(VIEWGROUP_CLS, "parent");
 
-            builder.addMethod(createViewSpec);
+            if (spec.getPathViewTypeName() != null) {
+                createViewSpecBuilder.addStatement("return new $T(context)", spec.getPathViewTypeName());
+            } else {
+                createViewSpecBuilder.addStatement("return $T.from(context).inflate($L, parent, false)", LAYOUTINFLATER_CLS, spec.getPathLayout());
+            }
+            builder.addMethod(createViewSpecBuilder.build());
         } else {
             builder.addSuperinterface(STACKABLE_CLS);
         }

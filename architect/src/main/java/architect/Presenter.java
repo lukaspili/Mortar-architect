@@ -97,7 +97,7 @@ class Presenter {
         for (int i = 0; i < dispatches.size(); i++) {
             dispatch = dispatches.get(i);
             Logger.d("Restore scope: %s", dispatch.entry.scopeName);
-            child = dispatch.entry.path.createView(dispatch.scope.createContext(view.getContext()));
+            child = dispatch.entry.path.createView(dispatch.scope.createContext(view.getContext()), view);
             if (dispatch.entry.state != null) {
                 view.restoreHierarchyState(dispatch.entry.state);
             }
@@ -139,7 +139,7 @@ class Presenter {
                 direction = Dispatcher.Direction.BACKWARD;
                 Logger.d("Reuse view");
             } else {
-                newView = dispatch.entry.path.createView(dispatch.scope.createContext(view.getContext()));
+                newView = dispatch.entry.path.createView(dispatch.scope.createContext(view.getContext()), view);
                 addView = true;
                 direction = Dispatcher.Direction.FORWARD;
                 Logger.d("Create new view");
@@ -191,7 +191,7 @@ class Presenter {
             // or when backward if previous entry is not modal
             Logger.d("Create new view for %s", newDispatch.entry.scopeName);
             Context context = newDispatch.scope.createContext(view.getContext());
-            newView = newDispatch.entry.path.createView(context);
+            newView = newDispatch.entry.path.createView(context, view);
             addNewView = true;
         } else {
             Logger.d("Reuse previous view for %s", newDispatch.entry.scopeName);

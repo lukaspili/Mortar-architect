@@ -12,6 +12,7 @@ public class ScopeSpec {
     private ClassName className;
     private ModuleSpec moduleSpec;
     private String daggerComponentBuilderDependencyMethodName;
+    private Integer pathLayout;
     private TypeName daggerComponentBuilderDependencyTypeName;
     private TypeName daggerComponentTypeName;
     private TypeName parentComponentTypeName;
@@ -37,6 +38,14 @@ public class ScopeSpec {
 
     public void setDaggerComponentBuilderDependencyMethodName(String daggerComponentBuilderDependencyMethodName) {
         this.daggerComponentBuilderDependencyMethodName = daggerComponentBuilderDependencyMethodName;
+    }
+
+    public Integer getPathLayout() {
+        return pathLayout;
+    }
+
+    public void setPathLayout(Integer pathLayout) {
+        this.pathLayout = pathLayout;
     }
 
     public TypeName getDaggerComponentBuilderDependencyTypeName() {
