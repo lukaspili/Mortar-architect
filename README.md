@@ -567,7 +567,7 @@ repositories {
 
 dependencies {
     // local var convinience for architect version
-    def architect_version = '0.13-SNAPSHOT'
+    def architect_version = '0.14-SNAPSHOT'
 
     // Core library
     compile 'com.github.lukaspili.mortar-architect:architect:' + architect_version
@@ -594,7 +594,9 @@ dependencies {
 
 ## Status
 
-The core API should be stable enough. Architect is implemented in several soon to be in production apps.  
+The core API should be stable enough. Architect is implemented in several apps.  
+
+Because of the rapid development cycle, I'm currently only using SNAPSHOT versions (I don't want to wait for maven central propagation). Once Architect reaches the stable version 1.0, I will adopt proper versioning.
 
 
 ## Author

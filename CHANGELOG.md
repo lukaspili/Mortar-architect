@@ -1,6 +1,6 @@
 # Changelog
 
-## Mortar Architect 0.14 *07/15/15*
+## Mortar Architect 0.14 *07/17/15*
 
  * Do not make view transition for intermediate paths during navigation events
  * Do not require a `StackableParceler` when don't restore navigation stack option is enabled
@@ -12,6 +12,7 @@
  * Add `Navigator.set()`
  * Add transition direction to `NavigatorChain`
  * Modify `Navigator.show()` to be able to show several modals at the same time
+ * Add `TransitionDirection` to specify the direction of the transition. It has only impact is on the transition animation.
 
 ## Mortar Architect 0.13 *07/10/15*
 
