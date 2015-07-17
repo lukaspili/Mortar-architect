@@ -64,6 +64,24 @@
             android:layout_height="wrap_content"
             android:text="Back to root"/>
 
+        <Button
+            android:id="@+id/home_show_popup_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show popup two"/>
+
+        <Button
+            android:id="@+id/home_show_two_popups"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show two popups"/>
+
+        <Button
+            android:id="@+id/home_set_new_stack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set new stack"/>
+
         <com.mortarnav.view.HomeNestedView
             android:layout_width="match_parent"
             android:layout_height="0dp"

@@ -144,17 +144,22 @@ public class History {
     }
 
     /**
-     * Kill all until root
+     * Kill all, including root or not
+     * The returned entries don't include the root entry though
      *
      * @return the killed entries, in the historical order
      */
-    List<Entry> killAll() {
-        List<Entry> killed = new ArrayList<>(entries.size() - 1);
+    List<Entry> killAll(boolean rootIncluded) {
+        List<Entry> killed = new ArrayList<>(rootIncluded ? entries.size() : entries.size() - 1);
         Entry entry;
-        for (int i = entries.size() - 1; i > 0; i--) {
+        for (int i = entries.size() - 1; i > (rootIncluded ? -1 : 0); i--) {
             entry = entries.get(i);
             entry.dead = true;
-            killed.add(entry);
+
+            if (i != 0) {
+                // never include root
+                killed.add(entry);
+            }
         }
 
         return killed;
@@ -239,6 +244,7 @@ public class History {
         boolean dead;
         Object returnsResult;
         Object receivedResult;
+        TransitionDirection transitionDirection;
 
         public Entry(String scopeName, StackablePath path, int navType) {
             Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");

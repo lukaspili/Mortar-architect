@@ -58,7 +58,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
             Logger.d("%d = %s", i, getChildAt(i));
         }
 
-        loadTransition(presentation, presentation.addView ? 2 : 1, new Callback() {
+        loadTransition(presentation, 1, new Callback() {
             @Override
             public void onAnimatorReady(Animator animator) {
                 if (animator != null) {
@@ -155,7 +155,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
             }
             callback.onAnimatorReady(null);
         } else {
-            measureAndGetTransition(presentation.view, getChildAt(getChildCount() - previousDecount), presentation.removePreviousView, presentation.direction, presentation.transition, callback);
+            measureAndGetTransition(presentation.view, getChildAt(getChildCount() - previousDecount - (presentation.addView ? 1 : 0)), presentation.removePreviousView, presentation.direction, presentation.transition, callback);
         }
     }
 
@@ -169,7 +169,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         callback.onPresentationFinished(sessionId);
     }
 
-    private void measureAndGetTransition(final View newView, final View previousView, final boolean removePreviousView, final Dispatcher.Direction direction, final ViewTransition transition, final Callback callback) {
+    private void measureAndGetTransition(final View newView, final View previousView, final boolean removePreviousView, final TransitionDirection direction, final ViewTransition transition, final Callback callback) {
         int width = newView.getWidth();
         int height = newView.getHeight();
 
@@ -192,7 +192,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         });
     }
 
-    private Animator getAnimator(final View originView, View destinationView, final boolean removePreviousView, final Dispatcher.Direction direction, final ViewTransition transition, final Callback callback) {
+    private Animator getAnimator(final View originView, View destinationView, final boolean removePreviousView, final TransitionDirection direction, final ViewTransition transition, final Callback callback) {
         AnimatorSet set = new AnimatorSet();
         set.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -207,7 +207,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
 
         transition.configure(set);
 
-        if (direction == Dispatcher.Direction.FORWARD) {
+        if (direction == TransitionDirection.FORWARD) {
             transition.forward(destinationView, originView, set);
         } else {
             transition.backward(destinationView, originView, set);
@@ -236,10 +236,10 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         final View view;
         final boolean addView;
         final boolean removePreviousView;
-        final Dispatcher.Direction direction;
+        final TransitionDirection direction;
         final ViewTransition transition;
 
-        public Presentation(View view, boolean addView, boolean removePreviousView, Dispatcher.Direction direction, ViewTransition transition) {
+        public Presentation(View view, boolean addView, boolean removePreviousView, TransitionDirection direction, ViewTransition transition) {
             this.view = view;
             this.addView = addView;
             this.removePreviousView = removePreviousView;

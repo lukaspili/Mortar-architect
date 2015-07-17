@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
                 navigator.transitions().register(new TransitionsMapping()
                         .byDefault(new LateralViewTransition(new Config().duration(300)))
                         .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250)))
-                        .show(MyPopup2View.class).withTransition(new BottomAppearTransition(new Config().duration(250))));
+                        .show(MyPopup2View.class).withTransition(new BottomAppearTransition(false, new Config().duration(1000))));
                 return navigator;
             }
 

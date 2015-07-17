@@ -60,10 +60,10 @@ public class Transitions {
         return this;
     }
 
-    ViewTransition findTransition(View originView, View destinationView, Dispatcher.Direction direction) {
+    ViewTransition findTransition(View originView, View destinationView, TransitionDirection direction) {
         // depending on transition direction, the target view is either the origin or destination
-        View target = direction == Dispatcher.Direction.FORWARD ? destinationView : originView;
-        View from = direction == Dispatcher.Direction.FORWARD ? originView : destinationView;
+        View target = direction == TransitionDirection.FORWARD ? destinationView : originView;
+        View from = direction == TransitionDirection.FORWARD ? originView : destinationView;
         return findTransition(target, from);
     }
 

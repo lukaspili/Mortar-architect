@@ -127,7 +127,7 @@ class Presenter {
         Dispatcher.Dispatch dispatch;
         ViewTransition viewTransition;
         View newView;
-        Dispatcher.Direction direction;
+        TransitionDirection direction;
         for (int i = 0; i < modals.size(); i++) {
             dispatch = modals.get(i);
             Logger.d("%s : %s", dispatch.entry.scopeName, dispatch.entry.dead ? "DEAD" : "ALIVE");
@@ -136,12 +136,12 @@ class Presenter {
             if (dispatch.entry.dead) {
                 newView = view.getChildAt(0);
                 addView = false;
-                direction = Dispatcher.Direction.BACKWARD;
+                direction = TransitionDirection.BACKWARD;
                 Logger.d("Reuse view");
             } else {
                 newView = dispatch.entry.path.createView(dispatch.scope.createContext(view.getContext()), view);
                 addView = true;
-                direction = Dispatcher.Direction.FORWARD;
+                direction = TransitionDirection.FORWARD;
                 Logger.d("Create new view");
             }
 
@@ -164,7 +164,7 @@ class Presenter {
         });
     }
 
-    void present(final Dispatcher.Dispatch newDispatch, final History.Entry previousEntry, final Dispatcher.Direction direction, final Dispatcher.Callback callback) {
+    void present(final Dispatcher.Dispatch newDispatch, final History.Entry previousEntry, final TransitionDirection direction, final Dispatcher.Callback callback) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
 
@@ -176,8 +176,8 @@ class Presenter {
         // either when present is done, or when presenter is desactivated
         dispatchingCallback = callback;
 
-        if (direction == Dispatcher.Direction.FORWARD && !previousEntry.dead) {
-            // forward, save previous view state
+        if (!previousEntry.dead) {
+            // save previous view state
             Logger.d("Save view state for: %s", previousEntry.scopeName);
             previousEntry.state = getCurrentViewState();
         }
@@ -185,8 +185,10 @@ class Presenter {
         // create or reuse view
         View newView;
         boolean addNewView;
-        if (direction == Dispatcher.Direction.FORWARD ||
-                (direction == Dispatcher.Direction.BACKWARD && !previousEntry.isModal())) {
+        if (!previousEntry.dead || (previousEntry.dead && !previousEntry.isModal())) {
+
+//                direction == Dispatcher.Direction.FORWARD ||
+//                (direction == Dispatcher.Direction.BACKWARD && !previousEntry.isModal())) {
             // create new view when forward and replace
             // or when backward if previous entry is not modal
             Logger.d("Create new view for %s", newDispatch.entry.scopeName);
@@ -224,7 +226,8 @@ class Presenter {
             newDispatch.entry.receivedResult = null;
         }
 
-        boolean keepPreviousView = direction == Dispatcher.Direction.FORWARD && newDispatch.entry.isModal();
+//        boolean keepPreviousView = direction == Dispatcher.Direction.FORWARD && newDispatch.entry.isModal();
+        boolean keepPreviousView = !previousEntry.dead && newDispatch.entry.isModal();
         Logger.d("Keep previous view: %b", keepPreviousView);
 
         view.show(new NavigatorView.Presentation(newView, addNewView, !keepPreviousView, direction, transition), new PresentationCallback() {

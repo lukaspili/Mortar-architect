@@ -74,35 +74,104 @@ public class Navigator implements Scoped {
         presenter = new Presenter(transitions);
     }
 
+    /**
+     * Push one path
+     */
+    public void push(StackablePath path) {
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path));
+    }
+
+    /**
+     * Push one or several paths
+     */
     public void push(StackablePath... paths) {
-        add(History.NAV_TYPE_PUSH, paths);
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths));
     }
 
+    /**
+     * Push navigation stack on top of the current one
+     */
+    public void push(NavigationStack stack) {
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, stack));
+    }
+
+    /**
+     * Show one path as modal
+     */
     public void show(StackablePath path) {
-        add(History.NAV_TYPE_MODAL, path);
+        dispatcher.dispatch(add(History.NAV_TYPE_MODAL, path));
     }
 
+    /**
+     * Show several paths as modal
+     */
+    public void show(StackablePath... paths) {
+        dispatcher.dispatch(add(History.NAV_TYPE_MODAL, paths));
+    }
+
+    /**
+     * Show navigation stack on top of current one
+     */
+    public void show(NavigationStack stack) {
+        dispatcher.dispatch(add(History.NAV_TYPE_MODAL, stack));
+    }
+
+    /**
+     * Replace current path with new one
+     */
     public void replace(StackablePath path) {
+        check();
         history.kill();
-        History.Entry entry = history.add(path, History.NAV_TYPE_PUSH);
-        dispatcher.dispatch(entry);
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path));
     }
 
-    public void chain(NavigationChain chain) {
-        Preconditions.checkArgument(!chain.chains.isEmpty(), "Navigation chain cannot be empty");
+    /**
+     * Replace current path with several new ones
+     */
+    public void replace(StackablePath... paths) {
+        check();
+        history.kill();
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths));
+    }
 
+    /**
+     * Replace current path with new stack
+     */
+    public void replace(NavigationStack stack) {
+        check();
+        history.kill();
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, stack));
+    }
+
+    /**
+     * Execute several navigation event on the current stack
+     */
+    public void chain(NavigationChain chain) {
+        chain(chain, null);
+    }
+
+    /**
+     * Execute several navigation event on the current stack
+     */
+    public void chain(NavigationChain chain, TransitionDirection direction) {
+        check();
+        Preconditions.checkArgument(chain != null && !chain.chains.isEmpty(), "Navigation chain cannot be null nor empty");
+
+        TransitionDirection defaultDirection = null;
         List<History.Entry> entries = new ArrayList<>(chain.chains.size());
         for (int i = 0; i < chain.chains.size(); i++) {
             NavigationChain.Chain c = chain.chains.get(i);
             if (c.path == null) {
+                defaultDirection = TransitionDirection.BACKWARD;
                 if (history.canKill()) {
                     if (c.type == NavigationChain.Chain.TYPE_BACK) {
                         entries.add(history.kill());
                     } else {
-                        entries.addAll(history.killAll());
+                        entries.addAll(history.killAll(false));
                     }
                 }
             } else {
+                defaultDirection = TransitionDirection.FORWARD;
                 if (c.type == NavigationChain.Chain.TYPE_REPLACE) {
                     history.kill();
                 }
@@ -114,22 +183,22 @@ public class Navigator implements Scoped {
             }
         }
 
+        entries.get(entries.size() - 1).transitionDirection = direction != null ? direction : defaultDirection;
         dispatcher.dispatch(entries);
     }
 
-    private void add(int navType, StackablePath... paths) {
-        Preconditions.checkArgument(paths != null && paths.length > 0, "StackablePath cannot be null or empty");
-        Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
+    /**
+     * Set new navigation stack by replacing the current one
+     *
+     * @param direction specify the ViewTransition direction to apply
+     */
+    public void set(NavigationStack stack, TransitionDirection direction) {
+        check();
 
-        if (paths.length == 1) {
-            dispatcher.dispatch(history.add(paths[0], navType));
-            return;
-        }
-
-        List<History.Entry> entries = new ArrayList<>(paths.length);
-        for (int i = 0; i < paths.length; i++) {
-            entries.add(history.add(paths[i], navType));
-        }
+        List<History.Entry> entries = new ArrayList<>();
+        entries.addAll(history.killAll(true));
+        entries.addAll(add(History.NAV_TYPE_PUSH, stack));
+        entries.get(entries.size() - 1).transitionDirection = direction;
         dispatcher.dispatch(entries);
     }
 
@@ -138,8 +207,7 @@ public class Navigator implements Scoped {
     }
 
     public boolean back(Object withResult) {
-        Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
-
+        check();
         if (!history.canKill()) {
             return false;
         }
@@ -155,15 +223,42 @@ public class Navigator implements Scoped {
     }
 
     public boolean backToRoot() {
-        Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
-
+        check();
         if (!history.canKill()) {
             return false;
         }
 
-        dispatcher.dispatch(history.killAll());
+//        List<History.Entry> entries = ;
+//        entries.get(entries.size() - 1).transitionDirection = TransitionDirection.BACKWARD;
+        dispatcher.dispatch(history.killAll(false));
         return true;
     }
+
+    private List<History.Entry> add(int navType, NavigationStack stack) {
+        Preconditions.checkArgument(stack != null && !stack.paths.isEmpty(), "Navigation stack cannot be null nor empty");
+        return add(navType, stack.paths.toArray(new StackablePath[stack.paths.size()]));
+    }
+
+    private List<History.Entry> add(int navType, StackablePath... paths) {
+        Preconditions.checkArgument(paths != null && paths.length > 0, "StackablePath cannot be null or empty");
+
+        List<History.Entry> entries = new ArrayList<>(paths.length);
+        for (int i = 0; i < paths.length; i++) {
+            entries.add(history.add(paths[i], navType));
+        }
+
+        return entries;
+    }
+
+    private History.Entry add(int navType, StackablePath path) {
+        Preconditions.checkNotNull(path, "StackablePath cannot be null");
+        return history.add(path, navType);
+    }
+
+    private void check() {
+        Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
+    }
+
 
     /**
      * Scope can be null if the method is called after the navigator scope was destroyed

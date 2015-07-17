@@ -69,4 +69,19 @@ public class HomeView extends PresentedScrollView<HomePresenter> {
     void backRootClick() {
         presenter.backToRootClick();
     }
+
+    @OnClick(R.id.home_show_popup_two)
+    void showPopupTwoClick() {
+        presenter.showPopupTwoClick();
+    }
+
+    @OnClick(R.id.home_show_two_popups)
+    void showTwoPopupsClick() {
+        presenter.showTwoPopupsClick();
+    }
+
+    @OnClick(R.id.home_set_new_stack)
+    void setNewStackClick() {
+        presenter.setNewStackClick();
+    }
 }

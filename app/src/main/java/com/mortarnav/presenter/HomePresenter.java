@@ -2,6 +2,7 @@ package com.mortarnav.presenter;
 
 import android.os.Bundle;
 
+import com.mortarnav.presenter.stackable.MyPopup2Stackable;
 import com.mortarnav.presenter.stackable.MyPopupStackable;
 import com.mortarnav.presenter.stackable.ReturnsResultStackable;
 import com.mortarnav.presenter.stackable.SlidesStackable;
@@ -11,8 +12,10 @@ import com.mortarnav.view.HomeView;
 
 import java.util.Random;
 
+import architect.NavigationStack;
 import architect.Navigator;
 import architect.ReceivesResult;
+import architect.TransitionDirection;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
@@ -81,5 +84,20 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
 
     public void backToRootClick() {
         Navigator.get(getView()).backToRoot();
+    }
+
+    public void showTwoPopupsClick() {
+        Navigator.get(getView()).show(new MyPopup2Stackable(), new MyPopupStackable());
+    }
+
+    public void showPopupTwoClick() {
+        Navigator.get(getView()).show(new MyPopup2Stackable());
+    }
+
+    public void setNewStackClick() {
+        Navigator.get(getView()).set(new NavigationStack()
+                .put(new HomeStackable("NEW STACK 1"))
+                .put(new HomeStackable("NEW STACK 2"))
+                .put(new SlidesStackable()), TransitionDirection.FORWARD);
     }
 }
