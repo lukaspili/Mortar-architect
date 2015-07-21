@@ -155,71 +155,31 @@ navigator.transitions().register(TransitionsMapping()
 
 Once the mapping is provided to the `Navigator` instance, it will apply the correct view transitions automatically.
 
-You can also create and provide your custom view transitions.  
-There is basically two types of transitions: 
-
- * `ViewTransition` where you can animate the enter view and the exit view.
- * `ModalTransition` where you can animate only the enter view. `ModalTransition` is just a subclass of `ViewTransition`, here for your convenience.
-
-Example of `ViewTransition`:
+You can also create and provide your custom view transitions. The following is the code of the `LateralViewTransition` which animates from left-to-right and reverse.
 
 ```java
 // LateralViewTransition.java
 
-public class LateralViewTransition extends BaseViewTransition<View, View> {
+public class LateralViewTransition implements ViewTransition {
 
     public LateralViewTransition() {
 
     }
 
-    public LateralViewTransition(Config config) {
-        super(config);
-    }
-
     @Override
-    public void forward(View enterView, View exitView, AnimatorSet set) {
-        set.play(ObjectAnimator.ofFloat(enterView, View.TRANSLATION_X, enterView.getWidth(), 0));
-        set.play(ObjectAnimator.ofFloat(exitView, View.TRANSLATION_X, 0, -exitView.getWidth()));
-    }
-
-    @Override
-    public void backward(View enterView, View exitView, AnimatorSet set) {
-        set.play(ObjectAnimator.ofFloat(enterView, View.TRANSLATION_X, -enterView.getWidth(), 0));
-        set.play(ObjectAnimator.ofFloat(exitView, View.TRANSLATION_X, 0, exitView.getWidth()));
+    public void transition(View enterView, View exitView, ViewTransitionDirection direction, AnimatorSet set) {
+        if (direction == ViewTransitionDirection.FORWARD || direction == ViewTransitionDirection.REPLACE) {
+            set.play(ObjectAnimator.ofFloat(enterView, View.TRANSLATION_X, enterView.getWidth(), 0));
+            set.play(ObjectAnimator.ofFloat(exitView, View.TRANSLATION_X, 0, -exitView.getWidth()));
+        } else {
+            set.play(ObjectAnimator.ofFloat(enterView, View.TRANSLATION_X, -enterView.getWidth(), 0));
+            set.play(ObjectAnimator.ofFloat(exitView, View.TRANSLATION_X, 0, exitView.getWidth()));
+        }
     }
 }
 ```
 
-Example of `ModalTransition`:
-
-```java
-// BottomAppearTransition.java
-
-public class BottomAppearTransition extends BaseModalTransition<View> {
-
-    public BottomAppearTransition() {
-    }
-
-    public BottomAppearTransition(Config config) {
-        super(config);
-    }
-
-    @Override
-    public void show(View view, AnimatorSet set) {
-        set.play(ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, view.getHeight(), 0));
-    }
-
-    @Override
-    public void hide(View view, AnimatorSet set) {
-        set.play(ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0, view.getHeight()));
-    }
-
-    @Override
-    public boolean hideExitView() {
-        return true; // hides the exit view once the view transition is finished
-    }
-}
-```
+You can find more transitions in the sub-project **commons**.
 
 
 ## Return result
