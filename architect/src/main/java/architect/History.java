@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An history of scopes...
+ * An history of scopes
+ *
  * History restoration from instance state bundle is only used during app process kill
  * During simple configuration change, the navigator scope is preserved, and thus the history also
  * See NavigatorLifecycleDelegate.onCreate() to see implementation details
+ *
  * History also persists its ScopeNamer instance, in order to preserve scope names
  * between state restoration (process kill)
  *
@@ -244,7 +246,7 @@ public class History {
         boolean dead;
         Object returnsResult;
         Object receivedResult;
-        TransitionDirection transitionDirection;
+        ViewTransitionDirection direction;
 
         public Entry(String scopeName, StackablePath path, int navType) {
             Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");

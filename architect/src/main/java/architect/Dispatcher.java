@@ -126,15 +126,15 @@ class Dispatcher {
         Preconditions.checkArgument(navigator.history.existInHistory(entry), "Entry does not exist in history");
         Logger.d("Get entry with scope: %s", entry.scopeName);
 
-        TransitionDirection direction;
+        ViewTransitionDirection direction;
         History.Entry nextEntry;
         final History.Entry previousEntry;
         if (entry.dead) {
-            direction = TransitionDirection.BACKWARD;
+            direction = ViewTransitionDirection.BACKWARD;
             previousEntry = entry;
             nextEntry = navigator.history.getLeftOf(entry);
         } else {
-            direction = TransitionDirection.FORWARD;
+            direction = ViewTransitionDirection.FORWARD;
             nextEntry = entry;
             previousEntry = navigator.history.getLeftOf(entry);
         }
@@ -158,7 +158,7 @@ class Dispatcher {
         present(nextEntry, previousEntry, direction);
     }
 
-    private void present(History.Entry nextEntry, final History.Entry previousEntry, TransitionDirection direction) {
+    private void present(History.Entry nextEntry, final History.Entry previousEntry, ViewTransitionDirection direction) {
         MortarScope currentScope = navigator.presenter.getCurrentScope();
         Preconditions.checkNotNull(currentScope, "Current scope cannot be null");
         Logger.d("Current container scope is: %s", currentScope.getName());
@@ -243,12 +243,12 @@ class Dispatcher {
                 }
             });
         } else {
-            TransitionDirection direction;
-            if (nextDispatch.transitionDirection != null) {
-                direction = nextDispatch.transitionDirection;
-                nextDispatch.transitionDirection = null;
+            ViewTransitionDirection direction;
+            if (nextDispatch.direction != null) {
+                direction = nextDispatch.direction;
+                nextDispatch.direction = null;
             } else {
-                direction = previousEntry.dead ? TransitionDirection.BACKWARD : TransitionDirection.FORWARD;
+                direction = previousEntry.dead ? ViewTransitionDirection.BACKWARD : ViewTransitionDirection.FORWARD;
             }
             present(nextDispatch, previousEntry, direction);
         }

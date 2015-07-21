@@ -1,12 +1,11 @@
 package architect;
 
+import android.support.v4.util.ArrayMap;
 import android.view.View;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import architect.transition.ViewTransition;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -60,10 +59,10 @@ public class Transitions {
         return this;
     }
 
-    ViewTransition findTransition(View originView, View destinationView, TransitionDirection direction) {
+    ViewTransition findTransition(View originView, View destinationView, ViewTransitionDirection direction) {
         // depending on transition direction, the target view is either the origin or destination
-        View target = direction == TransitionDirection.FORWARD ? destinationView : originView;
-        View from = direction == TransitionDirection.FORWARD ? originView : destinationView;
+        View target = direction == ViewTransitionDirection.FORWARD ? destinationView : originView;
+        View from = direction == ViewTransitionDirection.FORWARD ? originView : destinationView;
         return findTransition(target, from);
     }
 
@@ -79,7 +78,8 @@ public class Transitions {
             return null;
         }
 
-        return targetTransitions.get(fromKey);
+        ViewTransition transition = targetTransitions.get(fromKey);
+        return transition;
     }
 
     /**

@@ -17,6 +17,7 @@ android {
 
 dependencies {
     provided deps.javax_inject
+    compile deps.support_v4
     compile deps.mortar
 }
 

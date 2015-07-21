@@ -8,7 +8,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
-import architect.transition.ViewTransition;
+import architect.view.HandlesViewTransition;
 import architect.view.HasPresenter;
 import mortar.MortarScope;
 import mortar.ViewPresenter;
@@ -103,6 +103,10 @@ class Presenter {
             }
 
             view.addView(child);
+
+            if (child instanceof HandlesViewTransition) {
+                ((HandlesViewTransition) child).onViewTransition(null);
+            }
         }
     }
 
@@ -127,7 +131,7 @@ class Presenter {
         Dispatcher.Dispatch dispatch;
         ViewTransition viewTransition;
         View newView;
-        TransitionDirection direction;
+        ViewTransitionDirection direction;
         for (int i = 0; i < modals.size(); i++) {
             dispatch = modals.get(i);
             Logger.d("%s : %s", dispatch.entry.scopeName, dispatch.entry.dead ? "DEAD" : "ALIVE");
@@ -136,12 +140,12 @@ class Presenter {
             if (dispatch.entry.dead) {
                 newView = view.getChildAt(0);
                 addView = false;
-                direction = TransitionDirection.BACKWARD;
+                direction = ViewTransitionDirection.BACKWARD;
                 Logger.d("Reuse view");
             } else {
                 newView = dispatch.entry.path.createView(dispatch.scope.createContext(view.getContext()), view);
                 addView = true;
-                direction = TransitionDirection.FORWARD;
+                direction = ViewTransitionDirection.FORWARD;
                 Logger.d("Create new view");
             }
 
@@ -164,7 +168,7 @@ class Presenter {
         });
     }
 
-    void present(final Dispatcher.Dispatch newDispatch, final History.Entry previousEntry, final TransitionDirection direction, final Dispatcher.Callback callback) {
+    void present(final Dispatcher.Dispatch newDispatch, final History.Entry previousEntry, final ViewTransitionDirection direction, final Dispatcher.Callback callback) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
 

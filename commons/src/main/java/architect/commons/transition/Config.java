@@ -1,4 +1,4 @@
-package architect.transition;
+package architect.commons.transition;
 
 import android.animation.AnimatorSet;
 import android.view.animation.AccelerateDecelerateInterpolator;

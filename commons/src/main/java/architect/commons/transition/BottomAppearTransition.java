@@ -1,13 +1,15 @@
-package architect.transition;
+package architect.commons.transition;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
 
+import architect.ViewTransitionDirection;
+
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class BottomAppearTransition extends BaseModalTransition {
+public class BottomAppearTransition extends ModalTransition {
 
     protected boolean hideExitView = true;
 
@@ -34,13 +36,14 @@ public class BottomAppearTransition extends BaseModalTransition {
     }
 
     @Override
-    public void show(View view, AnimatorSet set) {
-        set.play(ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, view.getHeight(), 0));
-    }
+    public void transition(View enterView, View exitView, ViewTransitionDirection direction, AnimatorSet set) {
+        super.transition(enterView, exitView, direction, set);
 
-    @Override
-    public void hide(View view, AnimatorSet set) {
-        set.play(ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0, view.getHeight()));
+        if (direction == ViewTransitionDirection.FORWARD) {
+            set.play(ObjectAnimator.ofFloat(enterView, View.TRANSLATION_Y, enterView.getHeight(), 0));
+        } else {
+            set.play(ObjectAnimator.ofFloat(exitView, View.TRANSLATION_Y, 0, exitView.getHeight()));
+        }
     }
 
     @Override

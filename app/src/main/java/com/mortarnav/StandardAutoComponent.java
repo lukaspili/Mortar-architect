@@ -1,5 +1,6 @@
 package com.mortarnav;
 
+import com.mortarnav.deps.WithActivityDependencies;
 import com.mortarnav.deps.WithAppDependencies;
 
 import autodagger.AutoComponent;
@@ -9,6 +10,6 @@ import autodagger.AutoComponent;
  */
 @AutoComponent(
         dependencies = MainActivity.class,
-        superinterfaces = WithAppDependencies.class)
+        superinterfaces = WithActivityDependencies.class)
 public @interface StandardAutoComponent {
 }

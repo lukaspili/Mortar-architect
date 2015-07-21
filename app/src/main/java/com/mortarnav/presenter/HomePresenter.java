@@ -15,7 +15,7 @@ import java.util.Random;
 import architect.NavigationStack;
 import architect.Navigator;
 import architect.ReceivesResult;
-import architect.TransitionDirection;
+import architect.ViewTransitionDirection;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
@@ -98,6 +98,6 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
         Navigator.get(getView()).set(new NavigationStack()
                 .put(new HomeStackable("NEW STACK 1"))
                 .put(new HomeStackable("NEW STACK 2"))
-                .put(new SlidesStackable()), TransitionDirection.FORWARD);
+                .put(new SlidesStackable()), ViewTransitionDirection.FORWARD);
     }
 }

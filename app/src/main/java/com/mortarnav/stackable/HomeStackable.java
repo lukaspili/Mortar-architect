@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import com.mortarnav.DaggerScope;
 import com.mortarnav.MainActivityComponent;
+import com.mortarnav.deps.WithActivityDependencies;
 import com.mortarnav.presenter.HomePresenter;
 import com.mortarnav.view.HomeAdditionalCustomView;
 import com.mortarnav.view.HomeView;
@@ -59,7 +60,7 @@ public class HomeStackable implements StackablePath {
 
     @dagger.Component(dependencies = MainActivityComponent.class, modules = Module.class)
     @DaggerScope(Component.class)
-    public interface Component {
+    public interface Component extends WithActivityDependencies {
 
         void inject(HomeView view);
 

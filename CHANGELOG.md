@@ -2,6 +2,14 @@
 
 ## Mortar Architect 0.14 *07/17/15*
 
+ * Add `HandlesViewTransition` to hook up on the view transition
+ * Add examples of working with `Toolbar
+ * Rename `TransitionDirection` to `ViewTransitionDirection`
+ * Move all View transitions to project commons
+ 
+
+## Mortar Architect 0.14 *07/17/15*
+
  * Do not make view transition for intermediate paths during navigation events
  * Do not require a `StackableParceler` when don't restore navigation stack option is enabled
  * Add `Navigator.backToRoot()`

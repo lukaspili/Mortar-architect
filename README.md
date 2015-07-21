@@ -567,7 +567,7 @@ repositories {
 
 dependencies {
     // local var convinience for architect version
-    def architect_version = '0.14-SNAPSHOT'
+    def architect_version = '0.15-SNAPSHOT'
 
     // Core library
     compile 'com.github.lukaspili.mortar-architect:architect:' + architect_version

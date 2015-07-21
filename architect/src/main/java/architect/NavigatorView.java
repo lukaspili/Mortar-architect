@@ -13,8 +13,8 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import architect.transition.ViewTransition;
 import architect.view.HandlesBack;
+import architect.view.HandlesViewTransition;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -92,10 +92,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
 
             @Override
             public void onAnimatorReady(Animator animator) {
-                if (animator != null) {
-                    animators.add(animator);
-                }
-
+                animators.add(animator);
                 markReady();
             }
 
@@ -110,6 +107,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
 
                 if (readyCount == presentations.size()) {
                     if (!animators.isEmpty()) {
+
                         AnimatorSet set = new AnimatorSet();
                         set.addListener(new AnimatorListenerAdapter() {
                             @Override
@@ -139,6 +137,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
             Preconditions.checkNotNull(presentation.view, "New view cannot be null if current view is null");
             // no previous view, add and show directly
             addView(presentation.view);
+            sendTransitionEvents(presentation.view, null);
             callback.onAnimatorReady(null);
             return;
         }
@@ -153,9 +152,16 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
                 removeView(currentView);
                 Logger.d("Remove view %s", currentView.getClass());
             }
+            sendTransitionEvents(presentation.view, null);
             callback.onAnimatorReady(null);
         } else {
             measureAndGetTransition(presentation.view, getChildAt(getChildCount() - previousDecount - (presentation.addView ? 1 : 0)), presentation.removePreviousView, presentation.direction, presentation.transition, callback);
+        }
+    }
+
+    private void sendTransitionEvents(View destinationView, AnimatorSet set) {
+        if (destinationView instanceof HandlesViewTransition) {
+            ((HandlesViewTransition) destinationView).onViewTransition(set);
         }
     }
 
@@ -169,7 +175,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         callback.onPresentationFinished(sessionId);
     }
 
-    private void measureAndGetTransition(final View newView, final View previousView, final boolean removePreviousView, final TransitionDirection direction, final ViewTransition transition, final Callback callback) {
+    private void measureAndGetTransition(final View newView, final View previousView, final boolean removePreviousView, final ViewTransitionDirection direction, final ViewTransition transition, final Callback callback) {
         int width = newView.getWidth();
         int height = newView.getHeight();
 
@@ -192,26 +198,23 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         });
     }
 
-    private Animator getAnimator(final View originView, View destinationView, final boolean removePreviousView, final TransitionDirection direction, final ViewTransition transition, final Callback callback) {
+    private Animator getAnimator(final View originView, final View destinationView, final boolean removePreviousView, final ViewTransitionDirection direction, final ViewTransition transition, final Callback callback) {
         AnimatorSet set = new AnimatorSet();
         set.addListener(new AnimatorListenerAdapter() {
+
             @Override
             public void onAnimationEnd(Animator animation) {
                 if (removePreviousView) {
                     removeView(originView);
                     Logger.d("Remove view %s", originView.getClass());
                 }
+
                 callback.onAnimatorEnd();
             }
         });
 
-        transition.configure(set);
-
-        if (direction == TransitionDirection.FORWARD) {
-            transition.forward(destinationView, originView, set);
-        } else {
-            transition.backward(destinationView, originView, set);
-        }
+        transition.transition(destinationView, originView, direction, set);
+        sendTransitionEvents(destinationView, set);
 
         return set;
     }
@@ -236,10 +239,10 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         final View view;
         final boolean addView;
         final boolean removePreviousView;
-        final TransitionDirection direction;
+        final ViewTransitionDirection direction;
         final ViewTransition transition;
 
-        public Presentation(View view, boolean addView, boolean removePreviousView, TransitionDirection direction, ViewTransition transition) {
+        public Presentation(View view, boolean addView, boolean removePreviousView, ViewTransitionDirection direction, ViewTransition transition) {
             this.view = view;
             this.addView = addView;
             this.removePreviousView = removePreviousView;
@@ -254,85 +257,4 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
 
         void onAnimatorEnd();
     }
-
-    //    Logger.d("Show view: %s", presentation.view.getClass());
-//
-//    Logger.d("## Views before");
-//    for (int i = 0; i < getChildCount(); ++i) {
-//        Logger.d("%d = %s", i, getChildAt(i));
-//    }
-//
-//    final View currentView = getCurrentView();
-//
-//    if (currentView == null) {
-//        Preconditions.checkNotNull(presentation.view, "New view cannot be null if current view is null");
-//        // no previous view, add and show directly
-//        addView(presentation.view);
-//        end(callback);
-//        return;
-//    }
-//
-//    if (presentation.addView) {
-//        addView(presentation.view);
-//        Logger.d("Add view %s", presentation.view.getClass());
-//    }
-//
-//    if (presentation.transition == null) {
-//        if (presentation.removePreviousView) {
-//            removeView(currentView);
-//            Logger.d("Remove view %s", currentView.getClass());
-//        }
-//        end(callback);
-//    } else {
-//        measureAndTransition(presentation.view, getChildAt(getChildCount() - (presentation.addView ? 2 : 1)), presentation.removePreviousView, presentation.direction, presentation.transition, callback);
-//    }
-
-
-//    private void transition(final View originView, View destinationView, final boolean removePreviousView, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
-//        AnimatorSet set = new AnimatorSet();
-//        set.addListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                if (removePreviousView) {
-//                    removeView(originView);
-//                    Logger.d("Remove view %s", originView.getClass());
-//                }
-//                end(callback);
-//            }
-//        });
-//
-//        transition.configure(set);
-//
-//        if (direction == Dispatcher.Direction.FORWARD) {
-//            transition.forward(destinationView, originView, set);
-//        } else {
-//            transition.backward(destinationView, originView, set);
-//        }
-//
-//        set.start();
-//    }
-
-
-//    private void measureAndTransition(final View newView, final View previousView, final boolean removePreviousView, final Dispatcher.Direction direction, final ViewTransition transition, final Presenter.PresentationCallback callback) {
-//        int width = newView.getWidth();
-//        int height = newView.getHeight();
-//
-//        if (width > 0 && height > 0) {
-//            transition(previousView, newView, removePreviousView, direction, transition, callback);
-//            return;
-//        }
-//
-//        newView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-//            @Override
-//            public boolean onPreDraw() {
-//                final ViewTreeObserver observer = newView.getViewTreeObserver();
-//                if (observer.isAlive()) {
-//                    observer.removeOnPreDrawListener(this);
-//                }
-//
-//                transition(previousView, newView, removePreviousView, direction, transition, callback);
-//                return true;
-//            }
-//        });
-//    }
 }

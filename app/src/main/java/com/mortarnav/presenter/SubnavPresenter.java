@@ -12,8 +12,8 @@ import javax.inject.Inject;
 
 import architect.Navigator;
 import architect.TransitionsMapping;
+import architect.commons.transition.LateralViewTransition;
 import architect.robot.AutoStackable;
-import architect.transition.LateralViewTransition;
 import autodagger.AutoComponent;
 import mortar.MortarScope;
 import mortar.ViewPresenter;

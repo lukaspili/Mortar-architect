@@ -153,16 +153,16 @@ public class Navigator implements Scoped {
     /**
      * Execute several navigation event on the current stack
      */
-    public void chain(NavigationChain chain, TransitionDirection direction) {
+    public void chain(NavigationChain chain, ViewTransitionDirection direction) {
         check();
         Preconditions.checkArgument(chain != null && !chain.chains.isEmpty(), "Navigation chain cannot be null nor empty");
 
-        TransitionDirection defaultDirection = null;
+        ViewTransitionDirection defaultDirection = null;
         List<History.Entry> entries = new ArrayList<>(chain.chains.size());
         for (int i = 0; i < chain.chains.size(); i++) {
             NavigationChain.Chain c = chain.chains.get(i);
             if (c.path == null) {
-                defaultDirection = TransitionDirection.BACKWARD;
+                defaultDirection = ViewTransitionDirection.BACKWARD;
                 if (history.canKill()) {
                     if (c.type == NavigationChain.Chain.TYPE_BACK) {
                         entries.add(history.kill());
@@ -171,7 +171,7 @@ public class Navigator implements Scoped {
                     }
                 }
             } else {
-                defaultDirection = TransitionDirection.FORWARD;
+                defaultDirection = ViewTransitionDirection.FORWARD;
                 if (c.type == NavigationChain.Chain.TYPE_REPLACE) {
                     history.kill();
                 }
@@ -183,7 +183,7 @@ public class Navigator implements Scoped {
             }
         }
 
-        entries.get(entries.size() - 1).transitionDirection = direction != null ? direction : defaultDirection;
+        entries.get(entries.size() - 1).direction = direction != null ? direction : defaultDirection;
         dispatcher.dispatch(entries);
     }
 
@@ -192,13 +192,13 @@ public class Navigator implements Scoped {
      *
      * @param direction specify the ViewTransition direction to apply
      */
-    public void set(NavigationStack stack, TransitionDirection direction) {
+    public void set(NavigationStack stack, ViewTransitionDirection direction) {
         check();
 
         List<History.Entry> entries = new ArrayList<>();
         entries.addAll(history.killAll(true));
         entries.addAll(add(History.NAV_TYPE_PUSH, stack));
-        entries.get(entries.size() - 1).transitionDirection = direction;
+        entries.get(entries.size() - 1).direction = direction;
         dispatcher.dispatch(entries);
     }
 
