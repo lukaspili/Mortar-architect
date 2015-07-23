@@ -40,12 +40,16 @@ public abstract class PresentedLinearLayout<T extends ViewPresenter> extends Lin
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        presenter.takeView(this);
+        if (!isInEditMode()) {
+            presenter.takeView(this);
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        presenter.dropView(this);
+        if (!isInEditMode()) {
+            presenter.dropView(this);
+        }
         super.onDetachedFromWindow();
     }
 
