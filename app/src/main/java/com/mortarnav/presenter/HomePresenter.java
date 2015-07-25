@@ -2,6 +2,7 @@ package com.mortarnav.presenter;
 
 import android.os.Bundle;
 
+import com.mortarnav.stackable.BannerScreen;
 import com.mortarnav.stackable.HomeScreen;
 import com.mortarnav.view.HomeView;
 
@@ -10,31 +11,37 @@ import org.parceler.Parcel;
 import java.util.Random;
 
 import architect.Navigator;
-import architect.ReceivesResult;
+import architect.commons.ScreenService;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesResult<String> {
+public class HomePresenter extends ViewPresenter<HomeView> {
 
     private static int count = 0;
 
     private final String name;
-    private final PresenterState state;
+    private final String result;
+    private HomeState state;
 
-    public HomePresenter(String name, PresenterState state) {
+    public HomePresenter(String name, String result) {
         this.name = name;
-        this.state = state;
+        this.result = result;
 
-        if (state.random == -1) {
-            state.random = new Random().nextInt(100);
+        if (result != null) {
+            Timber.d("Home presenter with result: %s", result);
         }
     }
 
     @Override
     protected void onLoad(Bundle savedInstanceState) {
+        state = ScreenService.get(getView());
+        if (state.random == -1) {
+            state.random = new Random().nextInt(100);
+        }
+
         getView().titleTextView.setText(name);
 
 //        int r = savedInstanceState != null ? savedInstanceState.getInt("random") : random;
@@ -46,11 +53,11 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
 //        outState.putInt("random", random);
     }
 
-    @Override
-    public void onReceivedResult(String result) {
-        Timber.d("Receive result: %s", result);
-        // beware that this is called before onLoad() and getView() returns null here
-    }
+//    @Override
+//    public void onReceivedResult(String result) {
+//        Timber.d("Receive result: %s", result);
+//        // beware that this is called before onLoad() and getView() returns null here
+//    }
 
     public void nextHomeClick() {
         Navigator.get(getView()).push(new HomeScreen("Home " + ++count));
@@ -101,8 +108,15 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     }
 
     @Parcel(parcelsIndex = false)
-    public static class PresenterState {
+    public static class HomeState implements BannerScreen.StateWithBannerScreen {
 
         int random = -1;
+
+        BannerScreen bannerScreen = new BannerScreen();
+
+        @Override
+        public BannerScreen getBannerScreen() {
+            return bannerScreen;
+        }
     }
 }

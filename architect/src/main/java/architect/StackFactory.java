@@ -23,6 +23,7 @@ public class StackFactory {
         String scopeName = identifier != null ? String.format("%s_%s", screen.getClass().getName(), identifier) : screen.getClass().getName();
         MortarScope mortarScope = parentScope.findChild(scopeName);
         if (mortarScope == null) {
+            Logger.d("Create mortar scope: %s", scopeName);
             mortarScope = createScope(parentScope, screen, scopeName);
         }
 

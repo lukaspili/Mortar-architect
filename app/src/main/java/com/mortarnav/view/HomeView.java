@@ -96,7 +96,6 @@ public class HomeView extends PresentedScrollView<HomePresenter> implements Hand
         presenter.setNewStackClick();
     }
 
-
     @Override
     public void onViewTransition(AnimatorSet set) {
         if (set != null) {
@@ -113,7 +112,6 @@ public class HomeView extends PresentedScrollView<HomePresenter> implements Hand
                 }
             });
             Animator animator = toolbarOwner.animateShow();
-            Timber.d("Animate show: %s", animator);
             if (animator != null) {
                 set.play(animator);
             }
