@@ -5,6 +5,8 @@ import android.os.Bundle;
 import com.mortarnav.stackable.HomeScreen;
 import com.mortarnav.view.HomeView;
 
+import org.parceler.Parcel;
+
 import java.util.Random;
 
 import architect.Navigator;
@@ -20,24 +22,28 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     private static int count = 0;
 
     private final String name;
-    private final int random;
+    private final PresenterState state;
 
-    public HomePresenter(String name) {
+    public HomePresenter(String name, PresenterState state) {
         this.name = name;
-        random = new Random().nextInt(100);
+        this.state = state;
+
+        if (state.random == -1) {
+            state.random = new Random().nextInt(100);
+        }
     }
 
     @Override
     protected void onLoad(Bundle savedInstanceState) {
         getView().titleTextView.setText(name);
 
-        int r = savedInstanceState != null ? savedInstanceState.getInt("random") : random;
-        getView().subtitleTextView.setText("Random number: " + r);
+//        int r = savedInstanceState != null ? savedInstanceState.getInt("random") : random;
+        getView().subtitleTextView.setText("Random number: " + state.random);
     }
 
     @Override
     protected void onSave(Bundle outState) {
-        outState.putInt("random", random);
+//        outState.putInt("random", random);
     }
 
     @Override
@@ -92,5 +98,11 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
 //                .put(new HomeScreen("NEW STACK 1"))
 //                .put(new HomeScreen("NEW STACK 2"))
 //                .put(new SlidesStackable()), ViewTransitionDirection.FORWARD);
+    }
+
+    @Parcel(parcelsIndex = false)
+    public static class PresenterState {
+
+        int random = -1;
     }
 }

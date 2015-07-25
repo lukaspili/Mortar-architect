@@ -231,17 +231,18 @@ public class History {
         return entries.contains(entry);
     }
 
-    List<Entry> getPreviousOfModal(Entry entry) {
-        int index = entries.indexOf(entry);
-        Preconditions.checkArgument(index > 0, "Invalid entry modal index in history");
-
-        List<Entry> previous = new ArrayList<>(entries.size() - index);
+    @NonNull
+    List<Entry> getLastWithModals() {
+        Preconditions.checkArgument(entries.size() > 1, "At least 2 entries (non-modal + n modals)");
+        List<Entry> previous = new ArrayList<>(entries.size() - 2);
         Entry e;
-        for (int i = index - 1; i >= 0; i--) {
+        for (int i = entries.size() - 1; i >= 0; i--) {
             e = entries.get(i);
             previous.add(e);
+
             if (!e.isModal()) {
-                // when we encounter non modal, return the previous stack
+                // when we encounter non-modal, return the previous stack
+                // with the first non-modal
                 return previous;
             }
         }

@@ -96,7 +96,7 @@ class Presenter {
         View child;
         for (int i = 0; i < dispatchEntries.size(); i++) {
             dispatchEntry = dispatchEntries.get(i);
-            Logger.d("Restore scope: %s", dispatchEntry.entry.scopeName);
+            Logger.d("Restore: %s", dispatchEntry.entry.scopeName);
             child = dispatchEntry.entry.path.createView(dispatchEntry.scope.createContext(view.getContext()), view);
             if (dispatchEntry.entry.viewState != null) {
                 view.restoreHierarchyState(dispatchEntry.entry.viewState);

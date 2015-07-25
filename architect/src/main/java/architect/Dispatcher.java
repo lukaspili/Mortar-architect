@@ -42,6 +42,39 @@ class Dispatcher {
         Preconditions.checkArgument(entries.isEmpty(), "Dispatcher stack must be empty");
         Preconditions.checkNotNull(navigator.getScope(), "Navigator scope cannot be null");
 
+        History.Entry entry = navigator.history.getLast();
+        Preconditions.checkNotNull(entry, "No entry");
+        Logger.d("Activate last: %s", entry.scopeName);
+
+        List<DispatchEntry> dispatchEntries;
+        if (entry.isModal()) {
+            List<History.Entry> previous = navigator.history.getLastWithModals();
+            Preconditions.checkArgument(previous.get(previous.size() - 1) == entry, "Entry mismatch");
+            dispatchEntries = new ArrayList<>(previous.size());
+
+            History.Entry prevEntry;
+            MortarScope scope;
+            for (int i = previous.size() - 1; i >= 0; i--) {
+                prevEntry = previous.get(i);
+                Logger.d("Get previous entry: %s", prevEntry.scopeName);
+                scope = navigator.getScope().findChild(prevEntry.scopeName);
+                dispatchEntries.add(new DispatchEntry(prevEntry, scope));
+            }
+        } else {
+            dispatchEntries = new ArrayList<>(1);
+            MortarScope entryScope = navigator.getScope().findChild(entry.scopeName);
+            if (entryScope == null) {
+                // entry scope is null during the first launch
+                Logger.d("Create scope: %s", entry.scopeName);
+                entryScope = StackFactory.createScope(navigator.getScope(), entry.path, entry.scopeName);
+            }
+            dispatchEntries.add(new DispatchEntry(entry, entryScope));
+        }
+
+        navigator.presenter.restore(dispatchEntries);
+        active = true;
+
+
 //        // clean dead entries that may had happen on history while dispatcher
 //        // was inactive
 //        List<History.Entry> dead = navigator.history.removeAllDead();
@@ -94,7 +127,7 @@ class Dispatcher {
 //        dispatches.add(new Dispatch(entry, entryScope));
 //
 //        navigator.presenter.restore(dispatches);
-        active = true;
+//        active = true;
     }
 
     void desactivate() {
@@ -131,13 +164,9 @@ class Dispatcher {
         Preconditions.checkArgument(!entries.isEmpty(), "Cannot dispatch on empty stack");
 
         final History.Entry entry = entries.remove(0);
-        Logger.d("Entry to dispatch: %s", entry.path);
+        Logger.d("Entry to dispatch: %s", entry.scopeName);
 
-        boolean dead = navigator.history.existInHistory(entry);
-
-
-//        Preconditions.checkArgument(navigator.history.existInHistory(entry), "Entry does not exist in history");
-
+        final boolean dead = !navigator.history.existInHistory(entry);
         final History.Entry enterEntry;
         final History.Entry exitEntry;
         if (dead) {
@@ -150,6 +179,7 @@ class Dispatcher {
             exitEntry = navigator.history.getLeftOf(entry);
         }
 
+        Logger.d("Exit entry: %s - dead: %b", exitEntry.scopeName, dead);
         Preconditions.checkNotNull(enterEntry, "Next entry cannot be null");
         Preconditions.checkNotNull(exitEntry, "Previous entry cannot be null");
 //        Preconditions.checkNull(nextEntry.receivedResult, "Next entry cannot have already a result");
@@ -187,8 +217,8 @@ class Dispatcher {
             @Override
             public void onComplete() {
                 if (navigator.getScope() != null) {
-                    Logger.d("Destroy scope: %s", enterEntry.scopeName);
-                    navigator.getScope().findChild(enterEntry.scopeName).destroy();
+                    Logger.d("Destroy scope: %s", exitEntry.scopeName);
+                    navigator.getScope().findChild(exitEntry.scopeName).destroy();
                 }
 
                 endDispatch();
@@ -299,6 +329,9 @@ class Dispatcher {
         final MortarScope scope;
 
         public DispatchEntry(History.Entry entry, MortarScope scope) {
+            Preconditions.checkNotNull(entry, "Entry null");
+            Preconditions.checkNotNull(scope, "Scope null");
+            Preconditions.checkArgument(entry.scopeName.equals(scope.getName()), "Scope name mismatch");
             this.entry = entry;
             this.scope = scope;
         }

@@ -20,7 +20,7 @@ import dagger.Provides;
 import mortar.MortarScope;
 
 /**
- * Manually created StackablePath
+ * Manually created Screen
  * You should rather use @AutoStackable if you can
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -28,11 +28,13 @@ import mortar.MortarScope;
 @Parcel(parcelsIndex = false)
 public class HomeScreen implements ScreenPath {
 
+    HomePresenter.PresenterState presenterSate;
     String name;
 
     @ParcelConstructor
     public HomeScreen(String name) {
         this.name = name;
+        this.presenterSate = new HomePresenter.PresenterState();
     }
 
     @Override
@@ -54,7 +56,7 @@ public class HomeScreen implements ScreenPath {
         @Provides
         @DaggerScope(Component.class)
         public HomePresenter providesPresenter() {
-            return new HomePresenter(name);
+            return new HomePresenter(name, presenterSate);
         }
     }
 
