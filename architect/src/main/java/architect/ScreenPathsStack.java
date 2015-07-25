@@ -7,16 +7,16 @@ import java.util.List;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class NavigationStack {
+public class ScreenPathsStack {
 
-    List<StackablePath> paths = new ArrayList<>();
+    List<ScreenPath> paths = new ArrayList<>();
 
-    public NavigationStack put(StackablePath path) {
+    public ScreenPathsStack put(ScreenPath path) {
         paths.add(path);
         return this;
     }
 
-    public NavigationStack put(Collection<StackablePath> paths) {
+    public ScreenPathsStack put(Collection<ScreenPath> paths) {
         paths.addAll(paths);
         return this;
     }

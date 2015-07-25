@@ -2,7 +2,7 @@ package architect.commons.view;
 
 import android.content.Context;
 
-import architect.Stackable;
+import architect.Screen;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -11,7 +11,7 @@ public interface StackedContainer {
 
     String getStackableIdentifier();
 
-    Stackable getStackable();
+    Screen getStackable();
 
     void initWithContext(Context context);
 }

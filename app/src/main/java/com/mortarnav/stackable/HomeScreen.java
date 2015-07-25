@@ -14,7 +14,7 @@ import com.mortarnav.view.HomeView;
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
 
-import architect.StackablePath;
+import architect.ScreenPath;
 import architect.robot.DaggerService;
 import dagger.Provides;
 import mortar.MortarScope;
@@ -26,12 +26,12 @@ import mortar.MortarScope;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @Parcel(parcelsIndex = false)
-public class HomeStackable implements StackablePath {
+public class HomeScreen implements ScreenPath {
 
     String name;
 
     @ParcelConstructor
-    public HomeStackable(String name) {
+    public HomeScreen(String name) {
         this.name = name;
     }
 
@@ -42,7 +42,7 @@ public class HomeStackable implements StackablePath {
 
     @Override
     public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
-        builder.withService(DaggerService.SERVICE_NAME, DaggerHomeStackable_Component.builder()
+        builder.withService(DaggerService.SERVICE_NAME, DaggerHomeScreen_Component.builder()
                 .mainActivityComponent(parentScope.<MainActivityComponent>getService(DaggerService.SERVICE_NAME))
                 .module(new Module())
                 .build());

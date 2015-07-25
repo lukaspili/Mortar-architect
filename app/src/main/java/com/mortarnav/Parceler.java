@@ -4,7 +4,7 @@ import android.os.Parcelable;
 
 import org.parceler.Parcels;
 
-import architect.StackablePath;
+import architect.ScreenPath;
 import architect.StackableParceler;
 
 /**
@@ -15,12 +15,12 @@ import architect.StackableParceler;
 public class Parceler implements StackableParceler {
 
     @Override
-    public Parcelable wrap(StackablePath path) {
+    public Parcelable wrap(ScreenPath path) {
         return Parcels.wrap(path);
     }
 
     @Override
-    public StackablePath unwrap(Parcelable parcelable) {
+    public ScreenPath unwrap(Parcelable parcelable) {
         return Parcels.unwrap(parcelable);
     }
 }

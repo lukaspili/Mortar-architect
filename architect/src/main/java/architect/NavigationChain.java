@@ -20,17 +20,17 @@ public class NavigationChain {
         return this;
     }
 
-    public NavigationChain push(StackablePath path) {
+    public NavigationChain push(ScreenPath path) {
         chains.add(new Chain(path, Chain.TYPE_PUSH));
         return this;
     }
 
-    public NavigationChain show(StackablePath path) {
+    public NavigationChain show(ScreenPath path) {
         chains.add(new Chain(path, Chain.TYPE_SHOW));
         return this;
     }
 
-    public NavigationChain replace(StackablePath path) {
+    public NavigationChain replace(ScreenPath path) {
         chains.add(new Chain(path, Chain.TYPE_REPLACE));
         return this;
     }
@@ -43,14 +43,14 @@ public class NavigationChain {
         static final int TYPE_BACK = 4;
         static final int TYPE_BACK_ROOT = 5;
 
-        StackablePath path;
+        ScreenPath path;
         int type;
 
         public Chain(int type) {
             this(null, type);
         }
 
-        public Chain(StackablePath path, int type) {
+        public Chain(ScreenPath path, int type) {
             this.path = path;
             this.type = type;
         }

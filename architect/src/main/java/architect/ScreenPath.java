@@ -5,12 +5,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Extension of Stackable that can create the associated view programmatically
- * Required by Navigator
+ * ScreenPath = Screen + Navigation params
+ *
+ * Screen that is used in navigation
+ * It adds the meaning to create the view programmatically
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public interface StackablePath extends Stackable {
+public interface ScreenPath extends Screen {
 
     View createView(Context context, ViewGroup parent);
 }

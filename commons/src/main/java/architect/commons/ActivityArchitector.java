@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import architect.Navigator;
 import architect.NavigatorView;
-import architect.StackablePath;
+import architect.ScreenPath;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 
@@ -33,7 +33,7 @@ public class ActivityArchitector {
         return scope;
     }
 
-    public static Navigator onCreateNavigator(Activity activity, Bundle savedInstanceState, NavigatorView navigatorView, StackablePath... defaultPaths) {
+    public static Navigator onCreateNavigator(Activity activity, Bundle savedInstanceState, NavigatorView navigatorView, ScreenPath... defaultPaths) {
         Navigator navigator = Navigator.find(activity);
         navigator.delegate().onCreate(activity.getIntent(), savedInstanceState, navigatorView, defaultPaths);
         return navigator;

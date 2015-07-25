@@ -2,6 +2,7 @@ package architect;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class History {
         }
     }
 
-    void init(StackablePath... paths) {
+    void init(ScreenPath... paths) {
         entries = new ArrayList<>();
         scopeNamer = new ScopeNamer();
 
@@ -88,14 +89,15 @@ public class History {
         return entries == null;
     }
 
-    Entry add(StackablePath path, int navType) {
+    Entry add(ScreenPath path, int navType) {
         if (navType == NAV_TYPE_MODAL) {
             // modal
             Preconditions.checkArgument(!entries.isEmpty(), "Cannot add modal on empty history");
         } else {
             // push and history not empty
-            Entry lastAlive = getLastAlive();
-            Preconditions.checkArgument(lastAlive == null || !lastAlive.isModal(), "Cannot push new path on modal");
+            if (!entries.isEmpty()) {
+                Preconditions.checkArgument(!getLast().isModal(), "Cannot push new path on modal");
+            }
         }
 
         Entry entry = new Entry(scopeNamer.getName(path), path, navType);
@@ -113,18 +115,20 @@ public class History {
             return false;
         }
 
-        int notdead = 0;
-        for (int i = entries.size() - 1; i >= 0; i--) {
-            if (!entries.get(i).dead) {
-                notdead++;
-            }
+        return true;
 
-            if (notdead > 1) {
-                return true;
-            }
-        }
-
-        return false;
+//        int notdead = 0;
+//        for (int i = entries.size() - 1; i >= 0; i--) {
+//            if (!entries.get(i).dead) {
+//                notdead++;
+//            }
+//
+//            if (notdead > 1) {
+//                return true;
+//            }
+//        }
+//
+//        return false;
     }
 
     /**
@@ -133,16 +137,13 @@ public class History {
      * @return the killed entry
      */
     Entry kill() {
-        Entry entry;
-        for (int i = entries.size() - 1; i >= 0; i--) {
-            entry = entries.get(i);
-            if (!entry.dead) {
-                entry.dead = true;
-                return entry;
-            }
-        }
+        return entries.remove(entries.size() - 1);
+    }
 
-        throw new IllegalStateException("There is no entry to kill");
+    List<Entry> killAllButRoot() {
+        List<Entry> killed = new ArrayList<>(entries.subList(1, entries.size() - 1));
+        entries.removeAll(killed);
+        return killed;
     }
 
     /**
@@ -151,59 +152,69 @@ public class History {
      *
      * @return the killed entries, in the historical order
      */
-    List<Entry> killAll(boolean rootIncluded) {
-        List<Entry> killed = new ArrayList<>(rootIncluded ? entries.size() : entries.size() - 1);
-        Entry entry;
-        for (int i = entries.size() - 1; i > (rootIncluded ? -1 : 0); i--) {
-            entry = entries.get(i);
-            entry.dead = true;
-
-            if (i != 0) {
-                // never include root
-                killed.add(entry);
-            }
-        }
-
+    List<Entry> killAll() {
+        List<Entry> killed = new ArrayList<>(entries);
+        entries.clear();
         return killed;
+
+//        List<Entry> killed = new ArrayList<>(rootIncluded ? entries.size() : entries.size() - 1);
+//        Entry entry;
+//        for (int i = entries.size() - 1; i > (rootIncluded ? -1 : 0); i--) {
+//            entry = entries.get(i);
+//            entry.dead = true;
+//
+//            if (i != 0) {
+//                // never include root
+//                killed.add(entry);
+//            }
+//        }
+//
+//        return killed;
     }
 
-    Entry getLastAlive() {
-        if (entries.isEmpty()) {
-            return null;
-        }
-
-        Entry entry;
-        for (int i = entries.size() - 1; i >= 0; i--) {
-            entry = entries.get(i);
-            if (!entry.dead) {
-                return entry;
-            }
-        }
-
-        return null;
-    }
+//    Entry getLastAlive() {
+//        if (entries.isEmpty()) {
+//            return null;
+//        }
+//
+//        Entry entry;
+//        for (int i = entries.size() - 1; i >= 0; i--) {
+//            entry = entries.get(i);
+//            if (!entry.dead) {
+//                return entry;
+//            }
+//        }
+//
+//        return null;
+//    }
 
     void remove(Entry entry) {
         boolean removed = entries.remove(entry);
         Preconditions.checkArgument(removed, "Entry to remove does not exist");
     }
 
-    List<Entry> removeAllDead() {
-        if (entries.isEmpty()) {
-            return null;
-        }
+//    List<Entry> removeAllDead() {
+//        if (entries.isEmpty()) {
+//            return null;
+//        }
+//
+//        List<Entry> dead = new ArrayList<>(entries.size());
+//        Entry entry;
+//        for (int i = 0; i < entries.size(); i++) {
+//            entry = entries.get(i);
+//            if (entry.dead) {
+//                dead.add(entry);
+//                entries.remove(i);
+//            }
+//        }
+//
+//        return dead;
+//    }
 
-        List<Entry> dead = new ArrayList<>(entries.size());
-        Entry entry;
-        for (int i = 0; i < entries.size(); i++) {
-            entry = entries.get(i);
-            if (entry.dead) {
-                dead.add(entry);
-                entries.remove(i);
-            }
-        }
-
-        return dead;
+    @NonNull
+    Entry getLast() {
+        Preconditions.checkArgument(!entries.isEmpty(), "Cannot get last entry on empty history");
+        return entries.get(entries.size() - 1);
     }
 
     Entry getLeftOf(Entry entry) {
@@ -240,15 +251,18 @@ public class History {
 
     static class Entry {
         final String scopeName;
-        final StackablePath path;
+        final ScreenPath path;
         final int navType;
-        SparseArray<Parcelable> state;
-        boolean dead;
-        Object returnsResult;
-        Object receivedResult;
-        ViewTransitionDirection direction;
+        SparseArray<Parcelable> viewState;
 
-        public Entry(String scopeName, StackablePath path, int navType) {
+//        Object result;
+//
+        //        boolean dead;
+//        Object returnsResult;
+//        Object receivedResult;
+//        ViewTransitionDirection direction;
+
+        public Entry(String scopeName, ScreenPath path, int navType) {
             Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");
             Preconditions.checkNotNull(path, "Path cannot be null");
             Preconditions.checkArgument(navType == NAV_TYPE_PUSH || navType == NAV_TYPE_MODAL, "Nav type invalid");
@@ -262,26 +276,19 @@ public class History {
         }
 
         private Bundle toBundle(StackableParceler parceler) {
-            if (dead) {
-                // don't save dead entry
-                // its scope will be destroyed anyway
-                return null;
-            }
-
             Bundle bundle = new Bundle();
-            bundle.putString(SCOPE_KEY, scopeName);
             bundle.putParcelable(PATH_KEY, parceler.wrap(path));
-            bundle.putSparseParcelableArray(STATE_KEY, state);
+            bundle.putSparseParcelableArray(STATE_KEY, viewState);
             bundle.putInt(NAV_TYPE_KEY, navType);
             return bundle;
         }
 
         private static Entry fromBundle(Bundle bundle, StackableParceler parceler) {
-            StackablePath path = parceler.unwrap(bundle.getParcelable(PATH_KEY));
+            ScreenPath path = parceler.unwrap(bundle.getParcelable(PATH_KEY));
 
             // new entry with new scope instance, but preserving previous scope name
             Entry entry = new Entry(bundle.getString(SCOPE_KEY), path, bundle.getInt(NAV_TYPE_KEY));
-            entry.state = bundle.getSparseParcelableArray(STATE_KEY);
+            entry.viewState = bundle.getSparseParcelableArray(STATE_KEY);
             return entry;
         }
 

@@ -20,7 +20,7 @@ public class NavigatorLifecycleDelegate {
         this.navigator = navigator;
     }
 
-    public void onCreate(Intent intent, Bundle savedInstanceState, NavigatorView containerView, StackablePath... defaultPaths) {
+    public void onCreate(Intent intent, Bundle savedInstanceState, NavigatorView containerView, ScreenPath... defaultPaths) {
         Preconditions.checkNotNull(containerView, "Container view cannot not be null");
         Preconditions.checkArgument(defaultPaths != null && defaultPaths.length > 0, "Default path cannot not be null nor empty");
 

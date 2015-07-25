@@ -77,70 +77,70 @@ public class Navigator implements Scoped {
     /**
      * Push one path
      */
-    public void push(StackablePath path) {
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path));
+    public void push(ScreenPath path) {
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path), ViewTransitionDirection.FORWARD, null);
     }
 
     /**
      * Push one or several paths
      */
-    public void push(StackablePath... paths) {
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths));
+    public void push(ScreenPath... paths) {
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths), ViewTransitionDirection.FORWARD, null);
     }
 
     /**
      * Push navigation stack on top of the current one
      */
-    public void push(NavigationStack stack) {
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, stack));
+    public void push(ScreenPathsStack stack) {
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, stack), ViewTransitionDirection.FORWARD, null);
     }
 
     /**
      * Show one path as modal
      */
-    public void show(StackablePath path) {
-        dispatcher.dispatch(add(History.NAV_TYPE_MODAL, path));
+    public void show(ScreenPath path) {
+        dispatcher.dispatch(add(History.NAV_TYPE_MODAL, path), ViewTransitionDirection.FORWARD, null);
     }
 
     /**
      * Show several paths as modal
      */
-    public void show(StackablePath... paths) {
-        dispatcher.dispatch(add(History.NAV_TYPE_MODAL, paths));
+    public void show(ScreenPath... paths) {
+        dispatcher.dispatch(add(History.NAV_TYPE_MODAL, paths), ViewTransitionDirection.FORWARD, null);
     }
 
     /**
      * Show navigation stack on top of current one
      */
-    public void show(NavigationStack stack) {
-        dispatcher.dispatch(add(History.NAV_TYPE_MODAL, stack));
+    public void show(ScreenPathsStack stack) {
+        dispatcher.dispatch(add(History.NAV_TYPE_MODAL, stack), ViewTransitionDirection.FORWARD, null);
     }
 
     /**
      * Replace current path with new one
      */
-    public void replace(StackablePath path) {
+    public void replace(ScreenPath path) {
         check();
         history.kill();
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path));
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path), ViewTransitionDirection.REPLACE, null);
     }
 
     /**
      * Replace current path with several new ones
      */
-    public void replace(StackablePath... paths) {
+    public void replace(ScreenPath... paths) {
         check();
         history.kill();
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths));
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths), ViewTransitionDirection.REPLACE, null);
     }
 
     /**
      * Replace current path with new stack
      */
-    public void replace(NavigationStack stack) {
+    public void replace(ScreenPathsStack stack) {
         check();
         history.kill();
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, stack));
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, stack), ViewTransitionDirection.REPLACE, null);
     }
 
     /**
@@ -157,21 +157,18 @@ public class Navigator implements Scoped {
         check();
         Preconditions.checkArgument(chain != null && !chain.chains.isEmpty(), "Navigation chain cannot be null nor empty");
 
-        ViewTransitionDirection defaultDirection = null;
         List<History.Entry> entries = new ArrayList<>(chain.chains.size());
         for (int i = 0; i < chain.chains.size(); i++) {
             NavigationChain.Chain c = chain.chains.get(i);
             if (c.path == null) {
-                defaultDirection = ViewTransitionDirection.BACKWARD;
                 if (history.canKill()) {
                     if (c.type == NavigationChain.Chain.TYPE_BACK) {
                         entries.add(history.kill());
                     } else {
-                        entries.addAll(history.killAll(false));
+                        entries.addAll(history.killAllButRoot());
                     }
                 }
             } else {
-                defaultDirection = ViewTransitionDirection.FORWARD;
                 if (c.type == NavigationChain.Chain.TYPE_REPLACE) {
                     history.kill();
                 }
@@ -183,8 +180,7 @@ public class Navigator implements Scoped {
             }
         }
 
-        entries.get(entries.size() - 1).direction = direction != null ? direction : defaultDirection;
-        dispatcher.dispatch(entries);
+        dispatcher.dispatch(entries, direction, null);
     }
 
     /**
@@ -192,14 +188,13 @@ public class Navigator implements Scoped {
      *
      * @param direction specify the ViewTransition direction to apply
      */
-    public void set(NavigationStack stack, ViewTransitionDirection direction) {
+    public void set(ScreenPathsStack stack, ViewTransitionDirection direction) {
         check();
 
         List<History.Entry> entries = new ArrayList<>();
-        entries.addAll(history.killAll(true));
+        entries.addAll(history.killAll());
         entries.addAll(add(History.NAV_TYPE_PUSH, stack));
-        entries.get(entries.size() - 1).direction = direction;
-        dispatcher.dispatch(entries);
+        dispatcher.dispatch(entries, direction, null);
     }
 
     public boolean back() {
@@ -213,11 +208,7 @@ public class Navigator implements Scoped {
         }
 
         History.Entry entry = history.kill();
-        if (withResult != null) {
-            entry.returnsResult = withResult;
-        }
-
-        dispatcher.dispatch(entry);
+        dispatcher.dispatch(entry, ViewTransitionDirection.BACKWARD, withResult);
 
         return true;
     }
@@ -228,18 +219,16 @@ public class Navigator implements Scoped {
             return false;
         }
 
-//        List<History.Entry> entries = ;
-//        entries.get(entries.size() - 1).transitionDirection = TransitionDirection.BACKWARD;
-        dispatcher.dispatch(history.killAll(false));
+        dispatcher.dispatch(history.killAllButRoot(), ViewTransitionDirection.BACKWARD, null);
         return true;
     }
 
-    private List<History.Entry> add(int navType, NavigationStack stack) {
+    private List<History.Entry> add(int navType, ScreenPathsStack stack) {
         Preconditions.checkArgument(stack != null && !stack.paths.isEmpty(), "Navigation stack cannot be null nor empty");
-        return add(navType, stack.paths.toArray(new StackablePath[stack.paths.size()]));
+        return add(navType, stack.paths.toArray(new ScreenPath[stack.paths.size()]));
     }
 
-    private List<History.Entry> add(int navType, StackablePath... paths) {
+    private List<History.Entry> add(int navType, ScreenPath... paths) {
         Preconditions.checkArgument(paths != null && paths.length > 0, "StackablePath cannot be null or empty");
 
         List<History.Entry> entries = new ArrayList<>(paths.length);
@@ -250,7 +239,7 @@ public class Navigator implements Scoped {
         return entries;
     }
 
-    private History.Entry add(int navType, StackablePath path) {
+    private History.Entry add(int navType, ScreenPath path) {
         Preconditions.checkNotNull(path, "StackablePath cannot be null");
         return history.add(path, navType);
     }

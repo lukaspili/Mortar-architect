@@ -2,20 +2,13 @@ package com.mortarnav.presenter;
 
 import android.os.Bundle;
 
-import com.mortarnav.presenter.stackable.MyPopup2Stackable;
-import com.mortarnav.presenter.stackable.MyPopupStackable;
-import com.mortarnav.presenter.stackable.ReturnsResultStackable;
-import com.mortarnav.presenter.stackable.SlidesStackable;
-import com.mortarnav.presenter.stackable.SubnavStackable;
-import com.mortarnav.stackable.HomeStackable;
+import com.mortarnav.stackable.HomeScreen;
 import com.mortarnav.view.HomeView;
 
 import java.util.Random;
 
-import architect.NavigationStack;
 import architect.Navigator;
 import architect.ReceivesResult;
-import architect.ViewTransitionDirection;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
@@ -54,12 +47,12 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     }
 
     public void nextHomeClick() {
-        Navigator.get(getView()).push(new HomeStackable("Home " + ++count));
+        Navigator.get(getView()).push(new HomeScreen("Home " + ++count));
     }
 
 
     public void subnavClick() {
-        Navigator.get(getView()).push(new SubnavStackable());
+//        Navigator.get(getView()).push(new SubnavStackable());
     }
 
     public void customViewClick() {
@@ -67,19 +60,19 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     }
 
     public void pagerClick() {
-        Navigator.get(getView()).push(new SlidesStackable());
+//        Navigator.get(getView()).push(new SlidesStackable());
     }
 
     public void showPopupClick() {
-        Navigator.get(getView()).show(new MyPopupStackable());
+//        Navigator.get(getView()).show(new MyPopupStackable());
     }
 
     public void replaceNewHomeClick() {
-        Navigator.get(getView()).replace(new HomeStackable("Replaced!"));
+        Navigator.get(getView()).replace(new HomeScreen("Replaced!"));
     }
 
     public void showReturnsResultClick() {
-        Navigator.get(getView()).push(new ReturnsResultStackable());
+//        Navigator.get(getView()).push(new ReturnsResultStackable());
     }
 
     public void backToRootClick() {
@@ -87,17 +80,17 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     }
 
     public void showTwoPopupsClick() {
-        Navigator.get(getView()).show(new MyPopup2Stackable(), new MyPopupStackable());
+//        Navigator.get(getView()).show(new MyPopup2Stackable(), new MyPopupStackable());
     }
 
     public void showPopupTwoClick() {
-        Navigator.get(getView()).show(new MyPopup2Stackable());
+//        Navigator.get(getView()).show(new MyPopup2Stackable());
     }
 
     public void setNewStackClick() {
-        Navigator.get(getView()).set(new NavigationStack()
-                .put(new HomeStackable("NEW STACK 1"))
-                .put(new HomeStackable("NEW STACK 2"))
-                .put(new SlidesStackable()), ViewTransitionDirection.FORWARD);
+//        Navigator.get(getView()).set(new ScreenPathsStack()
+//                .put(new HomeScreen("NEW STACK 1"))
+//                .put(new HomeScreen("NEW STACK 2"))
+//                .put(new SlidesStackable()), ViewTransitionDirection.FORWARD);
     }
 }

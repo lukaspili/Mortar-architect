@@ -6,9 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.mortarnav.deps.WithActivityDependencies;
-import com.mortarnav.stackable.HomeStackable;
-import com.mortarnav.view.MyPopup2View;
-import com.mortarnav.view.MyPopupView;
+import com.mortarnav.stackable.HomeScreen;
 
 import javax.inject.Inject;
 
@@ -17,9 +15,7 @@ import architect.NavigatorView;
 import architect.TransitionsMapping;
 import architect.commons.ActivityArchitector;
 import architect.commons.Architected;
-import architect.commons.transition.BottomAppearTransition;
 import architect.commons.transition.Config;
-import architect.commons.transition.FadeModalTransition;
 import architect.commons.transition.LateralViewTransition;
 import architect.robot.DaggerService;
 import autodagger.AutoComponent;
@@ -79,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
                 Navigator navigator = Navigator.create(scope, new Parceler());
                 navigator.transitions().register(new TransitionsMapping()
                                 .byDefault(new LateralViewTransition(new Config().duration(300)))
-                                .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250)))
-                                .show(MyPopup2View.class).withTransition(new BottomAppearTransition(true, new Config().duration(1000)))
+//                                .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250)))
+//                                .show(MyPopup2View.class).withTransition(new BottomAppearTransition(true, new Config().duration(1000)))
 //                                .show(SlidesView.class).withTransition(new CustomFullScreenLateralTransition())
                 );
                 return navigator;
@@ -99,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         toolbarOwner.takeView(toolbar);
 
         // it is usually the best to create the navigator after everything else
-        navigator = ActivityArchitector.onCreateNavigator(this, savedInstanceState, containerView, new HomeStackable("Default home path"));
+        navigator = ActivityArchitector.onCreateNavigator(this, savedInstanceState, containerView, new HomeScreen("Default home path"));
     }
 
     @Override

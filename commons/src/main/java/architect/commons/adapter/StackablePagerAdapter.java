@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import java.util.Arrays;
 import java.util.List;
 
-import architect.StackablePath;
+import architect.ScreenPath;
 import architect.StackFactory;
 import mortar.MortarScope;
 
@@ -18,13 +18,13 @@ import mortar.MortarScope;
 public class StackablePagerAdapter extends PagerAdapter {
 
     private final Context context;
-    private final List<StackablePath> paths;
+    private final List<ScreenPath> paths;
 
-    public StackablePagerAdapter(Context context, StackablePath... paths) {
+    public StackablePagerAdapter(Context context, ScreenPath... paths) {
         this(context, Arrays.asList(paths));
     }
 
-    public StackablePagerAdapter(Context context, List<StackablePath> paths) {
+    public StackablePagerAdapter(Context context, List<ScreenPath> paths) {
         this.context = context;
         this.paths = paths;
     }
@@ -36,7 +36,7 @@ public class StackablePagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        StackablePath path = paths.get(position);
+        ScreenPath path = paths.get(position);
 
         Context pageContext = StackFactory.createContext(context, path, String.valueOf(position));
         View newChild = path.createView(pageContext, container);
