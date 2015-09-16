@@ -184,6 +184,7 @@ public class Navigator implements Scoped {
         }
 
         entries.get(entries.size() - 1).direction = direction != null ? direction : defaultDirection;
+        entries.get(0).returnsResult = chain.result;
         dispatcher.dispatch(entries);
     }
 
@@ -223,14 +224,23 @@ public class Navigator implements Scoped {
     }
 
     public boolean backToRoot() {
+        return backToRoot(null);
+    }
+
+    public boolean backToRoot(Object result) {
         check();
         if (!history.canKill()) {
             return false;
         }
 
-//        List<History.Entry> entries = ;
+        List<History.Entry> entries = history.killAll(false);
+
+        if (result != null) {
+            entries.get(0).returnsResult = result;
+        }
 //        entries.get(entries.size() - 1).transitionDirection = TransitionDirection.BACKWARD;
-        dispatcher.dispatch(history.killAll(false));
+
+        dispatcher.dispatch(entries);
         return true;
     }
 

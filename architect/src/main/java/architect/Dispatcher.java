@@ -225,6 +225,12 @@ class Dispatcher {
             return false;
         }
 
+        if (entry.dead && previousEntry.returnsResult != null) {
+            nextDispatch.receivedResult = previousEntry.returnsResult;
+            previousEntry.returnsResult = null;
+            Logger.d("Pass result from %s to %s", previousEntry.scopeName, nextDispatch.scopeName);
+        }
+
         if (entry.isModal()) {
             final List<Dispatch> finalModals = modals;
             navigator.presenter.presentModals(modals, new Callback() {

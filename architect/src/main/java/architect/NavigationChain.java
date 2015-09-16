@@ -9,14 +9,27 @@ import java.util.List;
 public class NavigationChain {
 
     List<Chain> chains = new ArrayList<>();
+    Object result;
 
     public NavigationChain back() {
         chains.add(new Chain(Chain.TYPE_BACK));
         return this;
     }
 
+    public NavigationChain back(Object result) {
+        chains.add(new Chain(Chain.TYPE_BACK));
+        this.result = result;
+        return this;
+    }
+
     public NavigationChain backToRoot() {
         chains.add(new Chain(Chain.TYPE_BACK_ROOT));
+        return this;
+    }
+
+    public NavigationChain backToRoot(Object result) {
+        chains.add(new Chain(Chain.TYPE_BACK_ROOT));
+        this.result = result;
         return this;
     }
 

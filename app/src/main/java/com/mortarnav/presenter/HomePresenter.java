@@ -83,7 +83,10 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     }
 
     public void backToRootClick() {
-        Navigator.get(getView()).backToRoot();
+        Navigator.get(getView()).backToRoot("Result test back to root");
+//        Navigator.get(getView()).chain(new NavigationChain()
+//                .back()
+//                .back("Test from nav chain"));
     }
 
     public void showTwoPopupsClick() {
