@@ -168,7 +168,7 @@ class Presenter {
 //        });
     }
 
-    void present(final Dispatcher.DispatchEntry enterDispatchEntry, final History.Entry exitEntry, final ViewTransitionDirection direction, final boolean exitEntryDead, final Dispatcher.Callback callback) {
+    void present(final Dispatcher.DispatchEntry enterDispatchEntry, final History.Entry exitEntry, final ViewTransitionDirection direction, final boolean exitEntryInHistory, final Dispatcher.Callback callback) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
 
@@ -180,18 +180,15 @@ class Presenter {
         // either when present is done, or when presenter is desactivated
         dispatchingCallback = callback;
 
-        exitEntry.viewState = getCurrentViewState();
-
-//        if (!exitEntry.dead) {
-//            // save previous view state
-//            Logger.d("Save view state for: %s", exitEntry.scopeName);
-//            exitEntry.viewState = getCurrentViewState();
-//        }
+        if(exitEntryInHistory) {
+            Logger.d("Save view state for: %s", exitEntry.scopeName);
+            exitEntry.viewState = getCurrentViewState();
+        }
 
         // create or reuse view
         View newView;
         boolean addNewView;
-        if (view.getChildCount() > 1 && exitEntryDead) {
+        if (view.getChildCount() > 1 && exitEntryInHistory) {
             Logger.d("Reuse previous view for %s", enterDispatchEntry.entry.scopeName);
             newView = view.getChildAt(view.getChildCount() - 2);
             addNewView = false;
@@ -245,7 +242,7 @@ class Presenter {
 //        }
 
 //        boolean keepPreviousView = direction == Dispatcher.Direction.FORWARD && newDispatch.entry.isModal();
-        boolean keepPreviousView = !exitEntryDead && enterDispatchEntry.entry.isModal();
+        boolean keepPreviousView = !exitEntryInHistory && enterDispatchEntry.entry.isModal();
         Logger.d("Keep previous view: %b", keepPreviousView);
 
         view.show(new NavigatorView.Presentation(newView, addNewView, !keepPreviousView, direction, transition), new PresentationCallback() {

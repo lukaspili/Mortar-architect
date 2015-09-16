@@ -166,26 +166,26 @@ class Dispatcher {
         final History.Entry entry = entries.remove(0);
         Logger.d("Entry to dispatch: %s", entry.scopeName);
 
-        final boolean dead = !navigator.history.existInHistory(entry);
+        final boolean inHistory = navigator.history.existInHistory(entry);
         final History.Entry enterEntry;
         final History.Entry exitEntry;
-        if (dead) {
-            // entry is dead, we go to previous one, from this one
-            exitEntry = entry;
-            enterEntry = navigator.history.getLast();
-        } else {
+        if (inHistory) {
             // new entry, we go to this one, from previous one
             enterEntry = entry;
             exitEntry = navigator.history.getLeftOf(entry);
+        } else {
+            // entry is dead, we go to previous one, from this one
+            exitEntry = entry;
+            enterEntry = navigator.history.getLast();
         }
 
-        Logger.d("Exit entry: %s - dead: %b", exitEntry.scopeName, dead);
+        Logger.d("Exit entry: %s - in history: %b", exitEntry.scopeName, inHistory);
         Preconditions.checkNotNull(enterEntry, "Next entry cannot be null");
         Preconditions.checkNotNull(exitEntry, "Previous entry cannot be null");
 //        Preconditions.checkNull(nextEntry.receivedResult, "Next entry cannot have already a result");
 
         if (nextEntryResult != null) {
-            Preconditions.checkArgument(dead, "Next entry result only if entry is dead");
+            Preconditions.checkArgument(inHistory, "Next entry result only if entry is dead");
             if (enterEntry.path instanceof ReceivesNavigationResult) {
                 ((ReceivesNavigationResult) enterEntry.path).onReceiveNavigationResult(nextEntryResult);
             }
@@ -205,15 +205,15 @@ class Dispatcher {
 //            previousEntry.returnsResult = null;
 //        }
 
-        present(enterEntry, exitEntry, dead);
+        present(enterEntry, exitEntry, inHistory);
     }
 
-    private void present(final History.Entry enterEntry, final History.Entry exitEntry, final boolean exitEntryDead) {
+    private void present(final History.Entry enterEntry, final History.Entry exitEntry, final boolean exitEntryInHistory) {
 //        MortarScope currentScope = navigator.presenter.getCurrentScope();
 //        Preconditions.checkNotNull(currentScope, "Current scope cannot be null");
 //        Logger.d("Current container scope is: %s", currentScope.getName());
 
-        navigator.presenter.present(createDispatchEntry(enterEntry), exitEntry, nextEntryTransitionDirection, exitEntryDead, new Callback() {
+        navigator.presenter.present(createDispatchEntry(enterEntry), exitEntry, nextEntryTransitionDirection, exitEntryInHistory, new Callback() {
             @Override
             public void onComplete() {
                 if (navigator.getScope() != null) {
