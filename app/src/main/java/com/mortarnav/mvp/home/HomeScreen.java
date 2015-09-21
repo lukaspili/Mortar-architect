@@ -1,4 +1,4 @@
-package com.mortarnav.stackable;
+package com.mortarnav.mvp.home;
 
 import android.content.Context;
 import android.view.View;
@@ -7,18 +7,15 @@ import android.view.ViewGroup;
 import com.mortarnav.DaggerScope;
 import com.mortarnav.MainActivityComponent;
 import com.mortarnav.deps.WithActivityDependencies;
-import com.mortarnav.presenter.HomePresenter;
-import com.mortarnav.view.HomeAdditionalCustomView;
-import com.mortarnav.view.HomeView;
+import com.mortarnav.mvp.banner.BannerScreen;
 
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
-import org.parceler.Transient;
 
 import architect.ScreenPath;
+import architect.commons.ScreenService;
 import architect.robot.DaggerService;
 import architect.screen.ReceivesNavigationResult;
-import architect.commons.ScreenService;
 import dagger.Provides;
 import mortar.MortarScope;
 
@@ -32,9 +29,8 @@ import mortar.MortarScope;
 public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> {
 
     HomePresenter.HomeState state;
+    BannerScreen bannerScreen;
     String name;
-
-    @Transient
     String result;
 
     @ParcelConstructor
@@ -57,7 +53,13 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
         if (state == null) {
             state = new HomePresenter.HomeState();
         }
-        builder.withService(ScreenService.SERVICE_NAME, state);
+
+        if (bannerScreen == null) {
+            bannerScreen = new BannerScreen();
+        }
+        builder.withService(ScreenService.SERVICE_NAME, new ScreenService.Builder()
+                .withScreen(BannerScreen.class, bannerScreen)
+                .build());
     }
 
     @Override
@@ -71,7 +73,11 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
         @Provides
         @DaggerScope(Component.class)
         public HomePresenter providesPresenter() {
-            return new HomePresenter(name, result);
+            if (result == null) {
+                return new HomePresenter(name, state);
+            } else {
+                return new HomePresenter(name, state, result);
+            }
         }
     }
 

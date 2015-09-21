@@ -1,4 +1,4 @@
-package com.mortarnav.view;
+package com.mortarnav.mvp.home;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.mortarnav.R;
-import com.mortarnav.stackable.HomeScreen;
-import com.mortarnav.presenter.HomePresenter;
+import com.mortarnav.mvp.home.HomeScreen;
+import com.mortarnav.mvp.home.HomePresenter;
 
 import javax.inject.Inject;
 

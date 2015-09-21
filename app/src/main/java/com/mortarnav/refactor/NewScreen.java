@@ -17,8 +17,9 @@ import mortar.MortarScope;
  */
 public class NewScreen implements ScreenPath, ReceivesNavigationResult<String> {
 
-    private String result;
     private String username;
+    private int userId;
+    private String result;
     private NewViewPresenter.State presenterState;
 
     public NewScreen(String username) {
@@ -42,7 +43,13 @@ public class NewScreen implements ScreenPath, ReceivesNavigationResult<String> {
         @Provides
         @DaggerScope(NewViewPresenter.class)
         public NewViewPresenter providesPresenter(RestClient restClient) {
-            return new NewViewPresenter(restClient, username, presenterState, result);
+            if (username != null) {
+                return new NewViewPresenter(restClient, username, presenterState, result);
+            } else if (userId != 0) {
+                return new NewViewPresenter(restClient, userId, presenterState, result);
+            } else {
+                return new NewViewPresenter(restClient, username, presenterState, result);
+            }
         }
     }
 

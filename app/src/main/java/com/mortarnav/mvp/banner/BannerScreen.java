@@ -1,20 +1,17 @@
-package com.mortarnav.stackable;
+package com.mortarnav.mvp.banner;
 
 import com.mortarnav.DaggerScope;
 import com.mortarnav.MainActivity;
 import com.mortarnav.MainActivityComponent;
-import com.mortarnav.presenter.BannerPresenter;
 
 import org.parceler.Parcel;
 
 import architect.NavigatorServices;
 import architect.Screen;
 import architect.robot.DaggerService;
-import architect.commons.ScreenService;
 import autodagger.AutoComponent;
 import dagger.Provides;
 import mortar.MortarScope;
-import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -42,9 +39,13 @@ public class BannerScreen implements Screen {
 
         if (bannerState == null) {
             bannerState = new BannerPresenter.BannerState();
-            Timber.d("Put banner state");
         }
-        builder.withService(ScreenService.SERVICE_NAME, bannerState);
+
+//        if (bannerState == null) {
+//            bannerState = new BannerPresenter.BannerState();
+//            Timber.d("Put banner state");
+//        }
+//        builder.withService(ScreenService.SERVICE_NAME, bannerState);
     }
 
     @dagger.Module
@@ -53,12 +54,12 @@ public class BannerScreen implements Screen {
         @Provides
         @DaggerScope(BannerPresenter.class)
         public BannerPresenter providesPresenter() {
-            return new BannerPresenter();
+            return new BannerPresenter(bannerState);
         }
     }
 
-    public interface StateWithBannerScreen {
-
-        BannerScreen getBannerScreen();
-    }
+//    public interface StateWithBannerScreen {
+//
+//        BannerScreen getBannerScreen();
+//    }
 }

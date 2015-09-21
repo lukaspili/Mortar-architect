@@ -2,6 +2,9 @@ package com.mortarnav.refactor;
 
 import com.mortarnav.deps.RestClient;
 
+import architect.robot.NavigationParam;
+import architect.robot.NavigationResult;
+import architect.robot.PresenterState;
 import mortar.ViewPresenter;
 
 /**
@@ -10,8 +13,17 @@ import mortar.ViewPresenter;
 public class NewViewPresenter extends ViewPresenter<NewView> {
 
     private final RestClient restClient;
-    private final String username;
+
+    @PresenterState
     private final State state;
+
+    @NavigationParam
+    private String username;
+
+    @NavigationParam
+    private int userId;
+
+    @NavigationResult
     private final String result;
 
     public NewViewPresenter(RestClient restClient, String username, State state, String result) {
@@ -21,7 +33,15 @@ public class NewViewPresenter extends ViewPresenter<NewView> {
         this.result = result;
     }
 
+    public NewViewPresenter(RestClient restClient, int userId, State state, String result) {
+        this.restClient = restClient;
+        this.userId = userId;
+        this.state = state;
+        this.result = result;
+    }
+
     public static class State {
+
 
     }
 }

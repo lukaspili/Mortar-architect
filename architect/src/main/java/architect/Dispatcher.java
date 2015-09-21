@@ -185,7 +185,7 @@ class Dispatcher {
 //        Preconditions.checkNull(nextEntry.receivedResult, "Next entry cannot have already a result");
 
         if (nextEntryResult != null) {
-            Preconditions.checkArgument(inHistory, "Next entry result only if entry is dead");
+            Preconditions.checkArgument(!inHistory, "Next entry result only if entry is dead");
             if (enterEntry.path instanceof ReceivesNavigationResult) {
                 ((ReceivesNavigationResult) enterEntry.path).onReceiveNavigationResult(nextEntryResult);
             }

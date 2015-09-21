@@ -1,19 +1,16 @@
-package com.mortarnav.view;
+package com.mortarnav.mvp.banner;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.mortarnav.R;
-import com.mortarnav.presenter.BannerPresenter;
-import com.mortarnav.stackable.BannerScreen;
-import com.mortarnav.stackable.BannerScreenComponent;
 
 import architect.Screen;
+import architect.commons.ScreenService;
 import architect.commons.view.ScreenLinearLayout;
 import architect.commons.view.ScreenViewContainer;
 import architect.robot.DaggerService;
-import architect.commons.ScreenService;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -29,6 +26,11 @@ public class BannerView extends ScreenLinearLayout<BannerPresenter> implements S
     }
 
     @Override
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr) {
+        super.init(context, attrs, defStyleAttr);
+    }
+
+    @Override
     public void initWithScreenContext(Context context) {
         DaggerService.<BannerScreenComponent>get(context).inject(this);
 
@@ -38,7 +40,7 @@ public class BannerView extends ScreenLinearLayout<BannerPresenter> implements S
 
     @Override
     public Screen getScreen() {
-        return ScreenService.<BannerScreen.StateWithBannerScreen>get(getContext()).getBannerScreen();
+        return ScreenService.get(getContext(), BannerScreen.class);
     }
 
     @OnClick

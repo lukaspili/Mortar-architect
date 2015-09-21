@@ -1,4 +1,4 @@
-package com.mortarnav.view;
+package com.mortarnav.mvp.home;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 import com.mortarnav.R;
 import com.mortarnav.ToolbarOwner;
-import com.mortarnav.presenter.HomePresenter;
-import com.mortarnav.stackable.HomeScreen;
+import com.mortarnav.mvp.home.HomePresenter;
+import com.mortarnav.mvp.home.HomeScreen;
 
 import javax.inject.Inject;
 
@@ -20,7 +20,6 @@ import architect.view.HandlesViewTransition;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

@@ -1,15 +1,14 @@
-package com.mortarnav.presenter;
+package com.mortarnav.mvp.banner;
 
 import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.view.BannerView;
 
 import org.parceler.Parcel;
 
 import java.util.Random;
 
-import architect.commons.ScreenService;
+import architect.robot.PresenterState;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
@@ -19,16 +18,16 @@ import timber.log.Timber;
 @DaggerScope(BannerPresenter.class)
 public class BannerPresenter extends ViewPresenter<BannerView> {
 
-    private BannerState state;
+    @PresenterState
+    private final BannerState state;
+
+    public BannerPresenter(BannerState state) {
+        this.state = state;
+    }
 
     @Override
     protected void onLoad(Bundle savedInstanceState) {
-        state = ScreenService.get(getView().getScreenContext());
-        if (state.random == -1) {
-            state.random = new Random().nextInt(100);
-        }
-
-        Timber.d("Banner presenter with random: %d", state.random);
+        Timber.d("Banner onLoad with random = %d", state.random);
     }
 
     public void click() {
@@ -38,6 +37,10 @@ public class BannerPresenter extends ViewPresenter<BannerView> {
     @Parcel(parcelsIndex = false)
     public static class BannerState {
 
-        int random = -1;
+        public BannerState() {
+            Timber.d("NEW BannerState, random = %d", random);
+        }
+
+        int random = new Random().nextInt(100);
     }
 }

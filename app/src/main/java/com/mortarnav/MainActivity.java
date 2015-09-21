@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.mortarnav.deps.WithActivityDependencies;
-import com.mortarnav.stackable.HomeScreen;
+import com.mortarnav.mvp.home.HomeScreen;
 
 import javax.inject.Inject;
 
