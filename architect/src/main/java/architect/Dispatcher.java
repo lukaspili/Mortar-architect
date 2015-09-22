@@ -66,7 +66,7 @@ class Dispatcher {
             if (entryScope == null) {
                 // entry scope is null during the first launch
                 Logger.d("Create scope: %s", entry.scopeName);
-                entryScope = StackFactory.createScope(navigator.getScope(), entry.path, entry.scopeName);
+                entryScope = MortarFactory.createScope(navigator.getScope(), entry.path, entry.scopeName);
             }
             dispatchEntries.add(new DispatchEntry(entry, entryScope));
         }
@@ -308,7 +308,7 @@ class Dispatcher {
 //    }
 
     private DispatchEntry createDispatchEntry(History.Entry entry) {
-        return new DispatchEntry(entry, StackFactory.createScope(navigator.getScope(), entry.path, entry.scopeName));
+        return new DispatchEntry(entry, MortarFactory.createScope(navigator.getScope(), entry.path, entry.scopeName));
     }
 
     private void cleanExit(History.Entry entry) {

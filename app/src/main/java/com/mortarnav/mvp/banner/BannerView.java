@@ -6,10 +6,9 @@ import android.view.View;
 
 import com.mortarnav.R;
 
-import architect.Screen;
-import architect.commons.ScreenService;
-import architect.commons.view.ScreenLinearLayout;
-import architect.commons.view.ScreenViewContainer;
+import architect.MortarFactory;
+import architect.commons.SubscreenService;
+import architect.commons.view.PresentedLinearLayout;
 import architect.robot.DaggerService;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
@@ -19,7 +18,7 @@ import butterknife.OnClick;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @AutoInjector(BannerPresenter.class)
-public class BannerView extends ScreenLinearLayout<BannerPresenter> implements ScreenViewContainer {
+public class BannerView extends PresentedLinearLayout<BannerPresenter> {
 
     public BannerView(Context parentContext, AttributeSet attrs) {
         super(parentContext, attrs);
@@ -27,20 +26,11 @@ public class BannerView extends ScreenLinearLayout<BannerPresenter> implements S
 
     @Override
     protected void init(Context context, AttributeSet attrs, int defStyleAttr) {
-        super.init(context, attrs, defStyleAttr);
-    }
+        Context screenContext = MortarFactory.createContext(context, SubscreenService.get(context, "bannerScreen"));
 
-    @Override
-    public void initWithScreenContext(Context context) {
-        DaggerService.<BannerScreenComponent>get(context).inject(this);
-
-        View view = View.inflate(context, R.layout.banner_view, this);
+        DaggerService.<BannerScreenComponent>get(screenContext).inject(this);
+        View view = View.inflate(screenContext, R.layout.banner_view, this);
         ButterKnife.bind(view);
-    }
-
-    @Override
-    public Screen getScreen() {
-        return ScreenService.get(getContext(), BannerScreen.class);
     }
 
     @OnClick

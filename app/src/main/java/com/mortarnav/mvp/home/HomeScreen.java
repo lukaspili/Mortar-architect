@@ -13,7 +13,7 @@ import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
 
 import architect.ScreenPath;
-import architect.commons.ScreenService;
+import architect.commons.SubscreenService;
 import architect.robot.DaggerService;
 import architect.screen.ReceivesNavigationResult;
 import dagger.Provides;
@@ -29,7 +29,10 @@ import mortar.MortarScope;
 public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> {
 
     HomePresenter.HomeState state;
+
     BannerScreen bannerScreen;
+    BannerScreen bannerScreen2;
+
     String name;
     String result;
 
@@ -57,8 +60,12 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
         if (bannerScreen == null) {
             bannerScreen = new BannerScreen();
         }
-        builder.withService(ScreenService.SERVICE_NAME, new ScreenService.Builder()
-                .withScreen(BannerScreen.class, bannerScreen)
+        if (bannerScreen2 == null) {
+            bannerScreen2 = new BannerScreen();
+        }
+        builder.withService(SubscreenService.SERVICE_NAME, new SubscreenService.Builder()
+                .withScreen("bannerScreen", bannerScreen)
+                .withScreen("bannerScreen2", bannerScreen2)
                 .build());
     }
 

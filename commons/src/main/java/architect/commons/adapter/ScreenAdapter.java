@@ -9,22 +9,22 @@ import java.util.Arrays;
 import java.util.List;
 
 import architect.ScreenPath;
-import architect.StackFactory;
+import architect.MortarFactory;
 import mortar.MortarScope;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class StackablePagerAdapter extends PagerAdapter {
+public class ScreenAdapter extends PagerAdapter {
 
     private final Context context;
     private final List<ScreenPath> paths;
 
-    public StackablePagerAdapter(Context context, ScreenPath... paths) {
+    public ScreenAdapter(Context context, ScreenPath... paths) {
         this(context, Arrays.asList(paths));
     }
 
-    public StackablePagerAdapter(Context context, List<ScreenPath> paths) {
+    public ScreenAdapter(Context context, List<ScreenPath> paths) {
         this.context = context;
         this.paths = paths;
     }
@@ -38,7 +38,7 @@ public class StackablePagerAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         ScreenPath path = paths.get(position);
 
-        Context pageContext = StackFactory.createContext(context, path, String.valueOf(position));
+        Context pageContext = MortarFactory.createContext(context, path, String.valueOf(position));
         View newChild = path.createView(pageContext, container);
         container.addView(newChild);
         return newChild;

@@ -3,7 +3,7 @@ package architect.commons.view;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import architect.StackFactory;
+import architect.MortarFactory;
 import mortar.ViewPresenter;
 
 /**
@@ -26,7 +26,7 @@ public abstract class StackedScrollView<T extends ViewPresenter> extends Present
 
     @Override
     protected void init(Context context, AttributeSet attrs, int defStyleAttr) {
-        Context newContext = StackFactory.createContext(context, getStackable(), getStackableIdentifier());
+        Context newContext = MortarFactory.createContext(context, getStackable(), getStackableIdentifier());
         initWithContext(newContext);
     }
 

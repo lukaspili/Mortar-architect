@@ -7,7 +7,7 @@ import mortar.MortarScope;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class StackFactory {
+public class MortarFactory {
 
     public static Context createContext(Context parentContext, Screen screen) {
         return createContext(parentContext, screen, null);

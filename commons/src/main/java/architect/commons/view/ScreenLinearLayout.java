@@ -3,7 +3,7 @@ package architect.commons.view;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import architect.StackFactory;
+import architect.MortarFactory;
 import mortar.ViewPresenter;
 
 /**
@@ -28,14 +28,14 @@ public abstract class ScreenLinearLayout<T extends ViewPresenter> extends Presen
 
     @Override
     protected void init(Context context, AttributeSet attrs, int defStyleAttr) {
-        screenContext = StackFactory.createContext(context, getScreen(), getScreenUniqueId());
+        screenContext = MortarFactory.createContext(context, getScreen(), getScreenUniqueId());
         initWithScreenContext(screenContext);
     }
 
-    @Override
-    public Context getScreenContext() {
-        return screenContext;
-    }
+//    @Override
+//    public Context getScreenContext() {
+//        return screenContext;
+//    }
 
     @Override
     public String getScreenUniqueId() {

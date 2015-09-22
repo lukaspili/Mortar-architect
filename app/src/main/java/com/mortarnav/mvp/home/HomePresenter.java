@@ -2,20 +2,33 @@ package com.mortarnav.mvp.home;
 
 import android.os.Bundle;
 
+import com.mortarnav.StandardAutoComponent;
+import com.mortarnav.mvp.banner.BannerScreen;
+
 import org.parceler.Parcel;
 
 import java.util.Random;
 
 import architect.Navigator;
+import architect.robot.AutoScreen;
+import architect.robot.ContainsSubscreen;
 import architect.robot.NavigationParam;
 import architect.robot.NavigationResult;
-import architect.robot.PresenterState;
+import architect.robot.ScreenData;
+import autodagger.AutoComponent;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
+@AutoScreen(
+        component = @AutoComponent(includes = StandardAutoComponent.class),
+        pathWithView = HomeView.class,
+        containsSubscreens = {
+                @ContainsSubscreen(type = BannerScreen.class, name = "bannerScreen")
+        }
+)
 public class HomePresenter extends ViewPresenter<HomeView> {
 
     private static int count = 0;
@@ -24,15 +37,14 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     private final String name;
 
     @NavigationResult
-    private final String result;
+    private String result;
 
-    @PresenterState
+    @ScreenData
     private final HomeState state;
 
     public HomePresenter(String name, HomeState state) {
         this.name = name;
         this.state = state;
-        this.result = null;
     }
 
     public HomePresenter(String name, HomeState state, String result) {
@@ -107,12 +119,14 @@ public class HomePresenter extends ViewPresenter<HomeView> {
 //                .put(new SlidesStackable()), ViewTransitionDirection.FORWARD);
     }
 
+
     @Parcel(parcelsIndex = false)
     public static class HomeState {
 
-        public HomeState() {
-            Timber.d("NEW HomeState, random = %d", random);
-        }
+//        public HomeState() {
+//            Timber.d("NEW HomeState, random = %d", random);
+//        }
+
 
         int random = new Random().nextInt(100);
     }

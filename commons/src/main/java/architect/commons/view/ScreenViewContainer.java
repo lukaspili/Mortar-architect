@@ -11,7 +11,7 @@ public interface ScreenViewContainer {
 
     void initWithScreenContext(Context context);
 
-    Context getScreenContext();
+//    Context getScreenContext();
 
     String getScreenUniqueId();
 

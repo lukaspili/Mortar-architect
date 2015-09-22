@@ -4,7 +4,7 @@ import com.mortarnav.deps.RestClient;
 
 import architect.robot.NavigationParam;
 import architect.robot.NavigationResult;
-import architect.robot.PresenterState;
+import architect.robot.ScreenData;
 import mortar.ViewPresenter;
 
 /**
@@ -14,7 +14,7 @@ public class NewViewPresenter extends ViewPresenter<NewView> {
 
     private final RestClient restClient;
 
-    @PresenterState
+    @ScreenData
     private final State state;
 
     @NavigationParam

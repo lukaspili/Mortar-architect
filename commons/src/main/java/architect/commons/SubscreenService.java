@@ -6,38 +6,41 @@ import android.view.View;
 import java.util.HashMap;
 import java.util.Map;
 
+import architect.Screen;
+
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScreenService {
+public class SubscreenService {
 
-    public static final String SERVICE_NAME = ScreenService.class.getName();
+    public static final String SERVICE_NAME = SubscreenService.class.getName();
 
-    private static <T> Map<String, T> get(Context context) {
+    private static <T extends Screen> Map<String, T> get(Context context) {
         //noinspection unchecked, ResourceType
         return (Map<String, T>) context.getSystemService(SERVICE_NAME);
     }
 
-    public static <T> T get(Context context, Class cls) {
+    public static <T extends Screen> T get(Context context, String name) {
         //noinspection unchecked
         Map<String, T> screens = get(context);
         if (screens == null) {
             return null;
         }
 
-        return screens.get(cls.getName());
+        return screens.get(name);
     }
 
-    public static <T> T get(View view, Class cls) {
-        return get(view.getContext(), cls);
+    public static <T> T get(View view, String name) {
+        //noinspection unchecked
+        return get(view.getContext(), name);
     }
 
     public static class Builder {
 
         private Map<String, Object> screens = new HashMap<>();
 
-        public Builder withScreen(Class cls, Object screen) {
-            screens.put(cls.getName(), screen);
+        public Builder withScreen(String name, Object screen) {
+            screens.put(name, screen);
             return this;
         }
 
