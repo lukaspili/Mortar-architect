@@ -175,7 +175,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         callback.onPresentationFinished(sessionId);
     }
 
-    private void measureAndGetTransition(final View newView, final View previousView, final boolean removePreviousView, final ViewTransitionDirection direction, final ViewTransition transition, final Callback callback) {
+    private void measureAndGetTransition(final View newView, final View previousView, final boolean removePreviousView, final int direction, final ViewTransition transition, final Callback callback) {
         int width = newView.getWidth();
         int height = newView.getHeight();
 
@@ -198,7 +198,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         });
     }
 
-    private Animator getAnimator(final View originView, final View destinationView, final boolean removePreviousView, final ViewTransitionDirection direction, final ViewTransition transition, final Callback callback) {
+    private Animator getAnimator(final View originView, final View destinationView, final boolean removePreviousView, final int direction, final ViewTransition transition, final Callback callback) {
         AnimatorSet set = new AnimatorSet();
         set.addListener(new AnimatorListenerAdapter() {
 
@@ -213,7 +213,7 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
             }
         });
 
-        transition.transition(destinationView, originView, direction, set);
+        transition.performTransition(destinationView, originView, direction, set);
         sendTransitionEvents(destinationView, set);
 
         return set;
@@ -239,10 +239,10 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         final View view;
         final boolean addView;
         final boolean removePreviousView;
-        final ViewTransitionDirection direction;
+        final int direction;
         final ViewTransition transition;
 
-        public Presentation(View view, boolean addView, boolean removePreviousView, ViewTransitionDirection direction, ViewTransition transition) {
+        public Presentation(View view, boolean addView, boolean removePreviousView, int direction, ViewTransition transition) {
             this.view = view;
             this.addView = addView;
             this.removePreviousView = removePreviousView;

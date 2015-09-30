@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An history of scopes
+ * Navigation history
  *
  * History restoration from instance state bundle is only used during app process kill
  * During simple configuration change, the navigator scope is preserved, and thus the history also
@@ -28,6 +28,8 @@ public class History {
     private static final String STATE_KEY = "VIEW_STATE";
     private static final String SCOPES_NAMER_KEY = "SCOPES_IDS";
     private static final String NAV_TYPE_KEY = "NAV_TYPE";
+    private static final String TRANSITION_KEY = "TRANSITION";
+    private static final String ID_KEY = "ID";
 
     static final int NAV_TYPE_PUSH = 1;
     static final int NAV_TYPE_MODAL = 2;
@@ -59,7 +61,7 @@ public class History {
         scopeNamer = new ScopeNamer();
 
         for (int i = 0; i < paths.length; i++) {
-            add(paths[i], NAV_TYPE_PUSH);
+            add(paths[i], NAV_TYPE_PUSH, null, null);
         }
     }
 
@@ -89,7 +91,7 @@ public class History {
         return entries == null;
     }
 
-    Entry add(ScreenPath path, int navType) {
+    Entry add(ScreenPath path, int navType, String transition, String id) {
         if (navType == NAV_TYPE_MODAL) {
             // modal
             Preconditions.checkArgument(!entries.isEmpty(), "Cannot add modal on empty history");
@@ -100,7 +102,7 @@ public class History {
             }
         }
 
-        Entry entry = new Entry(scopeNamer.getName(path), path, navType);
+        Entry entry = new Entry(scopeNamer.getName(path), path, navType, transition, id);
         Preconditions.checkArgument(!entries.contains(entry), "An entry with the same navigation path is already present in history");
         entries.add(entry);
 
@@ -111,11 +113,7 @@ public class History {
      * At least 2 alive entries
      */
     boolean canKill() {
-        if (entries.size() < 2) {
-            return false;
-        }
-
-        return true;
+        return entries.size() > 1;
 
 //        int notdead = 0;
 //        for (int i = entries.size() - 1; i >= 0; i--) {
@@ -254,22 +252,17 @@ public class History {
         final String scopeName;
         final ScreenPath path;
         final int navType;
+        final String transition;
         SparseArray<Parcelable> viewState;
 
-//        Object result;
-//
-        //        boolean dead;
-//        Object returnsResult;
-//        Object receivedResult;
-//        ViewTransitionDirection direction;
-
-        public Entry(String scopeName, ScreenPath path, int navType) {
+        public Entry(String scopeName, ScreenPath path, int navType, String transition, String id) {
             Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");
             Preconditions.checkNotNull(path, "Path cannot be null");
             Preconditions.checkArgument(navType == NAV_TYPE_PUSH || navType == NAV_TYPE_MODAL, "Nav type invalid");
             this.scopeName = scopeName;
             this.path = path;
             this.navType = navType;
+            this.transition = transition;
         }
 
         boolean isModal() {
@@ -281,6 +274,7 @@ public class History {
             bundle.putParcelable(PATH_KEY, parceler.wrap(path));
             bundle.putSparseParcelableArray(STATE_KEY, viewState);
             bundle.putInt(NAV_TYPE_KEY, navType);
+            bundle.putString(TRANSITION_KEY, transition);
             return bundle;
         }
 
@@ -288,7 +282,7 @@ public class History {
             ScreenPath path = parceler.unwrap(bundle.getParcelable(PATH_KEY));
 
             // new entry with new scope instance, but preserving previous scope name
-            Entry entry = new Entry(bundle.getString(SCOPE_KEY), path, bundle.getInt(NAV_TYPE_KEY));
+            Entry entry = new Entry(bundle.getString(SCOPE_KEY), path, bundle.getInt(NAV_TYPE_KEY), bundle.getString(TRANSITION_KEY), bundle.getString(ID_KEY));
             entry.viewState = bundle.getSparseParcelableArray(STATE_KEY);
             return entry;
         }

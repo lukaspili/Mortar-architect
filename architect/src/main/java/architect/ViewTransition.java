@@ -8,5 +8,9 @@ import android.view.View;
  */
 public interface ViewTransition<T_Enter extends View, T_Exit extends View> {
 
-    void transition(T_Enter enterView, T_Exit exitView, ViewTransitionDirection direction, AnimatorSet set);
+    int DIRECTION_FORWARD = 1;
+    int DIRECTION_BACKWARD = 2;
+    int DIRECTION_REPLACE = 3;
+
+    void performTransition(T_Enter enterView, T_Exit exitView, int direction, AnimatorSet set);
 }

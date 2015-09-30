@@ -26,7 +26,7 @@ public class LateralViewTransition implements ViewTransition {
     }
 
     @Override
-    public void transition(View enterView, View exitView, ViewTransitionDirection direction, AnimatorSet set) {
+    public void performTransition(View enterView, View exitView, ViewTransitionDirection direction, AnimatorSet set) {
         config.configure(set);
 
         if (direction == ViewTransitionDirection.FORWARD || direction == ViewTransitionDirection.REPLACE) {

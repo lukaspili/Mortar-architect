@@ -13,10 +13,22 @@ import mortar.MortarScope;
  */
 class Dispatcher {
 
+    static final int DISPATCH_FORWARD = 1;
+    static final int DISPATCH_BACKWARD = 2;
+
     private final Navigator navigator;
     private final List<History.Entry> entries = new ArrayList<>();
-    private ViewTransitionDirection nextEntryTransitionDirection;
-    private Object nextEntryResult;
+
+    /**
+     * The transition direction of the next dispatch
+     */
+    private int dispatchDirection;
+
+    /**
+     * The result to pass to the next entry screen
+     */
+    private Object dispatchResult;
+
     private boolean dispatching;
     private boolean killed;
     private boolean active;
@@ -136,21 +148,21 @@ class Dispatcher {
         entries.clear();
     }
 
-    void dispatch(List<History.Entry> e, ViewTransitionDirection nextEntryTransitionDirection, Object nextEntryResult) {
+    void dispatch(List<History.Entry> e, int direction, Object result) {
         if (!active) return;
 
         entries.addAll(e);
-        this.nextEntryTransitionDirection = nextEntryTransitionDirection;
-        this.nextEntryResult = nextEntryResult;
+        dispatchDirection = direction;
+        dispatchResult = result;
         startDispatch();
     }
 
-    void dispatch(History.Entry entry, ViewTransitionDirection nextEntryTransitionDirection, Object nextEntryResult) {
+    void dispatch(History.Entry entry, int direction, Object result) {
         if (!active) return;
 
         entries.add(entry);
-        this.nextEntryTransitionDirection = nextEntryTransitionDirection;
-        this.nextEntryResult = nextEntryResult;
+        dispatchDirection = direction;
+        dispatchResult = result;
         startDispatch();
     }
 
@@ -162,14 +174,17 @@ class Dispatcher {
         Preconditions.checkNotNull(navigator.getScope(), "Dispatcher navigator scope cannot be null");
         Preconditions.checkArgument(!navigator.history.isEmpty(), "Cannot dispatch on empty history");
         Preconditions.checkArgument(!entries.isEmpty(), "Cannot dispatch on empty stack");
+        Preconditions.checkArgument(dispatchDirection > 0, "Dispatch direction invalid value");
 
         final History.Entry entry = entries.remove(0);
         Logger.d("Entry to dispatch: %s", entry.scopeName);
 
-        final boolean inHistory = navigator.history.existInHistory(entry);
+        // in case of forward, the entry to dispatch is already added to history
+        // in opposite in case of backward, the entry to dispatch is not in history anymore
+        final boolean forward = navigator.history.existInHistory(entry);
         final History.Entry enterEntry;
         final History.Entry exitEntry;
-        if (inHistory) {
+        if (forward) {
             // new entry, we go to this one, from previous one
             enterEntry = entry;
             exitEntry = navigator.history.getLeftOf(entry);
@@ -179,18 +194,35 @@ class Dispatcher {
             enterEntry = navigator.history.getLast();
         }
 
-        Logger.d("Exit entry: %s - in history: %b", exitEntry.scopeName, inHistory);
+        Logger.d("Exit entry: %s - in history: %b", exitEntry.scopeName, forward);
         Preconditions.checkNotNull(enterEntry, "Next entry cannot be null");
         Preconditions.checkNotNull(exitEntry, "Previous entry cannot be null");
 //        Preconditions.checkNull(nextEntry.receivedResult, "Next entry cannot have already a result");
 
-        if (nextEntryResult != null) {
-            Preconditions.checkArgument(!inHistory, "Next entry result only if entry is dead");
+        Preconditions.checkArgument(forward && dispatchResult == null, "In forward dispatch, there is no dispatch result");
+        if (dispatchResult != null) {
             if (enterEntry.path instanceof ReceivesNavigationResult) {
-                ((ReceivesNavigationResult) enterEntry.path).onReceiveNavigationResult(nextEntryResult);
+                ((ReceivesNavigationResult) enterEntry.path).onReceiveNavigationResult(dispatchResult);
             }
-            nextEntryResult = null;
+            dispatchResult = null;
         }
+
+//        if (enterEntry.navigationResult != null) {
+//            Preconditions.checkArgument(!forward, "Enter entry result only if going back in history");
+//            if (enterEntry.path instanceof ReceivesNavigationResult) {
+//                ((ReceivesNavigationResult) enterEntry.path).onReceiveNavigationResult(enterEntry.navigationResult);
+//            }
+//            enterEntry.navigationResult = null;
+//        }
+
+
+//        if (nextEntryResult != null) {
+//            Preconditions.checkArgument(!inHistory, "Next entry result only if entry is dead");
+//            if (enterEntry.path instanceof ReceivesNavigationResult) {
+//                ((ReceivesNavigationResult) enterEntry.path).onReceiveNavigationResult(nextEntryResult);
+//            }
+//            nextEntryResult = null;
+//        }
 
 //        if (!entries.isEmpty()) {
 //            // more entries to dispatch, try to skip intermediate entries
@@ -205,7 +237,7 @@ class Dispatcher {
 //            previousEntry.returnsResult = null;
 //        }
 
-        present(enterEntry, exitEntry, inHistory);
+        present(enterEntry, exitEntry, forward);
     }
 
     private void present(final History.Entry enterEntry, final History.Entry exitEntry, final boolean exitEntryInHistory) {
@@ -213,7 +245,7 @@ class Dispatcher {
 //        Preconditions.checkNotNull(currentScope, "Current scope cannot be null");
 //        Logger.d("Current container scope is: %s", currentScope.getName());
 
-        navigator.presenter.present(createDispatchEntry(enterEntry), exitEntry, nextEntryTransitionDirection, exitEntryInHistory, new Callback() {
+        navigator.presenter.present(createDispatchEntry(enterEntry), exitEntry, dispatchDirection, exitEntryInHistory, new Callback() {
             @Override
             public void onComplete() {
                 if (navigator.getScope() != null) {

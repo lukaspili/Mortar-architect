@@ -14,7 +14,7 @@ import org.parceler.ParcelConstructor;
 
 import architect.ScreenPath;
 import architect.commons.SubscreenService;
-import architect.robot.DaggerService;
+import architect.robot.RobotService;
 import architect.screen.ReceivesNavigationResult;
 import dagger.Provides;
 import mortar.MortarScope;
@@ -48,8 +48,8 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
 
     @Override
     public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
-        builder.withService(DaggerService.SERVICE_NAME, DaggerHomeScreen_Component.builder()
-                .mainActivityComponent(parentScope.<MainActivityComponent>getService(DaggerService.SERVICE_NAME))
+        builder.withService(RobotService.DAGGER_SERVICE_NAME, DaggerHomeScreen_Component.builder()
+                .mainActivityComponent(parentScope.<MainActivityComponent>getService(RobotService.DAGGER_SERVICE_NAME))
                 .module(new Module())
                 .build());
 

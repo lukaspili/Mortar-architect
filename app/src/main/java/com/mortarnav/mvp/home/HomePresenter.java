@@ -9,7 +9,9 @@ import org.parceler.Parcel;
 
 import java.util.Random;
 
+import architect.Navigation;
 import architect.Navigator;
+import architect.commons.transition.LateralViewTransition;
 import architect.robot.AutoScreen;
 import architect.robot.ContainsSubscreen;
 import architect.robot.NavigationParam;
@@ -37,22 +39,19 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     private final String name;
 
     @NavigationResult
-    private String result;
+    private final String result;
 
     @ScreenData
     private final HomeState state;
 
-    public HomePresenter(String name, HomeState state) {
-        this.name = name;
+    public HomePresenter(HomeState state, String name, String result) {
         this.state = state;
-    }
-
-    public HomePresenter(String name, HomeState state, String result) {
         this.name = name;
-        this.state = state;
         this.result = result;
 
-        Timber.d("Home presenter with result: %s", result);
+        if (result != null) {
+            Timber.d("Home presenter with result: %s", result);
+        }
     }
 
     @Override
@@ -72,6 +71,14 @@ public class HomePresenter extends ViewPresenter<HomeView> {
 
     public void nextHomeClick() {
         Navigator.get(getView()).push(new HomeScreen("Home " + ++count));
+
+        Navigator.get(getView()).navigate(new Navigation()
+                        .perform(Navigation.forward(new HomeScreen(""), new LateralViewTransition()))
+                        .perform(Navigation.backward(new HomeScreen(""), "SOME RESULT", new LateralViewTransition()))
+                        .perform(Navigation.replace(new HomeScreen("")))
+                        .perform(Navigation.modal(new HomeScreen("")))
+
+        );
     }
 
 
@@ -92,7 +99,7 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     }
 
     public void replaceNewHomeClick() {
-        Navigator.get(getView()).replace(new HomeScreen("Replaced!"));
+//        Navigator.get(getView()).replace(new HomeScreen("Replaced!"));
     }
 
     public void showReturnsResultClick() {

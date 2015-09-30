@@ -18,12 +18,11 @@ import java.util.List;
 import javax.annotation.Generated;
 import javax.lang.model.element.Modifier;
 
-import architect.robot.DaggerService;
+import architect.robot.RobotService;
 import dagger.Module;
 import dagger.Provides;
 import mortar.MortarScope;
 import processorworkflow.AbstractComposer;
-import processorworkflow.Logger;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -32,7 +31,7 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
 
     private static final ClassName STACKABLE_CLS = ClassName.get("architect", "Stackable");
     private static final ClassName PATH_CLS = ClassName.get("architect", "StackablePath");
-    private static final ClassName DAGGERSERVICE_CLS = ClassName.get(DaggerService.class);
+    private static final ClassName DAGGERSERVICE_CLS = ClassName.get(RobotService.class);
     private static final ClassName CONTEXT_CLS = ClassName.get("android.content", "Context");
     private static final ClassName VIEW_CLS = ClassName.get("android.view", "View");
     private static final ClassName VIEWGROUP_CLS = ClassName.get("android.view", "ViewGroup");

@@ -36,8 +36,8 @@ public class BottomAppearTransition extends ModalTransition {
     }
 
     @Override
-    public void transition(View enterView, View exitView, ViewTransitionDirection direction, AnimatorSet set) {
-        super.transition(enterView, exitView, direction, set);
+    public void performTransition(View enterView, View exitView, ViewTransitionDirection direction, AnimatorSet set) {
+        super.performTransition(enterView, exitView, direction, set);
 
         if (direction == ViewTransitionDirection.FORWARD) {
             set.play(ObjectAnimator.ofFloat(enterView, View.TRANSLATION_Y, enterView.getHeight(), 0));

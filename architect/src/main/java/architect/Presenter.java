@@ -5,13 +5,10 @@ import android.os.Parcelable;
 import android.util.SparseArray;
 import android.view.View;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import architect.view.HandlesViewTransition;
-import architect.view.HasPresenter;
 import mortar.MortarScope;
-import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -168,7 +165,7 @@ class Presenter {
 //        });
     }
 
-    void present(final Dispatcher.DispatchEntry enterDispatchEntry, final History.Entry exitEntry, final ViewTransitionDirection direction, final boolean exitEntryInHistory, final Dispatcher.Callback callback) {
+    void present(final Dispatcher.DispatchEntry enterDispatchEntry, final History.Entry exitEntry, final int direction, final boolean exitEntryInHistory, final Dispatcher.Callback callback) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
 
@@ -180,7 +177,7 @@ class Presenter {
         // either when present is done, or when presenter is desactivated
         dispatchingCallback = callback;
 
-        if(exitEntryInHistory) {
+        if (exitEntryInHistory) {
             Logger.d("Save view state for: %s", exitEntry.scopeName);
             exitEntry.viewState = getCurrentViewState();
         }

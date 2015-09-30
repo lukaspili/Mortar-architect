@@ -17,7 +17,7 @@ import architect.commons.ActivityArchitector;
 import architect.commons.Architected;
 import architect.commons.transition.Config;
 import architect.commons.transition.LateralViewTransition;
-import architect.robot.DaggerService;
+import architect.robot.RobotService;
 import autodagger.AutoComponent;
 import autodagger.AutoInjector;
 import butterknife.Bind;
@@ -85,13 +85,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
                 MainActivityComponent component = DaggerMainActivityComponent.builder()
-                        .appComponent(parentScope.<AppComponent>getService(DaggerService.SERVICE_NAME))
+                        .appComponent(parentScope.<AppComponent>getService(RobotService.SERVICE_NAME))
                         .build();
-                builder.withService(DaggerService.SERVICE_NAME, component);
+                builder.withService(RobotService.SERVICE_NAME, component);
             }
         });
 
-        DaggerService.<MainActivityComponent>get(this).inject(this);
+        RobotService.<MainActivityComponent>get(this).inject(this);
         toolbarOwner.takeView(toolbar);
 
         // it is usually the best to create the navigator after everything else
