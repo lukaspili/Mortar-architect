@@ -156,6 +156,10 @@ public class History {
         Entry entry;
         for (int i = entries.size() - 1; i > (rootIncluded ? -1 : 0); i--) {
             entry = entries.get(i);
+
+            // entry can be killed from another dispatch still in process
+            // ignore killed entries
+            if (entry.dead) continue;
             entry.dead = true;
 
             if (i != 0) {
