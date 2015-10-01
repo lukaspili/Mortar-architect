@@ -1,6 +1,11 @@
 # Changelog
 
-## Mortar Architect 0.14 *07/17/15*
+## Mortar Architect 0.17 *10/01/15*
+
+ * History bug fix
+
+
+## Mortar Architect 0.15 *07/17/15*
 
  * Add `HandlesViewTransition` to hook up on the view transition
  * Add examples of working with `Toolbar
