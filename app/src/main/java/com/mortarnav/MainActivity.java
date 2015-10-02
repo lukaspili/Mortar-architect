@@ -12,12 +12,9 @@ import javax.inject.Inject;
 
 import architect.Navigator;
 import architect.NavigatorView;
-import architect.TransitionsMapping;
 import architect.commons.ActivityArchitector;
 import architect.commons.Architected;
-import architect.commons.transition.Config;
 import architect.commons.transition.LateralViewTransition;
-import architect.robot.RobotService;
 import autodagger.AutoComponent;
 import autodagger.AutoInjector;
 import butterknife.Bind;
@@ -73,25 +70,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Navigator createNavigator(MortarScope scope) {
                 Navigator navigator = Navigator.create(scope, new Parceler());
-                navigator.transitions().register(new TransitionsMapping()
-                                .byDefault(new LateralViewTransition(new Config().duration(300)))
+                navigator.transitions().setDefault(new LateralViewTransition());
+//                navigator.transitions().register(new TransitionsMapping()
+//                                .byDefault(new LateralViewTransition(new Config().duration(300)))
 //                                .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250)))
 //                                .show(MyPopup2View.class).withTransition(new BottomAppearTransition(true, new Config().duration(1000)))
 //                                .show(SlidesView.class).withTransition(new CustomFullScreenLateralTransition())
-                );
+//                );
                 return navigator;
             }
 
             @Override
             public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
                 MainActivityComponent component = DaggerMainActivityComponent.builder()
-                        .appComponent(parentScope.<AppComponent>getService(RobotService.SERVICE_NAME))
+                        .appComponent(parentScope.<AppComponent>getService(DaggerService.SERVICE_NAME))
                         .build();
-                builder.withService(RobotService.SERVICE_NAME, component);
+                builder.withService(DaggerService.SERVICE_NAME, component);
             }
         });
 
-        RobotService.<MainActivityComponent>get(this).inject(this);
+        DaggerService.<MainActivityComponent>get(this).inject(this);
         toolbarOwner.takeView(toolbar);
 
         // it is usually the best to create the navigator after everything else

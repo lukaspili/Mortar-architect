@@ -5,14 +5,14 @@ import android.os.Parcelable;
 import org.parceler.Parcels;
 
 import architect.ScreenPath;
-import architect.StackableParceler;
+import architect.ScreenParceler;
 
 /**
  * PathParceler that uses Parceler library
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class Parceler implements StackableParceler {
+public class Parceler implements ScreenParceler {
 
     @Override
     public Parcelable wrap(ScreenPath path) {

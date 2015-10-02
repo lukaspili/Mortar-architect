@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import architect.ViewTransition;
-import architect.ViewTransitionDirection;
 
 /**
  * Left / right transition
@@ -26,10 +25,10 @@ public class LateralViewTransition implements ViewTransition {
     }
 
     @Override
-    public void performTransition(View enterView, View exitView, ViewTransitionDirection direction, AnimatorSet set) {
+    public void performTransition(View enterView, View exitView, int direction, AnimatorSet set) {
         config.configure(set);
 
-        if (direction == ViewTransitionDirection.FORWARD || direction == ViewTransitionDirection.REPLACE) {
+        if (direction == ViewTransition.DIRECTION_FORWARD) {
             set.play(ObjectAnimator.ofFloat(enterView, View.TRANSLATION_X, enterView.getWidth(), 0));
             set.play(ObjectAnimator.ofFloat(exitView, View.TRANSLATION_X, 0, -exitView.getWidth()));
         } else {

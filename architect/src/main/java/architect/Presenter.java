@@ -82,21 +82,21 @@ class Presenter {
         completeDispatchingCallback();
     }
 
-    void restore(List<Dispatcher.DispatchEntry> dispatchEntries) {
+    void restore(List<Dispatcher.ScopedEntry> dispatchEntries) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkArgument(view.getChildCount() == 0, "Restore requires view with no children");
         if (dispatchEntries.isEmpty()) {
             return;
         }
 
-        Dispatcher.DispatchEntry dispatchEntry;
+        Dispatcher.ScopedEntry dispatchedEntry;
         View child;
         for (int i = 0; i < dispatchEntries.size(); i++) {
-            dispatchEntry = dispatchEntries.get(i);
-            Logger.d("Restore: %s", dispatchEntry.entry.scopeName);
-            child = dispatchEntry.entry.path.createView(dispatchEntry.scope.createContext(view.getContext()), view);
-            if (dispatchEntry.entry.viewState != null) {
-                view.restoreHierarchyState(dispatchEntry.entry.viewState);
+            dispatchedEntry = dispatchEntries.get(i);
+            Logger.d("Restore: %s", dispatchedEntry.entry);
+            child = dispatchedEntry.entry.path.createView(dispatchedEntry.scope.createContext(view.getContext()), view);
+            if (dispatchedEntry.entry.viewState != null) {
+                view.restoreHierarchyState(dispatchedEntry.entry.viewState);
             }
 
             view.addView(child);
@@ -111,7 +111,7 @@ class Presenter {
      * Present several modals that will all show/hide in parallel
      * Once all view transitions have been executed, the dispatcher callback will complete
      */
-    void presentModals(List<Dispatcher.DispatchEntry> modals, final Dispatcher.Callback callback) {
+    void presentModals(List<Dispatcher.ScopedEntry> modals, final Dispatcher.Callback callback) {
 //        Preconditions.checkNotNull(view, "Container view cannot be null");
 //        Preconditions.checkArgument(view.hasCurrentView(), "Container view must have current view");
 //        Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
@@ -165,32 +165,32 @@ class Presenter {
 //        });
     }
 
-    void present(final Dispatcher.DispatchEntry enterDispatchEntry, final History.Entry exitEntry, final int direction, final boolean exitEntryInHistory, final Dispatcher.Callback callback) {
+    void present(final Dispatcher.ScopedEntry enterDispatchEntry, final History.Entry exitEntry, final boolean forward, final int direction, final Dispatcher.Callback callback) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
 
-        Logger.d("Present new dispatch: %s - with direction: %s", enterDispatchEntry.entry.scopeName, direction);
-        Logger.d("Previous entry: %s", exitEntry.scopeName);
+        Logger.d("Present new dispatch: %s - with direction: %s", enterDispatchEntry.entry, direction);
+        Logger.d("Previous entry: %s", exitEntry);
 
         // set and track the callback from dispatcher
         // dispatcher is waiting for the onComplete call
         // either when present is done, or when presenter is desactivated
         dispatchingCallback = callback;
 
-        if (exitEntryInHistory) {
-            Logger.d("Save view state for: %s", exitEntry.scopeName);
+        if (forward) {
+            Logger.d("Save view state for: %s", exitEntry);
             exitEntry.viewState = getCurrentViewState();
         }
 
         // create or reuse view
         View newView;
         boolean addNewView;
-        if (view.getChildCount() > 1 && exitEntryInHistory) {
-            Logger.d("Reuse previous view for %s", enterDispatchEntry.entry.scopeName);
+        if (view.getChildCount() > 1 && forward) {
+            Logger.d("Reuse previous view for %s", enterDispatchEntry.entry);
             newView = view.getChildAt(view.getChildCount() - 2);
             addNewView = false;
         } else {
-            Logger.d("Create new view for %s", enterDispatchEntry.entry.scopeName);
+            Logger.d("Create new view for %s", enterDispatchEntry.entry);
             Context context = enterDispatchEntry.scope.createContext(view.getContext());
             newView = enterDispatchEntry.entry.path.createView(context, view);
             addNewView = true;
@@ -216,14 +216,14 @@ class Presenter {
         // find transition
         ViewTransition transition;
         if (view.hasCurrentView()) {
-            transition = transitions.findTransition(view.getCurrentView(), newView, direction);
+            transition = transitions.find(null);
         } else {
             transition = null;
         }
 
         // restore state if it exists
         if (enterDispatchEntry.entry.viewState != null) {
-            Logger.d("Restore view state for: %s", enterDispatchEntry.entry.scopeName);
+            Logger.d("Restore view state for: %s", enterDispatchEntry.entry);
             newView.restoreHierarchyState(enterDispatchEntry.entry.viewState);
         }
 
@@ -239,7 +239,7 @@ class Presenter {
 //        }
 
 //        boolean keepPreviousView = direction == Dispatcher.Direction.FORWARD && newDispatch.entry.isModal();
-        boolean keepPreviousView = !exitEntryInHistory && enterDispatchEntry.entry.isModal();
+        boolean keepPreviousView = !forward && enterDispatchEntry.entry.isModal();
         Logger.d("Keep previous view: %b", keepPreviousView);
 
         view.show(new NavigatorView.Presentation(newView, addNewView, !keepPreviousView, direction, transition), new PresentationCallback() {

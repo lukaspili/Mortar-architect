@@ -5,7 +5,7 @@ import android.os.Parcelable;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public interface StackableParceler<T extends ScreenPath> {
+public interface ScreenParceler<T extends ScreenPath> {
 
     Parcelable wrap(T path);
 

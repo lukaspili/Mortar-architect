@@ -46,12 +46,20 @@ public class MortarFactory {
 //        return scopeBuilder.build(scopeName);
 //    }
 
+//    /**
+//     * Create Mortar scope from screen
+//     */
+//    static MortarScope createScope(MortarScope parentScope, Screen screen) {
+//        Scoper scoper = parentScope.getService(Scoper.SERVICE_NAME);
+//        return createScope(parentScope, screen, scoper.getNextScope(screen));
+//    }
+
     /**
      * Create Mortar scope from screen
      */
-    static MortarScope createScope(MortarScope parentScope, Screen screen, String scopeName) {
+    static MortarScope createScope(MortarScope parentScope, Screen screen, String name) {
         MortarScope.Builder scopeBuilder = parentScope.buildChild();
         screen.configureScope(scopeBuilder, parentScope);
-        return scopeBuilder.build(scopeName);
+        return scopeBuilder.build(name);
     }
 }

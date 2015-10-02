@@ -24,9 +24,7 @@ public class History {
 
     private static final String ENTRIES_KEY = "ENTRIES";
     private static final String PATH_KEY = "PATH";
-    private static final String SCOPE_KEY = "SCOPE_STATE";
     private static final String STATE_KEY = "VIEW_STATE";
-    private static final String SCOPES_NAMER_KEY = "SCOPES_IDS";
     private static final String NAV_TYPE_KEY = "NAV_TYPE";
     private static final String TRANSITION_KEY = "TRANSITION";
     private static final String ID_KEY = "ID";
@@ -34,17 +32,14 @@ public class History {
     static final int NAV_TYPE_PUSH = 1;
     static final int NAV_TYPE_MODAL = 2;
 
-    private final StackableParceler parceler;
+    private final ScreenParceler parceler;
     private List<Entry> entries;
-    private ScopeNamer scopeNamer;
 
-    History(StackableParceler parceler) {
+    History(ScreenParceler parceler) {
         this.parceler = parceler;
     }
 
     void init(Bundle bundle) {
-        scopeNamer = bundle.getParcelable(SCOPES_NAMER_KEY);
-
         ArrayList<Bundle> entryBundles = bundle.getParcelableArrayList(ENTRIES_KEY);
         if (entryBundles != null) {
             entries = new ArrayList<>(entryBundles.size());
@@ -58,7 +53,6 @@ public class History {
 
     void init(ScreenPath... paths) {
         entries = new ArrayList<>();
-        scopeNamer = new ScopeNamer();
 
         for (int i = 0; i < paths.length; i++) {
             add(paths[i], NAV_TYPE_PUSH, null, null);
@@ -67,18 +61,14 @@ public class History {
 
     Bundle toBundle() {
         Bundle historyBundle = new Bundle();
-        historyBundle.putParcelable(SCOPES_NAMER_KEY, scopeNamer);
-
-        if (parceler != null) {
-            ArrayList<Bundle> entryBundles = new ArrayList<>(entries.size());
-            for (Entry entry : entries) {
-                Bundle entryBundle = entry.toBundle(parceler);
-                if (entryBundle != null) {
-                    entryBundles.add(entryBundle);
-                }
+        ArrayList<Bundle> entryBundles = new ArrayList<>(entries.size());
+        for (Entry entry : entries) {
+            Bundle entryBundle = entry.toBundle(parceler);
+            if (entryBundle != null) {
+                entryBundles.add(entryBundle);
             }
-            historyBundle.putParcelableArrayList(ENTRIES_KEY, entryBundles);
         }
+        historyBundle.putParcelableArrayList(ENTRIES_KEY, entryBundles);
 
         return historyBundle;
     }
@@ -102,7 +92,7 @@ public class History {
             }
         }
 
-        Entry entry = new Entry(scopeNamer.getName(path), path, navType, transition, id);
+        Entry entry = new Entry(path, navType, transition, id);
         Preconditions.checkArgument(!entries.contains(entry), "An entry with the same navigation path is already present in history");
         entries.add(entry);
 
@@ -249,17 +239,14 @@ public class History {
     }
 
     static class Entry {
-        final String scopeName;
         final ScreenPath path;
         final int navType;
         final String transition;
         SparseArray<Parcelable> viewState;
 
-        public Entry(String scopeName, ScreenPath path, int navType, String transition, String id) {
-            Preconditions.checkArgument(scopeName != null && !scopeName.isEmpty(), "Scope name cannot be null nor empty");
+        public Entry(ScreenPath path, int navType, String transition, String id) {
             Preconditions.checkNotNull(path, "Path cannot be null");
             Preconditions.checkArgument(navType == NAV_TYPE_PUSH || navType == NAV_TYPE_MODAL, "Nav type invalid");
-            this.scopeName = scopeName;
             this.path = path;
             this.navType = navType;
             this.transition = transition;
@@ -269,7 +256,7 @@ public class History {
             return navType == NAV_TYPE_MODAL;
         }
 
-        private Bundle toBundle(StackableParceler parceler) {
+        private Bundle toBundle(ScreenParceler parceler) {
             Bundle bundle = new Bundle();
             bundle.putParcelable(PATH_KEY, parceler.wrap(path));
             bundle.putSparseParcelableArray(STATE_KEY, viewState);
@@ -278,29 +265,15 @@ public class History {
             return bundle;
         }
 
-        private static Entry fromBundle(Bundle bundle, StackableParceler parceler) {
-            ScreenPath path = parceler.unwrap(bundle.getParcelable(PATH_KEY));
-
-            // new entry with new scope instance, but preserving previous scope name
-            Entry entry = new Entry(bundle.getString(SCOPE_KEY), path, bundle.getInt(NAV_TYPE_KEY), bundle.getString(TRANSITION_KEY), bundle.getString(ID_KEY));
+        private static Entry fromBundle(Bundle bundle, ScreenParceler parceler) {
+            Entry entry = new Entry(parceler.unwrap(bundle.getParcelable(PATH_KEY)), bundle.getInt(NAV_TYPE_KEY), bundle.getString(TRANSITION_KEY), bundle.getString(ID_KEY));
             entry.viewState = bundle.getSparseParcelableArray(STATE_KEY);
             return entry;
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Entry entry = (Entry) o;
-
-            return scopeName.equals(entry.scopeName);
-
-        }
-
-        @Override
-        public int hashCode() {
-            return scopeName.hashCode();
+        public String toString() {
+            return path.toString();
         }
     }
 }

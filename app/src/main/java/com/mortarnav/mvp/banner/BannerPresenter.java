@@ -8,7 +8,6 @@ import org.parceler.Parcel;
 
 import java.util.Random;
 
-import architect.robot.ScreenData;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
@@ -18,7 +17,7 @@ import timber.log.Timber;
 @DaggerScope(BannerPresenter.class)
 public class BannerPresenter extends ViewPresenter<BannerView> {
 
-    @ScreenData
+    //    @ScreenData
     private final BannerState state;
 
     public BannerPresenter(BannerState state) {

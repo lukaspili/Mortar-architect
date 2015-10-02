@@ -7,13 +7,13 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
+import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 import com.mortarnav.ToolbarOwner;
 
 import javax.inject.Inject;
 
 import architect.commons.view.PresentedScrollView;
-import architect.robot.RobotService;
 import architect.view.HandlesViewTransition;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -36,7 +36,7 @@ public class HomeView extends PresentedScrollView<HomePresenter> implements Hand
     public HomeView(Context context) {
         super(context);
 
-        RobotService.<HomeScreen.Component>getDaggerService(context).inject(this);
+        DaggerService.<HomeScreen.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.home_view, this);
         ButterKnife.bind(view);

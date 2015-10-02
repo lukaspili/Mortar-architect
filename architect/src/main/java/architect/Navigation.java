@@ -9,7 +9,7 @@ public class Navigation {
         return this;
     }
 
-    public Navigation push(Navigator.PathBuilder builder) {
+    public Navigation push(PathBuilder builder) {
         return this;
     }
 

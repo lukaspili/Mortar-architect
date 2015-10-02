@@ -19,12 +19,12 @@ public @interface AutoScreen {
     /**
      * Generates a ScreenPath class instead, and use the following view class
      */
-    Class<? extends View> pathWithView() default View.class;
+    Class<? extends View> pathView() default View.class;
 
     /**
      * Generates a ScreenPath class instead, and use the following layout file
      */
-    int pathWithLayout() default 0;
+    int pathLayout() default 0;
 
     /**
      * The generated screen will contain the following subscreens

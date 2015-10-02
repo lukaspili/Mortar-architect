@@ -2,46 +2,35 @@ package com.mortarnav.mvp.home;
 
 import android.os.Bundle;
 
-import com.mortarnav.StandardAutoComponent;
-import com.mortarnav.mvp.banner.BannerScreen;
-
 import org.parceler.Parcel;
 
 import java.util.Random;
 
-import architect.Navigation;
 import architect.Navigator;
-import architect.commons.transition.LateralViewTransition;
-import architect.robot.AutoScreen;
-import architect.robot.ContainsSubscreen;
-import architect.robot.NavigationParam;
-import architect.robot.NavigationResult;
-import architect.robot.ScreenData;
-import autodagger.AutoComponent;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@AutoScreen(
-        component = @AutoComponent(includes = StandardAutoComponent.class),
-        pathWithView = HomeView.class,
-        containsSubscreens = {
-                @ContainsSubscreen(type = BannerScreen.class, name = "bannerScreen")
-        }
-)
+//@AutoScreen(
+//        component = @AutoComponent(includes = StandardAutoComponent.class),
+//        pathView = HomeView.class,
+//        containsSubscreens = {
+//                @ContainsSubscreen(type = BannerScreen.class, name = "bannerScreen")
+//        }
+//)
 public class HomePresenter extends ViewPresenter<HomeView> {
 
     private static int count = 0;
 
-    @NavigationParam
+    //    @NavigationParam
     private final String name;
 
-    @NavigationResult
+    //    @NavigationResult
     private final String result;
 
-    @ScreenData
+    //    @ScreenData
     private final HomeState state;
 
     public HomePresenter(HomeState state, String name, String result) {
@@ -72,13 +61,12 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     public void nextHomeClick() {
         Navigator.get(getView()).push(new HomeScreen("Home " + ++count));
 
-        Navigator.get(getView()).navigate(new Navigation()
-                        .perform(Navigation.forward(new HomeScreen(""), new LateralViewTransition()))
-                        .perform(Navigation.backward(new HomeScreen(""), "SOME RESULT", new LateralViewTransition()))
-                        .perform(Navigation.replace(new HomeScreen("")))
-                        .perform(Navigation.modal(new HomeScreen("")))
-
-        );
+//        Navigator.get(getView()).navigate(new Navigation()
+//                        .perform(Navigation.forward(new HomeScreen(""), new LateralViewTransition()))
+//                        .perform(Navigation.backward(new HomeScreen(""), "SOME RESULT", new LateralViewTransition()))
+//                        .perform(Navigation.replace(new HomeScreen("")))
+//                        .perform(Navigation.modal(new HomeScreen("")))
+//        );
     }
 
 
@@ -129,11 +117,6 @@ public class HomePresenter extends ViewPresenter<HomeView> {
 
     @Parcel(parcelsIndex = false)
     public static class HomeState {
-
-//        public HomeState() {
-//            Timber.d("NEW HomeState, random = %d", random);
-//        }
-
 
         int random = new Random().nextInt(100);
     }

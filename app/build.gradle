@@ -34,8 +34,8 @@ dependencies {
 
     compile project(':architect')
     compile project(':commons')
-    compile project(':robot')
-    apt project(':robot-compiler')
+//    compile project(':robot')
+//    apt project(':robot-compiler')
 
 //    compile project(':autopath')
 //    apt project(':autopath-compiler')

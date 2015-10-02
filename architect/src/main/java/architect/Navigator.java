@@ -39,13 +39,13 @@ public class Navigator implements Scoped {
 //        return create(containerScope, parceler, null);
 //    }
 
-    public static Navigator create(MortarScope containerScope, StackableParceler parceler) {
+    public static Navigator create(MortarScope containerScope, ScreenParceler parceler) {
 //        if (config == null) {
 //            config = new Config();
 //        }
 
         Preconditions.checkNotNull(containerScope, "Mortar scope for Navigator cannot be null");
-        Preconditions.checkArgument(parceler != null, "StackableParceler for Navigator cannot be null");
+        Preconditions.checkArgument(parceler != null, "Parceler for Navigator cannot be null");
 
         Navigator navigator = new Navigator(parceler);
 
@@ -62,14 +62,15 @@ public class Navigator implements Scoped {
     final Transitions transitions;
     final Presenter presenter;
     final NavigatorLifecycleDelegate delegate;
+    final Scoper scoper;
     final Dispatcher dispatcher;
     private MortarScope scope;
 
-    private Navigator(StackableParceler parceler) {
-//        this.config = config;
+    private Navigator(ScreenParceler parceler) {
         history = new History(parceler);
         transitions = new Transitions();
         delegate = new NavigatorLifecycleDelegate(this);
+        scoper = new Scoper(this);
         dispatcher = new Dispatcher(this);
         presenter = new Presenter(transitions);
     }
@@ -78,28 +79,28 @@ public class Navigator implements Scoped {
      * Push one path
      */
     public void push(ScreenPath path) {
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path, null, null), Dispatcher.DISPATCH_FORWARD, null);
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path, null, null), null, 0);
     }
 
     /**
      * Push one or several paths
      */
     public void push(ScreenPath... paths) {
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths), Dispatcher.DISPATCH_FORWARD, null);
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths), null, 0);
     }
 
     /**
      * Push one path builder
      */
     public void push(PathBuilder builder) {
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builder.path, builder.transition, builder.id), Dispatcher.DISPATCH_FORWARD, null);
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builder.path, builder.transition, builder.id), null, 0);
     }
 
     /**
      * Push several path builders
      */
     public void push(PathBuilder... builders) {
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builders), Dispatcher.DISPATCH_FORWARD, null);
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builders), null, 0);
     }
 
 //    /**
@@ -169,7 +170,7 @@ public class Navigator implements Scoped {
         }
 
         History.Entry entry = history.kill();
-        dispatcher.dispatch(entry, Dispatcher.DISPATCH_BACKWARD, result);
+        dispatcher.dispatch(entry, result, 0);
 
         return true;
     }
@@ -184,7 +185,7 @@ public class Navigator implements Scoped {
             return false;
         }
 
-        dispatcher.dispatch(history.killAllButRoot(), ViewTransition.DIRECTION_BACKWARD, result);
+        dispatcher.dispatch(history.killAllButRoot(), result, 0);
         return true;
     }
 

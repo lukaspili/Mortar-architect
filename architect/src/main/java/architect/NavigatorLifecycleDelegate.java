@@ -26,12 +26,10 @@ public class NavigatorLifecycleDelegate {
 
         if (navigator.history.shouldInit()) {
             Bundle bundle = null;
-            if (!navigator.config.dontRestoreStackAfterKill) {
-                if (intent != null && intent.hasExtra(HISTORY_KEY)) {
-                    bundle = intent.getBundleExtra(HISTORY_KEY);
-                } else if (savedInstanceState != null && savedInstanceState.containsKey(HISTORY_KEY)) {
-                    bundle = savedInstanceState.getBundle(HISTORY_KEY);
-                }
+            if (intent != null && intent.hasExtra(HISTORY_KEY)) {
+                bundle = intent.getBundleExtra(HISTORY_KEY);
+            } else if (savedInstanceState != null && savedInstanceState.containsKey(HISTORY_KEY)) {
+                bundle = savedInstanceState.getBundle(HISTORY_KEY);
             }
 
             if (bundle != null) {

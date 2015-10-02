@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mortarnav.DaggerScope;
+import com.mortarnav.DaggerService;
 import com.mortarnav.MainActivityComponent;
 import com.mortarnav.deps.WithActivityDependencies;
 import com.mortarnav.mvp.banner.BannerScreen;
@@ -14,7 +15,6 @@ import org.parceler.ParcelConstructor;
 
 import architect.ScreenPath;
 import architect.commons.SubscreenService;
-import architect.robot.RobotService;
 import architect.screen.ReceivesNavigationResult;
 import dagger.Provides;
 import mortar.MortarScope;
@@ -48,8 +48,8 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
 
     @Override
     public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
-        builder.withService(RobotService.DAGGER_SERVICE_NAME, DaggerHomeScreen_Component.builder()
-                .mainActivityComponent(parentScope.<MainActivityComponent>getService(RobotService.DAGGER_SERVICE_NAME))
+        builder.withService(DaggerService.SERVICE_NAME, DaggerHomeScreen_Component.builder()
+                .mainActivityComponent(parentScope.<MainActivityComponent>getService(DaggerService.SERVICE_NAME))
                 .module(new Module())
                 .build());
 
@@ -80,11 +80,7 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
         @Provides
         @DaggerScope(Component.class)
         public HomePresenter providesPresenter() {
-            if (result == null) {
-                return new HomePresenter(name, state);
-            } else {
-                return new HomePresenter(name, state, result);
-            }
+            return new HomePresenter(state, name, result);
         }
     }
 

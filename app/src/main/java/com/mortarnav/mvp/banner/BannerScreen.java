@@ -1,6 +1,7 @@
 package com.mortarnav.mvp.banner;
 
 import com.mortarnav.DaggerScope;
+import com.mortarnav.DaggerService;
 import com.mortarnav.MainActivity;
 import com.mortarnav.MainActivityComponent;
 
@@ -8,10 +9,10 @@ import org.parceler.Parcel;
 
 import architect.NavigatorServices;
 import architect.Screen;
-import architect.robot.RobotService;
 import autodagger.AutoComponent;
 import dagger.Provides;
 import mortar.MortarScope;
+import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -30,9 +31,9 @@ public class BannerScreen implements Screen {
     public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
         // parentScope is not the main activity scope, but the scope of its container (like home scope)
         // retreive the main activity component from the navigator scope
-        MainActivityComponent component = NavigatorServices.getService(parentScope, RobotService.SERVICE_NAME);
+        MainActivityComponent component = NavigatorServices.getService(parentScope, DaggerService.SERVICE_NAME);
 
-        builder.withService(RobotService.SERVICE_NAME, DaggerBannerScreenComponent.builder()
+        builder.withService(DaggerService.SERVICE_NAME, DaggerBannerScreenComponent.builder()
                 .module(new Module())
                 .mainActivityComponent(component)
                 .build());

@@ -5,11 +5,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 
 import javax.inject.Inject;
 
-import architect.robot.RobotService;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -24,7 +24,7 @@ public class HomeAdditionalCustomView extends FrameLayout {
     public HomeAdditionalCustomView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        RobotService.<HomeScreen.Component>get(context).inject(this);
+        DaggerService.<HomeScreen.Component>get(context).inject(this);
 
         View view = View.inflate(context, R.layout.home_additional_custom_view, this);
         ButterKnife.bind(view);

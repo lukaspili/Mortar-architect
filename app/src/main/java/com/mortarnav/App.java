@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.mortarnav.deps.WithAppDependencies;
 
-import architect.robot.RobotService;
 import autodagger.AutoComponent;
 import mortar.MortarScope;
 import timber.log.Timber;
@@ -34,7 +33,7 @@ public class App extends Application {
         AppComponent component = DaggerAppComponent.create();
 
         scope = MortarScope.buildRootScope()
-                .withService(RobotService.SERVICE_NAME, component)
+                .withService(DaggerService.SERVICE_NAME, component)
                 .build("Root");
     }
 }
