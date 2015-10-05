@@ -97,7 +97,7 @@ public class HomePresenter extends ViewPresenter<HomeView> {
 
     public void backToRootClick() {
         Navigator.get(getView()).back("This is a navigation result");
-//        Navigator.get(getView()).backToRoot();
+        Navigator.get(getView()).backToRoot("This is a navigation result backtoroot");
     }
 
     public void showTwoPopupsClick() {

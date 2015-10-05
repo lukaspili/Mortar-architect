@@ -143,6 +143,14 @@ class Dispatcher {
         entries.clear();
     }
 
+    void dispatch(List<History.Entry> e) {
+        dispatch(e, null, 0);
+    }
+
+    void dispatch(List<History.Entry> e, Object result) {
+        dispatch(e, result, 0);
+    }
+
     void dispatch(List<History.Entry> e, Object result, int direction) {
         if (!active) return;
 
@@ -150,6 +158,14 @@ class Dispatcher {
             entries.add(new Dispatch(e.get(i), result, direction));
         }
         startDispatch();
+    }
+
+    void dispatch(History.Entry entry) {
+        dispatch(entry, null, 0);
+    }
+
+    void dispatch(History.Entry entry, Object result) {
+        dispatch(entry, result, 0);
     }
 
     void dispatch(History.Entry entry, Object result, int direction) {
@@ -239,7 +255,7 @@ class Dispatcher {
 //        Logger.d("Current container scope is: %s", currentScope.getName());
 
         final MortarScope exitScope = navigator.scoper.getCurrentScope(exitEntry.path);
-        ScopedEntry scopedEntry = createDispatchEntry(enterEntry);
+        ScopedEntry scopedEntry = createDispatchEntry(enterEntry, forward);
 
         navigator.presenter.present(scopedEntry, exitEntry, forward, transitionDirection, new Callback() {
             @Override
@@ -333,8 +349,8 @@ class Dispatcher {
 //        return true;
 //    }
 
-    private ScopedEntry createDispatchEntry(History.Entry entry) {
-        return new ScopedEntry(entry, navigator.scoper.getNewScope(entry.path));
+    private ScopedEntry createDispatchEntry(History.Entry entry, boolean forward) {
+        return new ScopedEntry(entry, navigator.scoper.getNewScope(entry.path, forward));
     }
 
     private void cleanExit(History.Entry entry) {

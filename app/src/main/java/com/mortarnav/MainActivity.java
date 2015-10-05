@@ -2,6 +2,7 @@ package com.mortarnav;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     protected Toolbar toolbar;
 
     @Override
-    public Object getSystemService(String name) {
+    public Object getSystemService(@NonNull String name) {
         if (scope != null && scope.hasService(name)) {
             return scope.getService(name);
         }

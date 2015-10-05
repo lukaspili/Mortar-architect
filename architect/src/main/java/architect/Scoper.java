@@ -12,10 +12,8 @@ import mortar.MortarScope;
  */
 public class Scoper {
 
-    public static final String SERVICE_NAME = Scoper.class.getName();
-
     private final Navigator navigator;
-    private final SimpleArrayMap<String, Integer> ids;
+    private final SimpleArrayMap<Class, Integer> ids;
 
     public Scoper(Navigator navigator) {
         this.navigator = navigator;
@@ -23,64 +21,43 @@ public class Scoper {
     }
 
     public MortarScope getCurrentScope(Screen screen) {
-        String name = getCurrentScopeName(screen);
+        Class cls = screen.getClass();
+        int id = getId(cls);
+        String name = getName(cls, id);
+
         MortarScope scope = navigator.getScope().findChild(name);
         if (scope == null) {
-            Logger.d("Create scope: %s", name);
-            scope = MortarFactory.createScope(navigator.getScope(), screen, name);
+            return createNewScope(screen, cls, id, true);
         }
         return scope;
     }
 
-    public MortarScope getNewScope(Screen screen) {
-        String name = getNewScopeName(screen);
-        MortarScope scope = navigator.getScope().findChild(name);
-        if (scope == null) {
-            Logger.d("Create scope: %s", name);
-            scope = MortarFactory.createScope(navigator.getScope(), screen, name);
-        }
-        return scope;
+    public MortarScope getNewScope(Screen screen, boolean forward) {
+        Class cls = screen.getClass();
+        return createNewScope(screen, cls, getId(cls), forward);
     }
 
-    public String getCurrentScopeName(Object obj) {
-        String name = obj.getClass().getName();
-        int id = getId(name);
-        return getName(name, id);
+    private MortarScope createNewScope(Screen screen, Class cls, int currentId, boolean forward) {
+        ids.put(cls, forward ? ++currentId : --currentId);
+        String name = getName(cls, currentId);
+
+        Logger.d("Create scope: %s", name);
+        return MortarFactory.createScope(navigator.getScope(), screen, name);
     }
 
-    public String getNewScopeName(Object obj) {
-        String name = obj.getClass().getName();
-        int id = getId(name);
-        ids.put(name, ++id);
-
-        return getName(name, id);
-    }
-
-//    private void incrementId(Screen screen) {
-//        String name = screen.getClass().getName();
-//        int id;
-//        if (ids.containsKey(name)) {
-//            id = ids.get(name);
-//        } else {
-//            id = 1;
-//        }
-//
-//        ids.put(name, id);
-//    }
-
-    private int getId(String name) {
+    private int getId(Class cls) {
         int id;
-        if (ids.containsKey(name)) {
-            id = ids.get(name);
+        if (ids.containsKey(cls)) {
+            id = ids.get(cls);
         } else {
-            id = 1;
-            ids.put(name, id);
+            id = 0;
+            ids.put(cls, id);
         }
 
         return id;
     }
 
-    private String getName(String name, int id) {
-        return String.format("ARCHITECT_SCOPE_%s_%d", name, id);
+    private String getName(Class cls, int id) {
+        return String.format("ARCHITECT_SCOPE_%s_%d", cls, id);
     }
 }

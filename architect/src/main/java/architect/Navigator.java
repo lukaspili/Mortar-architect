@@ -165,7 +165,7 @@ public class Navigator implements Scoped {
         }
 
         History.Entry entry = history.kill();
-        dispatcher.dispatch(entry, result, 0);
+        dispatcher.dispatch(entry, result);
 
         return true;
     }
@@ -180,7 +180,7 @@ public class Navigator implements Scoped {
             return false;
         }
 
-        dispatcher.dispatch(history.killAllButRoot(), result, 0);
+        dispatcher.dispatch(history.killAllButRoot(), result);
         return true;
     }
 
