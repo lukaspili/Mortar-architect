@@ -98,6 +98,75 @@ public class Navigator implements Scoped {
         dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builders), null, 0);
     }
 
+
+    // REPLACE
+
+    /**
+     * Replace current path by one another path
+     */
+    public void replace(ScreenPath path) {
+        replace(path, ViewTransition.DIRECTION_FORWARD);
+    }
+
+    /**
+     * Replace current path by one another path
+     */
+    public void replace(ScreenPath path, int viewTransitionDirection) {
+        checkReplace(viewTransitionDirection);
+
+        history.kill();
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path, null, null), null, viewTransitionDirection);
+    }
+
+    /**
+     * Replace current path by several another paths
+     */
+    public void replace(ScreenPath... paths) {
+        replace(ViewTransition.DIRECTION_FORWARD, paths);
+    }
+
+    /**
+     * Replace current path by several another paths
+     */
+    public void replace(int viewTransitionDirection, ScreenPath... paths) {
+        checkReplace(viewTransitionDirection);
+
+        history.kill();
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths), null, viewTransitionDirection);
+    }
+
+    /**
+     * Replace current path by one path builder
+     */
+    public void replace(PathBuilder builder) {
+        replace(builder, ViewTransition.DIRECTION_FORWARD);
+    }
+
+    /**
+     * Replace current path by one path builder
+     */
+    public void replace(PathBuilder builder, int viewTransitionDirection) {
+        checkReplace(viewTransitionDirection);
+
+        history.kill();
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builder.path, builder.transition, builder.id), null, viewTransitionDirection);
+    }
+
+    /**
+     * Push several path builders
+     */
+    public void replace(PathBuilder... builders) {
+        replace(ViewTransition.DIRECTION_FORWARD, builders);
+    }
+
+    /**
+     * Push several path builders
+     */
+    public void replace(int viewTransitionDirection, PathBuilder... builders) {
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builders), null, viewTransitionDirection);
+    }
+
+
 //    /**
 //     * Show one path as modal
 //     */
@@ -185,8 +254,8 @@ public class Navigator implements Scoped {
     }
 
 
-//    // REPLACE
-//
+    // REPLACE
+
 //    public void replace(ScreenPath screen) {
 //        replace(screen, null);
 //    }
@@ -194,6 +263,8 @@ public class Navigator implements Scoped {
 //    public void replace(ScreenPath screen, String transition) {
 //        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, screen, transition), ViewTransition.DIRECTION_FORWARD);
 //    }
+//
+//
 //
 //    public void replace(Destination... destination) {
 //
@@ -318,6 +389,12 @@ public class Navigator implements Scoped {
 
     private void check() {
         Preconditions.checkNotNull(scope, "Navigator scope cannot be null");
+    }
+
+    private void checkReplace(int transitionDirection) {
+        check();
+        Preconditions.checkArgument(history.canReplace(), "No path to replace");
+        Preconditions.checkArgument(transitionDirection == ViewTransition.DIRECTION_FORWARD || transitionDirection == ViewTransition.DIRECTION_BACKWARD, "View transition direction invalid value, must be either ViewTransition.DIRECTION_FORWARD or ViewTransition.DIRECTION_BACKWARD");
     }
 
 

@@ -35,6 +35,16 @@ public class History {
     private final ScreenParceler parceler;
     private List<Entry> entries;
 
+    /**
+     * In case of replacing the root entry by a new one,
+     * we will keep a reference to the old one for the dispatcher to dispatch between the old
+     * and the new one
+     *
+     * The previousRoot is not persisted during config changes, so it will disappear either
+     * by lifecycle events or by the dispatcher
+     */
+    private Entry previousRoot;
+
     History(ScreenParceler parceler) {
         this.parceler = parceler;
     }
@@ -99,6 +109,10 @@ public class History {
         return entry;
     }
 
+    boolean canReplace() {
+        return entries.size() > 0;
+    }
+
     /**
      * At least 2 alive entries
      */
@@ -125,6 +139,11 @@ public class History {
      * @return the killed entry
      */
     Entry kill() {
+        if (entries.size() == 1) {
+            previousRoot = entries.remove(0);
+            return previousRoot;
+        }
+
         return entries.remove(entries.size() - 1);
     }
 
@@ -210,7 +229,9 @@ public class History {
         int index = entries.indexOf(entry);
         Preconditions.checkArgument(index >= 0, "Get left of an entry that does not exist in history");
         if (index == 0) {
-            return null;
+            Entry previous = previousRoot;
+            previousRoot = null;
+            return previous;
         }
 
         return entries.get(index - 1);
