@@ -14,7 +14,6 @@ import mortar.Scoped;
  */
 public class Navigator implements Scoped {
 
-    public static final String SCOPE_NAME = Navigator.class.getName();
     public static final String SERVICE_NAME = Navigator.class.getName();
 
     public static Navigator get(Context context) {
@@ -30,32 +29,28 @@ public class Navigator implements Scoped {
      * Retreive the navigator from the nearest child of the current context
      * Use this method from the host of a navigator container view to retrieve the associated navigator
      */
-    public static Navigator find(Context context) {
-        MortarScope scope = MortarScope.findChild(context, SCOPE_NAME);
-        return scope != null ? scope.<Navigator>getService(SERVICE_NAME) : null;
-    }
+//    public static Navigator find(Context context) {
+//        MortarScope scope = MortarScope.findChild(context, SCOPE_NAME);
+//        return scope != null ? scope.<Navigator>getService(SERVICE_NAME) : null;
+//    }
 
 //    public static Navigator create(MortarScope containerScope, StackableParceler parceler) {
 //        return create(containerScope, parceler, null);
 //    }
 
-    public static Navigator create(MortarScope containerScope, ScreenParceler parceler) {
-//        if (config == null) {
-//            config = new Config();
-//        }
-
-        Preconditions.checkNotNull(containerScope, "Mortar scope for Navigator cannot be null");
-        Preconditions.checkArgument(parceler != null, "Parceler for Navigator cannot be null");
-
-        Navigator navigator = new Navigator(parceler);
-
-        MortarScope scope = containerScope.buildChild()
-                .withService(SERVICE_NAME, navigator)
-                .build(SCOPE_NAME);
-        scope.register(navigator);
-
-        return navigator;
-    }
+//    public static Navigator create(MortarScope containerScope, ScreenParceler parceler) {
+//        Preconditions.checkNotNull(containerScope, "Mortar scope for Navigator cannot be null");
+//        Preconditions.checkArgument(parceler != null, "Parceler for Navigator cannot be null");
+//
+//        Navigator navigator = new Navigator(parceler);
+//
+//        MortarScope scope = containerScope.buildChild()
+//                .withService(SERVICE_NAME, navigator)
+//                .build(SCOPE_NAME);
+//        scope.register(navigator);
+//
+//        return navigator;
+//    }
 
     //    final Config config;
     final History history;
@@ -66,7 +61,7 @@ public class Navigator implements Scoped {
     final Dispatcher dispatcher;
     private MortarScope scope;
 
-    private Navigator(ScreenParceler parceler) {
+    public Navigator(ScreenParceler parceler) {
         history = new History(parceler);
         transitions = new Transitions();
         delegate = new NavigatorLifecycleDelegate(this);

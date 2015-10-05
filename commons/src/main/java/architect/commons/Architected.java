@@ -9,5 +9,5 @@ import mortar.MortarScope;
  */
 public interface Architected extends Screen {
 
-    Navigator createNavigator(MortarScope scope);
+    Navigator createNavigator();
 }

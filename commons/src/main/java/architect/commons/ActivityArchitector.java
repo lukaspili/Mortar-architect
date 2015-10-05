@@ -15,17 +15,18 @@ import mortar.bundler.BundleServiceRunner;
 public class ActivityArchitector {
 
     public static MortarScope onCreateScope(Activity activity, Bundle savedInstanceState, Architected architected) {
-        String scopeName = activity.getLocalClassName() + "-task-" + activity.getTaskId();
+        final String scopeName = activity.getLocalClassName() + "-task-" + activity.getTaskId();
         MortarScope scope = MortarScope.findChild(activity.getApplicationContext(), scopeName);
         if (scope == null) {
-            MortarScope parentScope = MortarScope.getScope(activity.getApplicationContext());
+            final MortarScope parentScope = MortarScope.getScope(activity.getApplicationContext());
+            final Navigator navigator = architected.createNavigator();
 
             MortarScope.Builder builder = parentScope.buildChild()
-                    .withService(BundleServiceRunner.SERVICE_NAME, new BundleServiceRunner());
+                    .withService(BundleServiceRunner.SERVICE_NAME, new BundleServiceRunner())
+                    .withService(Navigator.SERVICE_NAME, navigator);
             architected.configureScope(builder, parentScope);
             scope = builder.build(scopeName);
-
-            architected.createNavigator(scope);
+            scope.register(navigator);
         }
 
         BundleServiceRunner.getBundleServiceRunner(scope).onCreate(savedInstanceState);
@@ -33,8 +34,8 @@ public class ActivityArchitector {
         return scope;
     }
 
-    public static Navigator onCreateNavigator(Activity activity, Bundle savedInstanceState, NavigatorView navigatorView, ScreenPath... defaultPaths) {
-        Navigator navigator = Navigator.find(activity);
+    public static Navigator onCreateNavigator(Activity activity, MortarScope scope, Bundle savedInstanceState, NavigatorView navigatorView, ScreenPath... defaultPaths) {
+        Navigator navigator = scope.getService(Navigator.SERVICE_NAME);
         navigator.delegate().onCreate(activity.getIntent(), savedInstanceState, navigatorView, defaultPaths);
         return navigator;
     }

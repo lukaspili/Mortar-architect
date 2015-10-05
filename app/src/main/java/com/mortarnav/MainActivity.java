@@ -60,23 +60,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-
-        toolbar.setTitle("Mortar architect");
-        setSupportActionBar(toolbar);
-
         scope = ActivityArchitector.onCreateScope(this, savedInstanceState, new Architected() {
             @Override
-            public Navigator createNavigator(MortarScope scope) {
-                Navigator navigator = Navigator.create(scope, new Parceler());
+            public Navigator createNavigator() {
+                Navigator navigator = new Navigator(new Parceler());
                 navigator.transitions().setDefault(new LateralViewTransition());
-//                navigator.transitions().register(new TransitionsMapping()
-//                                .byDefault(new LateralViewTransition(new Config().duration(300)))
-//                                .show(MyPopupView.class).withTransition(new FadeModalTransition(new Config().duration(250)))
-//                                .show(MyPopup2View.class).withTransition(new BottomAppearTransition(true, new Config().duration(1000)))
-//                                .show(SlidesView.class).withTransition(new CustomFullScreenLateralTransition())
-//                );
                 return navigator;
             }
 
@@ -89,11 +77,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
+        toolbar.setTitle("Mortar architect");
+        setSupportActionBar(toolbar);
+
         DaggerService.<MainActivityComponent>get(this).inject(this);
         toolbarOwner.takeView(toolbar);
 
         // it is usually the best to create the navigator after everything else
-        navigator = ActivityArchitector.onCreateNavigator(this, savedInstanceState, containerView, new HomeScreen("Default home path"));
+        navigator = ActivityArchitector.onCreateNavigator(this, scope, savedInstanceState, containerView, new HomeScreen("Default home path"));
     }
 
     @Override

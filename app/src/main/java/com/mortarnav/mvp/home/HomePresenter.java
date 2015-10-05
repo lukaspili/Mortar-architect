@@ -3,6 +3,7 @@ package com.mortarnav.mvp.home;
 import android.os.Bundle;
 
 import org.parceler.Parcel;
+import org.parceler.ParcelConstructor;
 
 import java.util.Random;
 
@@ -32,6 +33,8 @@ public class HomePresenter extends ViewPresenter<HomeView> {
 
     //    @ScreenData
     private final HomeState state;
+
+    int random;
 
     public HomePresenter(HomeState state, String name, String result) {
         this.state = state;
@@ -118,6 +121,15 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     @Parcel(parcelsIndex = false)
     public static class HomeState {
 
-        int random = new Random().nextInt(100);
+        int random;
+
+        public HomeState() {
+            this.random = new Random().nextInt(100);
+        }
+
+        @ParcelConstructor
+        public HomeState(int random) {
+            this.random = random;
+        }
     }
 }

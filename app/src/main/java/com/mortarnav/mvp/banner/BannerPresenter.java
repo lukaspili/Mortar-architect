@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.mortarnav.DaggerScope;
 
 import org.parceler.Parcel;
+import org.parceler.ParcelConstructor;
 
 import java.util.Random;
 
@@ -19,6 +20,7 @@ public class BannerPresenter extends ViewPresenter<BannerView> {
 
     //    @ScreenData
     private final BannerState state;
+
 
     public BannerPresenter(BannerState state) {
         this.state = state;
@@ -36,10 +38,15 @@ public class BannerPresenter extends ViewPresenter<BannerView> {
     @Parcel(parcelsIndex = false)
     public static class BannerState {
 
+        int random;
+
         public BannerState() {
-            Timber.d("NEW BannerState, random = %d", random);
+            this.random = new Random().nextInt(100);
         }
 
-        int random = new Random().nextInt(100);
+        @ParcelConstructor
+        public BannerState(int random) {
+            this.random = random;
+        }
     }
 }

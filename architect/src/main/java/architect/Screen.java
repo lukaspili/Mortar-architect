@@ -4,9 +4,9 @@ import mortar.MortarScope;
 
 /**
  * Screen is:
- *  - MortarScope (+ whatever you put inside, such as Dagger2 component)
- *  - ViewPresenter (+ ViewPresenter state)
- *  - View
+ * - MortarScope (+ whatever you put inside, such as Dagger2 component)
+ * - ViewPresenter (+ ViewPresenter state)
+ * - View
  *
  * Use screen in your views, or use ScreenPath with Navigator
  *
@@ -14,9 +14,6 @@ import mortar.MortarScope;
  */
 public interface Screen {
 
-//    protected T presenterState;
-
-    public abstract void configureScope(MortarScope.Builder builder, MortarScope parentScope);
-
+    void configureScope(MortarScope.Builder builder, MortarScope parentScope);
 
 }
