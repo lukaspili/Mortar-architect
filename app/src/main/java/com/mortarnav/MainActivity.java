@@ -70,10 +70,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
-                MainActivityComponent component = DaggerMainActivityComponent.builder()
+                DaggerService.configureScope(builder, MainActivity.class, DaggerMainActivityComponent.builder()
                         .appComponent(parentScope.<AppComponent>getService(DaggerService.SERVICE_NAME))
-                        .build();
-                builder.withService(DaggerService.SERVICE_NAME, component);
+                        .build());
             }
         });
 

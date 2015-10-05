@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import com.mortarnav.DaggerScope;
 import com.mortarnav.DaggerService;
+import com.mortarnav.MainActivity;
 import com.mortarnav.MainActivityComponent;
 import com.mortarnav.deps.WithActivityDependencies;
 import com.mortarnav.mvp.banner.BannerScreen;
@@ -36,8 +37,18 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
     String name;
     String result;
 
-    @ParcelConstructor
     public HomeScreen(String name) {
+        this.name = name;
+        state = new HomePresenter.HomeState();
+        bannerScreen = new BannerScreen();
+        bannerScreen2 = new BannerScreen();
+    }
+
+    @ParcelConstructor
+    HomeScreen(HomePresenter.HomeState state, BannerScreen bannerScreen, BannerScreen bannerScreen2, String name) {
+        this.state = state;
+        this.bannerScreen = bannerScreen;
+        this.bannerScreen2 = bannerScreen2;
         this.name = name;
     }
 
@@ -48,21 +59,11 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
 
     @Override
     public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
-        builder.withService(DaggerService.SERVICE_NAME, DaggerHomeScreen_Component.builder()
-                .mainActivityComponent(parentScope.<MainActivityComponent>getService(DaggerService.SERVICE_NAME))
+        DaggerService.configureScope(builder, HomeScreen.class, DaggerHomeScreen_Component.builder()
+                .mainActivityComponent(DaggerService.<MainActivityComponent>getTyped(parentScope, MainActivity.class))
                 .module(new Module())
                 .build());
 
-        if (state == null) {
-            state = new HomePresenter.HomeState();
-        }
-
-        if (bannerScreen == null) {
-            bannerScreen = new BannerScreen();
-        }
-        if (bannerScreen2 == null) {
-            bannerScreen2 = new BannerScreen();
-        }
         builder.withService(SubscreenService.SERVICE_NAME, new SubscreenService.Builder()
                 .withScreen("bannerScreen", bannerScreen)
                 .withScreen("bannerScreen2", bannerScreen2)

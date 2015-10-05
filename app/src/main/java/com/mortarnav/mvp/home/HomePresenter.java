@@ -34,8 +34,6 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     //    @ScreenData
     private final HomeState state;
 
-    int random;
-
     public HomePresenter(HomeState state, String name, String result) {
         this.state = state;
         this.name = name;
