@@ -27,18 +27,21 @@ public class Scoper {
 
         MortarScope scope = navigator.getScope().findChild(name);
         if (scope == null) {
-            return createNewScope(screen, cls, id, true);
+            return createNewScope(screen, cls, id, true, 1);
         }
         return scope;
     }
 
-    public MortarScope getNewScope(Screen screen, boolean forward) {
+    public MortarScope getNewScope(Screen screen, boolean forward, int depth) {
         Class cls = screen.getClass();
-        return createNewScope(screen, cls, getId(cls), forward);
+        return createNewScope(screen, cls, getId(cls), forward, depth);
     }
 
-    private MortarScope createNewScope(Screen screen, Class cls, int currentId, boolean forward) {
-        ids.put(cls, forward ? ++currentId : --currentId);
+    private MortarScope createNewScope(Screen screen, Class cls, int currentId, boolean forward, int depth) {
+        currentId = forward ? currentId + depth : currentId - depth;
+        Preconditions.checkArgument(currentId > 0, "Scoper name id must be > 0");
+
+        ids.put(cls, currentId);
         String name = getName(cls, currentId);
 
         Logger.d("Create scope: %s", name);
@@ -51,7 +54,6 @@ public class Scoper {
             id = ids.get(cls);
         } else {
             id = 0;
-            ids.put(cls, id);
         }
 
         return id;

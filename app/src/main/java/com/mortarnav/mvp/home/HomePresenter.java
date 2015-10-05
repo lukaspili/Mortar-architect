@@ -18,7 +18,8 @@ import timber.log.Timber;
 //        component = @AutoComponent(includes = StandardAutoComponent.class),
 //        pathView = HomeView.class,
 //        containsSubscreens = {
-//                @ContainsSubscreen(type = BannerScreen.class, name = "bannerScreen")
+//                @ContainsSubscreen(type = BannerScreen.class, name = "bannerScreen"),
+//                @ContainsSubscreen(type = BannerScreen.class, name = "bannerScreen2")
 //        }
 //)
 public class HomePresenter extends ViewPresenter<HomeView> {
@@ -49,25 +50,12 @@ public class HomePresenter extends ViewPresenter<HomeView> {
         Timber.d("Home onLoad with random = %d", state.random);
 
         getView().titleTextView.setText(name);
-
-//        int r = savedInstanceState != null ? savedInstanceState.getInt("random") : random;
         getView().subtitleTextView.setText("Random number: " + state.random);
     }
 
-    @Override
-    protected void onSave(Bundle outState) {
-//        outState.putInt("random", random);
-    }
-
     public void nextHomeClick() {
-        Navigator.get(getView()).push(new HomeScreen("Home " + ++count));
-
-//        Navigator.get(getView()).navigate(new Navigation()
-//                        .perform(Navigation.forward(new HomeScreen(""), new LateralViewTransition()))
-//                        .perform(Navigation.backward(new HomeScreen(""), "SOME RESULT", new LateralViewTransition()))
-//                        .perform(Navigation.replace(new HomeScreen("")))
-//                        .perform(Navigation.modal(new HomeScreen("")))
-//        );
+//        Navigator.get(getView()).push(new HomeScreen("Home " + ++count));
+        Navigator.get(getView()).push(new HomeScreen("Home " + ++count), new HomeScreen("Home " + ++count));
     }
 
 
@@ -96,7 +84,7 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     }
 
     public void backToRootClick() {
-        Navigator.get(getView()).back("This is a navigation result");
+//        Navigator.get(getView()).back("This is a navigation result");
         Navigator.get(getView()).backToRoot("This is a navigation result backtoroot");
     }
 

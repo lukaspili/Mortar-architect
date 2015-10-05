@@ -183,9 +183,17 @@ class Dispatcher {
         Preconditions.checkNotNull(navigator.getScope(), "Dispatcher navigator scope cannot be null");
         Preconditions.checkArgument(!navigator.history.isEmpty(), "Cannot dispatch on empty history");
         Preconditions.checkArgument(!entries.isEmpty(), "Cannot dispatch on empty stack");
-//        Preconditions.checkArgument(dispatchDirection > 0, "Dispatch direction invalid value");
 
-        final Dispatch dispatch = entries.remove(0);
+        final int dispatchIndex = getDispatchIndex();
+        Logger.d("Entries to dispatch at once: %d", dispatchIndex + 1);
+
+        final Dispatch dispatch;
+        if (dispatchIndex == 0) {
+            dispatch = entries.remove(dispatchIndex);
+        } else {
+            dispatch = entries.get(dispatchIndex);
+            entries.subList(0, dispatchIndex + 1).clear();
+        }
         Logger.d("Entry to dispatch: %s", dispatch.entry);
 
         // in case of forward, the entry to dispatch is already added to history
@@ -245,19 +253,10 @@ class Dispatcher {
 //        }
 
         final int direction = dispatch.direction != 0 ? dispatch.direction : (forward ? ViewTransition.DIRECTION_FORWARD : ViewTransition.DIRECTION_BACKWARD);
-
-        present(enterEntry, exitEntry, forward, direction);
-    }
-
-    private void present(final History.Entry enterEntry, final History.Entry exitEntry, final boolean forward, final int transitionDirection) {
-//        MortarScope currentScope = navigator.presenter.getCurrentScope();
-//        Preconditions.checkNotNull(currentScope, "Current scope cannot be null");
-//        Logger.d("Current container scope is: %s", currentScope.getName());
-
         final MortarScope exitScope = navigator.scoper.getCurrentScope(exitEntry.path);
-        ScopedEntry scopedEntry = createDispatchEntry(enterEntry, forward);
+        final ScopedEntry scopedEntry = createDispatchEntry(enterEntry, forward, dispatchIndex + 1);
 
-        navigator.presenter.present(scopedEntry, exitEntry, forward, transitionDirection, new Callback() {
+        navigator.presenter.present(scopedEntry, exitEntry, forward, direction, new Callback() {
             @Override
             public void onComplete() {
                 Logger.d("Destroy scope: %s", exitScope.getName());
@@ -268,6 +267,66 @@ class Dispatcher {
             }
         });
     }
+
+    private int getDispatchIndex() {
+        Dispatch dispatch = entries.get(0);
+        int index = 0;
+
+        Dispatch next;
+        for (int i = 1; i < entries.size(); i++) {
+            next = entries.get(i);
+
+            if ((dispatch.entry.isModal() && !next.entry.isModal()) ||
+                    (!dispatch.entry.isModal() && next.entry.isModal())) {
+                break;
+            }
+
+            index = i;
+        }
+
+        return index;
+    }
+
+    private Dispatch get() {
+        Dispatch dispatch = entries.remove(0);
+        int end = 0;
+
+        Dispatch next;
+        for (int i = 0; i < entries.size(); i++) {
+            next = entries.get(i);
+
+            if ((dispatch.entry.isModal() && !next.entry.isModal()) ||
+                    (!dispatch.entry.isModal() && next.entry.isModal())) {
+                break;
+            }
+
+            end = i;
+            dispatch = next;
+        }
+
+        entries.subList(0, end).clear();
+        return dispatch;
+    }
+
+//    private void present(final History.Entry enterEntry, final History.Entry exitEntry, final boolean forward, final int transitionDirection) {
+////        MortarScope currentScope = navigator.presenter.getCurrentScope();
+////        Preconditions.checkNotNull(currentScope, "Current scope cannot be null");
+////        Logger.d("Current container scope is: %s", currentScope.getName());
+//
+//        final MortarScope exitScope = navigator.scoper.getCurrentScope(exitEntry.path);
+//        ScopedEntry scopedEntry = createDispatchEntry(enterEntry, forward);
+//
+//        navigator.presenter.present(scopedEntry, exitEntry, forward, transitionDirection, new Callback() {
+//            @Override
+//            public void onComplete() {
+//                Logger.d("Destroy scope: %s", exitScope.getName());
+//                exitScope.destroy();
+//
+//                endDispatch();
+//                startDispatch(); // maybe something else to dispatch
+//            }
+//        });
+//    }
 
 //    private boolean fastForward(History.Entry entry, History.Entry previousEntry) {
 //        boolean fastForwarded = false;
@@ -349,8 +408,8 @@ class Dispatcher {
 //        return true;
 //    }
 
-    private ScopedEntry createDispatchEntry(History.Entry entry, boolean forward) {
-        return new ScopedEntry(entry, navigator.scoper.getNewScope(entry.path, forward));
+    private ScopedEntry createDispatchEntry(History.Entry entry, boolean forward, int depth) {
+        return new ScopedEntry(entry, navigator.scoper.getNewScope(entry.path, forward, depth));
     }
 
     private void cleanExit(History.Entry entry) {

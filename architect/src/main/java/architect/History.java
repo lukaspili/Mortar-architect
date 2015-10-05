@@ -129,9 +129,10 @@ public class History {
     }
 
     List<Entry> killAllButRoot() {
-        List<Entry> killed = new ArrayList<>(entries.subList(1, entries.size() - 1));
-        entries.removeAll(killed);
-        return killed;
+        List<Entry> remove = entries.subList(1, entries.size());
+        List<Entry> result = new ArrayList<>(remove);
+        remove.clear();
+        return result;
     }
 
     /**
