@@ -1,6 +1,7 @@
 package com.mortarnav.mvp.banner;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -26,7 +27,15 @@ public class BannerView extends PresentedLinearLayout<BannerPresenter> {
 
     @Override
     protected void init(Context context, AttributeSet attrs, int defStyleAttr) {
-        Context screenContext = MortarFactory.createContext(context, SubscreenService.get(context, "bannerScreen"));
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.BannerView, 0, 0);
+        String screen;
+        try {
+            screen = a.getString(R.styleable.BannerView_banner_screen_name);
+        } finally {
+            a.recycle();
+        }
+
+        Context screenContext = MortarFactory.createContext(context, SubscreenService.get(context, screen));
 
         DaggerService.<BannerScreenComponent>get(screenContext).inject(this);
         View view = View.inflate(screenContext, R.layout.banner_view, this);

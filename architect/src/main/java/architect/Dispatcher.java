@@ -155,7 +155,8 @@ class Dispatcher {
         if (!active) return;
 
         for (int i = 0; i < e.size(); i++) {
-            entries.add(new Dispatch(e.get(i), result, direction));
+            // add the result to the last entry only
+            entries.add(new Dispatch(e.get(i), i == e.size() - 1 ? result : null, direction));
         }
         startDispatch();
     }

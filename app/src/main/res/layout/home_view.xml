@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -83,16 +84,29 @@
             android:text="Set new stack"/>
 
         <!--<com.mortarnav.view.HomeNestedView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:layout_weight="1"/>-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="1"/>-->
 
         <com.mortarnav.mvp.home.HomeAdditionalCustomView
             android:layout_width="match_parent"
             android:layout_height="100dp"/>
 
         <com.mortarnav.mvp.banner.BannerView
+            android:id="@+id/home_banner_1"
             android:layout_width="match_parent"
-            android:layout_height="100dp"/>
+            android:layout_height="100dp"
+            app:banner_screen_name="bannerScreen"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black"/>
+
+        <com.mortarnav.mvp.banner.BannerView
+            android:id="@+id/home_banner_2"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            app:banner_screen_name="bannerScreen2"/>
     </LinearLayout>
 </ScrollView>

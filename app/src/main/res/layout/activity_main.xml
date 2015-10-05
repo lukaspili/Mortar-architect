@@ -16,6 +16,3 @@
         android:layout_height="match_parent"
         app:layout_behavior="com.mortarnav.NavigatorViewBehavior"/>
 </android.support.design.widget.CoordinatorLayout>
-
-
-

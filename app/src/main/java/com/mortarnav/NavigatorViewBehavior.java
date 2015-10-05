@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import architect.NavigatorView;
-import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
