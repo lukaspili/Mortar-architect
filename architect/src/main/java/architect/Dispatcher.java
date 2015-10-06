@@ -13,21 +13,8 @@ import mortar.MortarScope;
  */
 class Dispatcher {
 
-//    static final int DISPATCH_FORWARD = 1;
-//    static final int DISPATCH_BACKWARD = 2;
-
     private final Navigator navigator;
     private final List<Dispatch> entries = new ArrayList<>();
-
-//    /**
-//     * The transition direction of the next dispatch
-//     */
-//    private int dispatchDirection;
-
-//    /**
-//     * The result to pass to the next entry screen
-//     */
-//    private Object dispatchResult;
 
     private boolean dispatching;
     private boolean killed;
@@ -176,6 +163,9 @@ class Dispatcher {
         startDispatch();
     }
 
+    /**
+     * SHOW ME WHAT YOU GOT
+     */
     void startDispatch() {
         Preconditions.checkArgument(active, "Dispatcher must be active");
 

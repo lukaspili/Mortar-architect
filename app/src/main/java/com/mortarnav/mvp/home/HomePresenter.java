@@ -7,6 +7,7 @@ import org.parceler.ParcelConstructor;
 
 import java.util.Random;
 
+import architect.Navigation;
 import architect.Navigator;
 import mortar.ViewPresenter;
 import timber.log.Timber;
@@ -60,6 +61,13 @@ public class HomePresenter extends ViewPresenter<HomeView> {
 
 
     public void subnavClick() {
+        Navigator.get(getView()).navigate(new Navigation()
+                .push(new HomeScreen("Nav pushed 1"))
+                .push(new HomeScreen("Nav pushed 2"))
+                .replace(new HomeScreen("Nav replace 1"))
+                .push(new HomeScreen("Nav pushed 3")));
+
+
 //        Navigator.get(getView()).push(new SubnavStackable());
     }
 
@@ -97,10 +105,9 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     }
 
     public void setNewStackClick() {
-//        Navigator.get(getView()).set(new ScreenPathsStack()
-//                .put(new HomeScreen("NEW STACK 1"))
-//                .put(new HomeScreen("NEW STACK 2"))
-//                .put(new SlidesStackable()), ViewTransitionDirection.FORWARD);
+        Navigator.get(getView()).set(new HomeScreen("NEW STACK 1"),
+                new HomeScreen("NEW STACK 2"),
+                new HomeScreen("NEW STACK 3"));
     }
 
 

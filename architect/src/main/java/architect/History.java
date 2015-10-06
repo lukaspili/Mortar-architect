@@ -35,15 +35,15 @@ public class History {
     private final ScreenParceler parceler;
     private List<Entry> entries;
 
-    /**
-     * In case of replacing the root entry by a new one,
-     * we will keep a reference to the old one for the dispatcher to dispatch between the old
-     * and the new one
-     *
-     * The previousRoot is not persisted during config changes, so it will disappear either
-     * by lifecycle events or by the dispatcher
-     */
-    private Entry previousRoot;
+//    /**
+//     * In case of replacing the root entry by a new one,
+//     * we will keep a reference to the old one for the dispatcher to dispatch between the old
+//     * and the new one
+//     *
+//     * The previousRoot is not persisted during config changes, so it will disappear either
+//     * by lifecycle events or by the dispatcher
+//     */
+//    private Entry previousRoot;
 
     History(ScreenParceler parceler) {
         this.parceler = parceler;
@@ -103,9 +103,7 @@ public class History {
         }
 
         Entry entry = new Entry(path, navType, transition, id);
-        Preconditions.checkArgument(!entries.contains(entry), "An entry with the same navigation path is already present in history");
         entries.add(entry);
-
         return entry;
     }
 
@@ -139,45 +137,48 @@ public class History {
      * @return the killed entry
      */
     Entry kill() {
-        if (entries.size() == 1) {
-            previousRoot = entries.remove(0);
-            return previousRoot;
-        }
-
         return entries.remove(entries.size() - 1);
     }
 
+    /**
+     * Kill all but root
+     *
+     * @return the killed entries, in the historical order
+     */
     List<Entry> killAllButRoot() {
-        List<Entry> remove = entries.subList(1, entries.size());
-        List<Entry> result = new ArrayList<>(remove);
-        remove.clear();
-        return result;
+        if (entries.size() == 1) {
+            return new ArrayList<>(0);
+        }
+
+        List<Entry> killed = new ArrayList<>(entries.size() - 1);
+
+        if (entries.size() == 2) {
+            killed.add(entries.remove(1));
+        } else {
+            for (int i = entries.size() - 1; i >= 1; i--) {
+                killed.add(entries.remove(i));
+            }
+        }
+
+        return killed;
     }
 
     /**
-     * Kill all, including root or not
-     * The returned entries don't include the root entry though
+     * Kill all
      *
      * @return the killed entries, in the historical order
      */
     List<Entry> killAll() {
-        List<Entry> killed = new ArrayList<>(entries);
-        entries.clear();
-        return killed;
+        List<Entry> killed = new ArrayList<>(entries.size());
 
-//        List<Entry> killed = new ArrayList<>(rootIncluded ? entries.size() : entries.size() - 1);
-//        Entry entry;
-//        for (int i = entries.size() - 1; i > (rootIncluded ? -1 : 0); i--) {
-//            entry = entries.get(i);
-//            entry.dead = true;
-//
-//            if (i != 0) {
-//                // never include root
-//                killed.add(entry);
-//            }
-//        }
-//
-//        return killed;
+        if (entries.size() == 1) {
+            killed.add(entries.remove(0));
+        } else {
+            for (int i = entries.size() - 1; i >= 0; i--) {
+                killed.add(entries.remove(i));
+            }
+        }
+        return killed;
     }
 
 //    Entry getLastAlive() {
@@ -196,10 +197,6 @@ public class History {
 //        return null;
 //    }
 
-    void remove(Entry entry) {
-        boolean removed = entries.remove(entry);
-        Preconditions.checkArgument(removed, "Entry to remove does not exist");
-    }
 
 //    List<Entry> removeAllDead() {
 //        if (entries.isEmpty()) {
@@ -228,11 +225,11 @@ public class History {
     Entry getLeftOf(Entry entry) {
         int index = entries.indexOf(entry);
         Preconditions.checkArgument(index >= 0, "Get left of an entry that does not exist in history");
-        if (index == 0) {
-            Entry previous = previousRoot;
-            previousRoot = null;
-            return previous;
-        }
+//        if (index == 0) {
+//            Entry previous = previousRoot;
+//            previousRoot = null;
+//            return previous;
+//        }
 
         return entries.get(index - 1);
     }

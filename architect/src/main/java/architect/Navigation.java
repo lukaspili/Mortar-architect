@@ -1,69 +1,101 @@
 package architect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class Navigation {
 
+    static final int TYPE_PUSH = 1;
+    static final int TYPE_SHOW = 2;
+    static final int TYPE_REPLACE = 3;
+    static final int TYPE_BACK = 4;
+    static final int TYPE_BACK_ROOT = 5;
+
+    List<Step> steps = new ArrayList<>();
+    Object result;
+
     public Navigation push(ScreenPath screen) {
+        steps.add(new Step(screen, TYPE_PUSH));
         return this;
     }
 
     public Navigation push(PathBuilder builder) {
+        steps.add(new Step(builder, TYPE_PUSH));
+        return this;
+    }
+
+    public Navigation show(ScreenPath screen) {
+        steps.add(new Step(screen, TYPE_SHOW));
+        return this;
+    }
+
+    public Navigation show(PathBuilder builder) {
+        steps.add(new Step(builder, TYPE_SHOW));
+        return this;
+    }
+
+    public Navigation replace(ScreenPath screen) {
+        steps.add(new Step(screen, TYPE_REPLACE));
+        return this;
+    }
+
+    public Navigation replace(PathBuilder builder) {
+        steps.add(new Step(builder, TYPE_REPLACE));
+        return this;
+    }
+
+    public Navigation back() {
+        steps.add(new Step(TYPE_BACK));
         return this;
     }
 
     public Navigation back(Object result) {
+        checkResult(result);
+        steps.add(new Step(TYPE_BACK));
         return this;
     }
 
-    public static Type forward(ScreenPath screen, ViewTransition transition) {
-        return new Type();
-    }
-
-    public static Type forward(ScreenPath screen) {
-        return forward(screen, null);
-    }
-
-    public static Type backward(ScreenPath screen, Object result, ViewTransition transition) {
-        return new Type();
-    }
-
-    public static Type backward(ScreenPath screen, ViewTransition transition) {
-        return backward(screen, null, transition);
-    }
-
-    public static Type backward(ScreenPath screen, Object result) {
-        return backward(screen, result, null);
-    }
-
-    public static Type backward(ScreenPath screen) {
-        return backward(screen, null, null);
-    }
-
-    public static Type replace(ScreenPath screen, ViewTransition transition) {
-        return new Type();
-    }
-
-    public static Type replace(ScreenPath screen) {
-        return replace(screen, null);
-    }
-
-    public static Type modal(ScreenPath screen, ViewTransition transition) {
-        return new Type();
-    }
-
-    public static Type modal(ScreenPath screen) {
-        return modal(screen, null);
-    }
-
-    public Navigation perform(Type type) {
+    public Navigation backToRoot() {
+        steps.add(new Step(TYPE_BACK_ROOT));
         return this;
     }
 
-    public static class Type {
-
+    public Navigation backToRoot(Object result) {
+        checkResult(result);
+        steps.add(new Step(TYPE_BACK_ROOT));
+        return this;
     }
 
+    private void checkResult(Object result) {
+        Preconditions.checkArgument(result != null && this.result == null, "Cannot have several results in one navigation");
+    }
 
+    static class Step {
+        final ScreenPath path;
+        final PathBuilder builder;
+        final int type;
+
+        public Step(int type) {
+            this.path = null;
+            this.builder = null;
+            this.type = type;
+        }
+
+        public Step(ScreenPath path, int type) {
+            Preconditions.checkNotNull(path, "ScreenPath cannot be null");
+            this.path = path;
+            this.builder = null;
+            this.type = type;
+        }
+
+        public Step(PathBuilder builder, int type) {
+            Preconditions.checkNotNull(builder, "PathBuilder cannot be null");
+            this.path = null;
+            this.builder = builder;
+            this.type = type;
+        }
+    }
 }

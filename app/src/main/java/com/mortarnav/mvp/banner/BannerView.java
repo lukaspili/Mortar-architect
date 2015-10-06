@@ -35,7 +35,7 @@ public class BannerView extends PresentedLinearLayout<BannerPresenter> {
             a.recycle();
         }
 
-        Context screenContext = MortarFactory.createContext(context, SubscreenService.get(context, screen));
+        Context screenContext = MortarFactory.createContext(context, SubscreenService.get(context, screen), screen);
 
         DaggerService.<BannerScreenComponent>get(screenContext).inject(this);
         View view = View.inflate(screenContext, R.layout.banner_view, this);
