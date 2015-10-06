@@ -22,31 +22,31 @@ public class ToolbarOwner extends Presenter<Toolbar> {
     public ToolbarOwner() {
     }
 
-    public Animator animateHide() {
-        if (!hasView()) return null;
-        if (getView().getVisibility() == View.GONE) {
-            return null;
-        }
-        return ObjectAnimator.ofFloat(getView(), View.Y, 0, -getView().getHeight());
-    }
-
-    public Animator animateShow() {
-        if (!hasView()) return null;
-        if (getView().getVisibility() == View.VISIBLE) {
-            return null;
-        }
-        return ObjectAnimator.ofFloat(getView(), View.Y, -getView().getHeight(), 0);
-    }
-
-    public void hide() {
-        if (!hasView()) return;
-        getView().setVisibility(View.GONE);
-    }
-
-    public void show() {
-        if (!hasView()) return;
-        getView().setVisibility(View.VISIBLE);
-    }
+//    public Animator animateHide() {
+//        if (!hasView()) return null;
+//        if (getView().getVisibility() == View.GONE) {
+//            return null;
+//        }
+//        return ObjectAnimator.ofFloat(getView(), View.Y, 0, -getView().getHeight());
+//    }
+//
+//    public Animator animateShow() {
+//        if (!hasView()) return null;
+//        if (getView().getVisibility() == View.VISIBLE) {
+//            return null;
+//        }
+//        return ObjectAnimator.ofFloat(getView(), View.Y, -getView().getHeight(), 0);
+//    }
+//
+//    public void hide() {
+//        if (!hasView()) return;
+//        getView().setVisibility(View.GONE);
+//    }
+//
+//    public void show() {
+//        if (!hasView()) return;
+//        getView().setVisibility(View.VISIBLE);
+//    }
 
     public void setTitle(String title) {
         if (!hasView()) return;

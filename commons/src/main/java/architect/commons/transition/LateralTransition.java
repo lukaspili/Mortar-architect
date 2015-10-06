@@ -3,7 +3,6 @@ package architect.commons.transition;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 
 import architect.ViewTransition;
 
@@ -12,21 +11,18 @@ import architect.ViewTransition;
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class LateralViewTransition implements ViewTransition {
+public class LateralTransition extends AbstractViewTransition<View, View> {
 
-    protected Config config;
-
-    public LateralViewTransition() {
-        this(new Config().duration(300).interpolator(new AccelerateDecelerateInterpolator()));
+    public LateralTransition() {
     }
 
-    public LateralViewTransition(Config config) {
-        this.config = config;
+    public LateralTransition(Config config) {
+        super(config);
     }
 
     @Override
     public void performTransition(View enterView, View exitView, int direction, AnimatorSet set) {
-        config.configure(set);
+        super.performTransition(enterView, exitView, direction, set);
 
         if (direction == ViewTransition.DIRECTION_FORWARD) {
             set.play(ObjectAnimator.ofFloat(enterView, View.TRANSLATION_X, enterView.getWidth(), 0));

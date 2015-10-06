@@ -3,7 +3,7 @@ package architect;
 import java.util.ArrayList;
 import java.util.List;
 
-import architect.screen.ReceivesNavigationResult;
+import architect.nav.ReceivesNavigationResult;
 import mortar.MortarScope;
 
 /**
@@ -42,7 +42,6 @@ class Dispatcher {
         Preconditions.checkNotNull(navigator.getScope(), "Navigator scope cannot be null");
 
         History.Entry entry = navigator.history.getLast();
-        Preconditions.checkNotNull(entry, "No entry");
         Logger.d("Activate last: %s", entry);
 
         List<ScopedEntry> dispatchedEntries;
@@ -278,26 +277,26 @@ class Dispatcher {
         return index;
     }
 
-    private Dispatch get() {
-        Dispatch dispatch = entries.remove(0);
-        int end = 0;
-
-        Dispatch next;
-        for (int i = 0; i < entries.size(); i++) {
-            next = entries.get(i);
-
-            if ((dispatch.entry.isModal() && !next.entry.isModal()) ||
-                    (!dispatch.entry.isModal() && next.entry.isModal())) {
-                break;
-            }
-
-            end = i;
-            dispatch = next;
-        }
-
-        entries.subList(0, end).clear();
-        return dispatch;
-    }
+//    private Dispatch get() {
+//        Dispatch dispatch = entries.remove(0);
+//        int end = 0;
+//
+//        Dispatch next;
+//        for (int i = 0; i < entries.size(); i++) {
+//            next = entries.get(i);
+//
+//            if ((dispatch.entry.isModal() && !next.entry.isModal()) ||
+//                    (!dispatch.entry.isModal() && next.entry.isModal())) {
+//                break;
+//            }
+//
+//            end = i;
+//            dispatch = next;
+//        }
+//
+//        entries.subList(0, end).clear();
+//        return dispatch;
+//    }
 
 //    private void present(final History.Entry enterEntry, final History.Entry exitEntry, final boolean forward, final int transitionDirection) {
 ////        MortarScope currentScope = navigator.presenter.getCurrentScope();
@@ -403,9 +402,9 @@ class Dispatcher {
         return new ScopedEntry(entry, navigator.scoper.getNewScope(entry.path, forward, depth));
     }
 
-    private void cleanExit(History.Entry entry) {
-
-    }
+//    private void cleanExit(History.Entry entry) {
+//
+//    }
 
     private void endDispatch() {
         Preconditions.checkArgument(dispatching, "Calling endDispatch while not dispatching");

@@ -3,17 +3,15 @@ package architect.commons.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
-import architect.view.HasPresenter;
 import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class PresentedFrameLayout<T extends ViewPresenter> extends FrameLayout implements HasPresenter<T> {
+public abstract class PresentedFrameLayout<T extends ViewPresenter> extends FrameLayout {
 
     @Inject
     protected T presenter;
@@ -40,17 +38,20 @@ public abstract class PresentedFrameLayout<T extends ViewPresenter> extends Fram
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        presenter.takeView(this);
+
+        if (!isInEditMode()) {
+            //noinspection unchecked
+            presenter.takeView(this);
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        presenter.dropView(this);
-        super.onDetachedFromWindow();
-    }
+        if (!isInEditMode()) {
+            //noinspection unchecked
+            presenter.dropView(this);
+        }
 
-    @Override
-    public T getPresenter() {
-        return presenter;
+        super.onDetachedFromWindow();
     }
 }

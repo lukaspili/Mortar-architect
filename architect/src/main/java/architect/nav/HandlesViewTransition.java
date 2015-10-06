@@ -1,4 +1,4 @@
-package architect.view;
+package architect.nav;
 
 import android.animation.AnimatorSet;
 

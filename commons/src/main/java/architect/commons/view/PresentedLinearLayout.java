@@ -6,14 +6,12 @@ import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
-import architect.view.HasPresenter;
 import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class PresentedLinearLayout<T extends ViewPresenter> extends LinearLayout
-        implements HasPresenter<T> {
+public abstract class PresentedLinearLayout<T extends ViewPresenter> extends LinearLayout {
 
     @Inject
     protected T presenter;
@@ -40,17 +38,20 @@ public abstract class PresentedLinearLayout<T extends ViewPresenter> extends Lin
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        presenter.takeView(this);
+
+        if (!isInEditMode()) {
+            //noinspection unchecked
+            presenter.takeView(this);
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        presenter.dropView(this);
-        super.onDetachedFromWindow();
-    }
+        if (!isInEditMode()) {
+            //noinspection unchecked
+            presenter.dropView(this);
+        }
 
-    @Override
-    public T getPresenter() {
-        return presenter;
+        super.onDetachedFromWindow();
     }
 }

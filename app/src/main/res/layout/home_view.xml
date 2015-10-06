@@ -1,112 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/holo_orange_dark"
-        android:orientation="vertical">
+        android:layout_height="56dp"
+        android:background="#2196F3"/>
 
-        <TextView
-            android:id="@+id/home_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/home_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-
-        <Button
-            android:id="@+id/next_home_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Go to next home view"/>
-
-        <Button
-            android:id="@+id/subnav_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Go to view with sub navigator"/>
-
-        <Button
-            android:id="@+id/pager_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Go to view with view pager"/>
-
-        <Button
-            android:id="@+id/show_popup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show popup"/>
-
-        <Button
-            android:id="@+id/replace_new_home"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Replace with new home"/>
-
-        <Button
-            android:id="@+id/show_returns_result"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Go to Returns Result"/>
-
-        <Button
-            android:id="@+id/back_root"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Back to root"/>
-
-        <Button
-            android:id="@+id/home_show_popup_two"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show popup two"/>
-
-        <Button
-            android:id="@+id/home_show_two_popups"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show two popups"/>
-
-        <Button
-            android:id="@+id/home_set_new_stack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Set new stack"/>
-
-        <!--<com.mortarnav.view.HomeNestedView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_weight="1"/>-->
-
-        <com.mortarnav.mvp.home.HomeAdditionalCustomView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"/>
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_orange_dark"
+            android:orientation="vertical">
 
-        <com.mortarnav.mvp.banner.BannerView
-            android:id="@+id/home_banner_1"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            app:banner_screen_name="bannerScreen"/>
+            <TextView
+                android:id="@+id/home_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/black"/>
+            <TextView
+                android:id="@+id/home_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
 
-        <com.mortarnav.mvp.banner.BannerView
-            android:id="@+id/home_banner_2"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            app:banner_screen_name="bannerScreen2"/>
-    </LinearLayout>
-</ScrollView>
+            <Button
+                android:id="@+id/next_home_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Go to next home view"/>
+
+            <Button
+                android:id="@+id/subnav_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Go to view with sub navigator"/>
+
+            <Button
+                android:id="@+id/pager_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Go to view with view pager"/>
+
+            <Button
+                android:id="@+id/show_popup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show popup"/>
+
+            <Button
+                android:id="@+id/replace_new_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Replace with new home"/>
+
+            <Button
+                android:id="@+id/show_returns_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Go to Returns Result"/>
+
+            <Button
+                android:id="@+id/back_root"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back to root"/>
+
+            <Button
+                android:id="@+id/home_show_popup_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show popup two"/>
+
+            <Button
+                android:id="@+id/home_show_two_popups"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show two popups"/>
+
+            <Button
+                android:id="@+id/home_set_new_stack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set new stack"/>
+
+            <!--<com.mortarnav.view.HomeNestedView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1"/>-->
+
+            <com.mortarnav.mvp.home.HomeAdditionalCustomView
+                android:layout_width="match_parent"
+                android:layout_height="100dp"/>
+
+            <com.mortarnav.mvp.banner.BannerView
+                android:id="@+id/home_banner_1"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                app:banner_screen_name="bannerScreen"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/black"/>
+
+            <com.mortarnav.mvp.banner.BannerView
+                android:id="@+id/home_banner_2"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                app:banner_screen_name="bannerScreen2"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

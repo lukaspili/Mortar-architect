@@ -1,20 +1,14 @@
 package com.mortarnav.mvp.home;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.content.Context;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
 import com.mortarnav.DaggerService;
 import com.mortarnav.R;
-import com.mortarnav.ToolbarOwner;
 
-import javax.inject.Inject;
-
-import architect.commons.view.PresentedScrollView;
-import architect.view.HandlesViewTransition;
+import architect.commons.view.PresentedLinearLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -22,16 +16,16 @@ import butterknife.OnClick;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class HomeView extends PresentedScrollView<HomePresenter> implements HandlesViewTransition {
-
-    @Inject
-    protected ToolbarOwner toolbarOwner;
+public class HomeView extends PresentedLinearLayout<HomePresenter> {
 
     @Bind(R.id.home_title)
     public TextView titleTextView;
 
     @Bind(R.id.home_subtitle)
     public TextView subtitleTextView;
+
+    @Bind(R.id.toolbar)
+    public Toolbar toolbar;
 
     public HomeView(Context context) {
         super(context);
@@ -40,6 +34,8 @@ public class HomeView extends PresentedScrollView<HomePresenter> implements Hand
 
         View view = View.inflate(context, R.layout.home_view, this);
         ButterKnife.bind(view);
+
+        toolbar.setTitle("Home View");
     }
 
     @OnClick(R.id.next_home_button)
@@ -93,28 +89,28 @@ public class HomeView extends PresentedScrollView<HomePresenter> implements Hand
         presenter.setNewStackClick();
     }
 
-    @Override
-    public void onViewTransition(AnimatorSet set) {
-        if (set != null) {
-            set.addListener(new AnimatorListenerAdapter() {
-
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    toolbarOwner.show();
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    toolbarOwner.setTitle("Hello Home!");
-                }
-            });
-            Animator animator = toolbarOwner.animateShow();
-            if (animator != null) {
-                set.play(animator);
-            }
-        } else {
-            toolbarOwner.show();
-            toolbarOwner.setTitle("Hello Home!");
-        }
-    }
+//    @Override
+//    public void onViewTransition(AnimatorSet set) {
+//        if (set != null) {
+//            set.addListener(new AnimatorListenerAdapter() {
+//
+//                @Override
+//                public void onAnimationStart(Animator animation) {
+//                    toolbarOwner.show();
+//                }
+//
+//                @Override
+//                public void onAnimationEnd(Animator animation) {
+//                    toolbarOwner.setTitle("Hello Home!");
+//                }
+//            });
+//            Animator animator = toolbarOwner.animateShow();
+//            if (animator != null) {
+//                set.play(animator);
+//            }
+//        } else {
+//            toolbarOwner.show();
+//            toolbarOwner.setTitle("Hello Home!");
+//        }
+//    }
 }

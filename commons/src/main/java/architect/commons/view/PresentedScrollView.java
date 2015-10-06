@@ -6,13 +6,12 @@ import android.widget.ScrollView;
 
 import javax.inject.Inject;
 
-import architect.view.HasPresenter;
 import mortar.ViewPresenter;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public abstract class PresentedScrollView<T extends ViewPresenter> extends ScrollView implements HasPresenter<T> {
+public abstract class PresentedScrollView<T extends ViewPresenter> extends ScrollView {
 
     @Inject
     protected T presenter;
@@ -39,17 +38,20 @@ public abstract class PresentedScrollView<T extends ViewPresenter> extends Scrol
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        presenter.takeView(this);
+
+        if (!isInEditMode()) {
+            //noinspection unchecked
+            presenter.takeView(this);
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        presenter.dropView(this);
-        super.onDetachedFromWindow();
-    }
+        if (!isInEditMode()) {
+            //noinspection unchecked
+            presenter.dropView(this);
+        }
 
-    @Override
-    public T getPresenter() {
-        return presenter;
+        super.onDetachedFromWindow();
     }
 }

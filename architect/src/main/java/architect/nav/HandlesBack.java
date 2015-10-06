@@ -1,4 +1,4 @@
-package architect.view;
+package architect.nav;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

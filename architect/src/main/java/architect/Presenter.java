@@ -7,7 +7,7 @@ import android.view.View;
 
 import java.util.List;
 
-import architect.view.HandlesViewTransition;
+import architect.nav.HandlesViewTransition;
 import mortar.MortarScope;
 
 /**

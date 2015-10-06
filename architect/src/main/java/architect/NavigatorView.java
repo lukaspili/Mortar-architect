@@ -13,8 +13,8 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import architect.view.HandlesBack;
-import architect.view.HandlesViewTransition;
+import architect.nav.HandlesBack;
+import architect.nav.HandlesViewTransition;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

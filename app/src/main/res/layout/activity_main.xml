@@ -4,12 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="#2196F3"/>
-
     <architect.NavigatorView
         android:id="@+id/navigator_container"
         android:layout_width="match_parent"

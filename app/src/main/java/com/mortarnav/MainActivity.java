@@ -4,18 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import com.mortarnav.deps.WithActivityDependencies;
 import com.mortarnav.mvp.home.HomeScreen;
-
-import javax.inject.Inject;
 
 import architect.Navigator;
 import architect.NavigatorView;
 import architect.commons.ActivityArchitector;
 import architect.commons.Architected;
-import architect.commons.transition.LateralViewTransition;
+import architect.commons.transition.StandardTransition;
 import autodagger.AutoComponent;
 import autodagger.AutoInjector;
 import butterknife.Bind;
@@ -39,14 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private MortarScope scope;
     private Navigator navigator;
 
-    @Inject
-    protected ToolbarOwner toolbarOwner;
-
     @Bind(R.id.navigator_container)
     protected NavigatorView containerView;
-
-    @Bind(R.id.toolbar)
-    protected Toolbar toolbar;
 
     @Override
     public Object getSystemService(@NonNull String name) {
@@ -65,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Navigator createNavigator() {
                 Navigator navigator = new Navigator(new Parceler());
-                navigator.transitions().setDefault(new LateralViewTransition());
+                navigator.transitions().setDefault(new StandardTransition());
                 return navigator;
             }
 
@@ -80,11 +71,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        toolbar.setTitle("Mortar architect");
-        setSupportActionBar(toolbar);
-
         DaggerService.<MainActivityComponent>get(this).inject(this);
-        toolbarOwner.takeView(toolbar);
 
         // it is usually the best to create the navigator after everything else
         navigator = ActivityArchitector.onCreateNavigator(this, scope, savedInstanceState, containerView, new HomeScreen("Default home path"));
@@ -117,8 +104,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        toolbarOwner.dropView(toolbar);
-
         navigator.delegate().onDestroy();
         navigator = null;
 

@@ -16,7 +16,7 @@ import org.parceler.ParcelConstructor;
 
 import architect.ScreenPath;
 import architect.commons.SubscreenService;
-import architect.screen.ReceivesNavigationResult;
+import architect.nav.ReceivesNavigationResult;
 import dagger.Provides;
 import mortar.MortarScope;
 
