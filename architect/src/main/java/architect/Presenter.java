@@ -10,7 +10,6 @@ import android.view.View;
 
 import java.util.List;
 
-import architect.nav.HandlesViewTransition;
 import mortar.MortarScope;
 
 /**
@@ -32,9 +31,6 @@ class Presenter {
      * negative value means there is no session (like during config changes)
      */
     private int sessionId = 0;
-//    private final List<History.Entry> entriesInView = new ArrayList<>();
-//    private final List<MortarScope> scopesInView = new ArrayList<>();
-//    private final List<String> presentedModalScopes = new ArrayList<>();
 
     Presenter(Transitions transitions) {
         this.transitions = transitions;
@@ -104,9 +100,9 @@ class Presenter {
 
             view.addView(child);
 
-            if (child instanceof HandlesViewTransition) {
-                ((HandlesViewTransition) child).onViewTransition(null);
-            }
+//            if (child instanceof HandlesViewTransition) {
+//                ((HandlesViewTransition) child).onViewTransition(null);
+//            }
         }
     }
 
@@ -240,22 +236,16 @@ class Presenter {
             enterView.restoreHierarchyState(enterDispatchEntry.entry.viewState);
         }
 
-        view.push(enterView, forward, new NavigatorView.Callback2() {
+        view.beginTransition(enterView, forward, sessionId, new NavigatorView.Callback2() {
 
             @Override
-            public void onViewReady(View enterView, final View exitView) {
+            public void onViewReady(View enterView, final View exitView, int sessionId) {
+                if (!isCurrentSession(sessionId)) return;
+
                 if (transition != null) {
-                    AnimatorSet set = new AnimatorSet();
-                    set.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            performAfter(exitView);
-                        }
-                    });
-                    transition.performTransition(enterView, exitView, viewTransitionDirection, set);
-                    set.start();
+                    performTransition(enterView, exitView, transition, viewTransitionDirection, sessionId);
                 } else {
-                    performAfter(exitView);
+                    commitTransition(exitView, sessionId);
                 }
             }
         });
@@ -286,8 +276,22 @@ class Presenter {
 //        });
     }
 
-    private void performAfter(View exitView) {
-        view.end(exitView);
+    private void performTransition(View enterView, final View exitView, ViewTransition transition, int transitionDirection, final int sessionId) {
+        AnimatorSet set = new AnimatorSet();
+        set.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                commitTransition(exitView, sessionId);
+            }
+        });
+        transition.performTransition(enterView, exitView, transitionDirection, set);
+        set.start();
+    }
+
+    private void commitTransition(View exitView, int sessionId) {
+        if (!isCurrentSession(sessionId)) return;
+
+        view.endTransition(exitView);
         completeDispatchingCallback();
     }
 
@@ -327,8 +331,8 @@ class Presenter {
         callback.onComplete();
     }
 
-    interface PresentationCallback {
-
-        void onPresentationFinished(int sessionId);
-    }
+//    interface PresentationCallback {
+//
+//        void onPresentationFinished(int sessionId);
+//    }
 }

@@ -1,6 +1,5 @@
 package architect;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -42,13 +41,13 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         return hasCurrentView() ? getChildAt(getChildCount() - 1) : null;
     }
 
-    void push(View enterView, boolean forward, Callback2 callback) {
+    void beginTransition(View enterView, boolean forward, int sessionId, Callback2 callback) {
         Preconditions.checkArgument(!interactionsDisabled, "Start presentation but previous one did not end");
         Preconditions.checkArgument(sessionId > 0, "Cannot show while session is not valid");
         interactionsDisabled = true;
 
         View exitView = getCurrentView();
-        Preconditions.checkNotNull(exitView, "exitView null");
+        Preconditions.checkNotNull(exitView, "exitView cannot be null");
 
         if (forward) {
             addView(enterView);
@@ -56,22 +55,22 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
             addView(enterView, getChildCount() - 1);
         }
 
-        measureAndGetTransition(enterView, exitView, callback);
+        measureAndGetTransition(enterView, exitView, sessionId, callback);
     }
 
-    void end(View exitView) {
+    void endTransition(View exitView) {
         Preconditions.checkArgument(interactionsDisabled, "NavigatorView end but should not");
         removeView(exitView);
 
         interactionsDisabled = false;
     }
 
-    private void measureAndGetTransition(final View enterView, final View exitView, final Callback2 callback) {
+    private void measureAndGetTransition(final View enterView, final View exitView, final int sessionId, final Callback2 callback) {
         int width = enterView.getWidth();
         int height = enterView.getHeight();
 
         if (width > 0 && height > 0) {
-            callback.onViewReady(enterView, exitView);
+            callback.onViewReady(enterView, exitView, sessionId);
             return;
         }
 
@@ -83,14 +82,14 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
                     observer.removeOnPreDrawListener(this);
                 }
 
-                callback.onViewReady(enterView, exitView);
+                callback.onViewReady(enterView, exitView, sessionId);
                 return true;
             }
         });
     }
 
 
-//    void show(final Presentation presentation, final Presenter.PresentationCallback callback) {
+    //    void show(final Presentation presentation, final Presenter.PresentationCallback callback) {
 //        Preconditions.checkArgument(!interactionsDisabled, "Start presentation but previous one did not end");
 //        Preconditions.checkArgument(sessionId > 0, "Cannot show while session is not valid");
 //        interactionsDisabled = true;
@@ -277,30 +276,30 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         return false;
     }
 
-    static class Presentation {
-        final View view;
-        final boolean addView;
-        final boolean removePreviousView;
-        final int direction;
-        final ViewTransition transition;
-
-        public Presentation(View view, boolean addView, boolean removePreviousView, int direction, ViewTransition transition) {
-            this.view = view;
-            this.addView = addView;
-            this.removePreviousView = removePreviousView;
-            this.direction = direction;
-            this.transition = transition;
-        }
-    }
-
-    private interface Callback {
-
-        void onAnimatorReady(Animator animator);
-
-        void onAnimatorEnd();
-    }
+//    static class Presentation {
+//        final View view;
+//        final boolean addView;
+//        final boolean removePreviousView;
+//        final int direction;
+//        final ViewTransition transition;
+//
+//        public Presentation(View view, boolean addView, boolean removePreviousView, int direction, ViewTransition transition) {
+//            this.view = view;
+//            this.addView = addView;
+//            this.removePreviousView = removePreviousView;
+//            this.direction = direction;
+//            this.transition = transition;
+//        }
+//    }
+//
+//    private interface Callback {
+//
+//        void onAnimatorReady(Animator animator);
+//
+//        void onAnimatorEnd();
+//    }
 
     interface Callback2 {
-        void onViewReady(View enterView, View exitView);
+        void onViewReady(View enterView, View exitView, int sessionId);
     }
 }
