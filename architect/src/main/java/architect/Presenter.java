@@ -1,5 +1,8 @@
 package architect;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.os.Parcelable;
 import android.util.SparseArray;
@@ -165,11 +168,11 @@ class Presenter {
 //        });
     }
 
-    void present(final Dispatcher.ScopedEntry enterDispatchEntry, final History.Entry exitEntry, final boolean forward, final int direction, final Dispatcher.Callback callback) {
+    void present(final Dispatcher.ScopedEntry enterDispatchEntry, final History.Entry exitEntry, final boolean forward, final int viewTransitionDirection, final Dispatcher.Callback callback) {
         Preconditions.checkNotNull(view, "Container view cannot be null");
         Preconditions.checkNull(dispatchingCallback, "Previous dispatching callback not completed");
 
-        Logger.d("Present new dispatch: %s - with direction: %s", enterDispatchEntry.entry, direction);
+        Logger.d("Present new entry: %s", enterDispatchEntry.entry);
         Logger.d("Previous entry: %s", exitEntry);
 
         // set and track the callback from dispatcher
@@ -182,19 +185,29 @@ class Presenter {
             exitEntry.viewState = getCurrentViewState();
         }
 
-        // create or reuse view
-        View newView;
-        boolean addNewView;
-        if (view.getChildCount() > 1 && forward) {
-            Logger.d("Reuse previous view for %s", enterDispatchEntry.entry);
-            newView = view.getChildAt(view.getChildCount() - 2);
-            addNewView = false;
+        final View enterView;
+        if (enterDispatchEntry.entry.isModal()) {
+            enterView = null;
+            throw new RuntimeException("Yo");
         } else {
-            Logger.d("Create new view for %s", enterDispatchEntry.entry);
             Context context = enterDispatchEntry.scope.createContext(view.getContext());
-            newView = enterDispatchEntry.entry.path.createView(context, view);
-            addNewView = true;
+            enterView = enterDispatchEntry.entry.path.createView(context, view);
         }
+
+
+        // create or reuse view
+//        View newView;
+//        boolean addNewView;
+//        if (view.getChildCount() > 1 && forward) {
+//            Logger.d("Reuse previous view for %s", enterDispatchEntry.entry);
+//            newView = view.getChildAt(view.getChildCount() - 2);
+//            addNewView = false;
+//        } else {
+//            Logger.d("Create new view for %s", enterDispatchEntry.entry);
+//            Context context = enterDispatchEntry.scope.createContext(view.getContext());
+//            newView = enterDispatchEntry.entry.path.createView(context, view);
+//            addNewView = true;
+//        }
 
 
 //        if (!exitEntry.dead || (exitEntry.dead && !exitEntry.isModal())) {
@@ -214,9 +227,9 @@ class Presenter {
 //        }
 
         // find transition
-        ViewTransition transition;
+        final ViewTransition transition;
         if (view.hasCurrentView()) {
-            transition = transitions.find(null);
+            transition = transitions.find(enterDispatchEntry.entry.transition);
         } else {
             transition = null;
         }
@@ -224,8 +237,29 @@ class Presenter {
         // restore state if it exists
         if (enterDispatchEntry.entry.viewState != null) {
             Logger.d("Restore view state for: %s", enterDispatchEntry.entry);
-            newView.restoreHierarchyState(enterDispatchEntry.entry.viewState);
+            enterView.restoreHierarchyState(enterDispatchEntry.entry.viewState);
         }
+
+        view.push(enterView, forward, new NavigatorView.Callback2() {
+
+            @Override
+            public void onViewReady(View enterView, final View exitView) {
+                if (transition != null) {
+                    AnimatorSet set = new AnimatorSet();
+                    set.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            performAfter(exitView);
+                        }
+                    });
+                    transition.performTransition(enterView, exitView, viewTransitionDirection, set);
+                    set.start();
+                } else {
+                    performAfter(exitView);
+                }
+            }
+        });
+
 
 //        if (enterDispatchEntry.entry.receivedResult != null) {
 //            if (newView instanceof HasPresenter) {
@@ -239,17 +273,22 @@ class Presenter {
 //        }
 
 //        boolean keepPreviousView = direction == Dispatcher.Direction.FORWARD && newDispatch.entry.isModal();
-        boolean keepPreviousView = !forward && enterDispatchEntry.entry.isModal();
-        Logger.d("Keep previous view: %b", keepPreviousView);
+//        boolean keepPreviousView = !forward && enterDispatchEntry.entry.isModal();
+//        Logger.d("Keep previous view: %b", keepPreviousView);
+//
+//        view.show(new NavigatorView.Presentation(newView, addNewView, !keepPreviousView, viewTransitionDirection, transition), new PresentationCallback() {
+//            @Override
+//            public void onPresentationFinished(int sessionId) {
+//                if (isCurrentSession(sessionId)) {
+//                    completeDispatchingCallback();
+//                }
+//            }
+//        });
+    }
 
-        view.show(new NavigatorView.Presentation(newView, addNewView, !keepPreviousView, direction, transition), new PresentationCallback() {
-            @Override
-            public void onPresentationFinished(int sessionId) {
-                if (isCurrentSession(sessionId)) {
-                    completeDispatchingCallback();
-                }
-            }
-        });
+    private void performAfter(View exitView) {
+        view.end(exitView);
+        completeDispatchingCallback();
     }
 
     MortarScope getCurrentScope() {

@@ -243,8 +243,10 @@ class Dispatcher {
 //        }
 
         final int direction = dispatch.direction != 0 ? dispatch.direction : (forward ? ViewTransition.DIRECTION_FORWARD : ViewTransition.DIRECTION_BACKWARD);
-        final MortarScope exitScope = navigator.scoper.getCurrentScope(exitEntry.path);
         final ScopedEntry scopedEntry = createDispatchEntry(enterEntry, forward, dispatchIndex + 1);
+
+        final MortarScope exitScope = navigator.presenter.getCurrentScope();
+        Preconditions.checkNotNull(exitScope, "Exit scope cannot be null");
 
         navigator.presenter.present(scopedEntry, exitEntry, forward, direction, new Callback() {
             @Override
