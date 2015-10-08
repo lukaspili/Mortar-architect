@@ -9,7 +9,7 @@ import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 
 import architect.MortarFactory;
-import architect.commons.SubscreenService;
+import architect.SubScreenService;
 import architect.commons.view.PresentedLinearLayout;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
@@ -35,7 +35,7 @@ public class BannerView extends PresentedLinearLayout<BannerPresenter> {
             a.recycle();
         }
 
-        Context screenContext = MortarFactory.createContext(context, SubscreenService.get(context, screen), screen);
+        Context screenContext = MortarFactory.createContext(context, SubScreenService.get(context, screen), screen);
 
         DaggerService.<BannerScreenComponent>get(screenContext).inject(this);
         View view = View.inflate(screenContext, R.layout.banner_view, this);

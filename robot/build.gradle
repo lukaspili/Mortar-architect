@@ -24,6 +24,7 @@ idea {
 dependencies {
     provided deps.autodagger2
     provided deps.android
+    provided deps.mortar
 }
 
 apply from: '../mvn-publish.gradle'

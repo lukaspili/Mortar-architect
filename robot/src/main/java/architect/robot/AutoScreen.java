@@ -29,5 +29,5 @@ public @interface AutoScreen {
     /**
      * The generated screen will contain the following subscreens
      */
-    ContainsSubscreen[] containsSubscreens() default {};
+    ContainsSubscreen[] subScreens() default {};
 }

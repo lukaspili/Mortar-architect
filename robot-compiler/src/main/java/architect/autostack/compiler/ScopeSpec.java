@@ -4,6 +4,8 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 
+import java.util.List;
+
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
@@ -19,6 +21,7 @@ public class ScopeSpec {
     private TypeName pathViewTypeName;
     private AnnotationSpec scopeAnnotationSpec;
     private AnnotationSpec componentAnnotationSpec;
+    private List<SubscreenSpec> subscreenSpecs;
 
     public ScopeSpec(ClassName className) {
         this.className = className;
@@ -98,5 +101,13 @@ public class ScopeSpec {
 
     public void setComponentAnnotationSpec(AnnotationSpec componentAnnotationSpec) {
         this.componentAnnotationSpec = componentAnnotationSpec;
+    }
+
+    public List<SubscreenSpec> getSubscreenSpecs() {
+        return subscreenSpecs;
+    }
+
+    public void setSubscreenSpecs(List<SubscreenSpec> subscreenSpecs) {
+        this.subscreenSpecs = subscreenSpecs;
     }
 }

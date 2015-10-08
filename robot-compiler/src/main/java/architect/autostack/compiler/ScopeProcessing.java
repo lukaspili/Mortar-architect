@@ -11,6 +11,8 @@ import com.squareup.javapoet.TypeName;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
@@ -18,8 +20,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import architect.robot.AutoStackable;
-import architect.robot.FromPath;
+import architect.robot.AutoScreen;
+import architect.robot.NavigationParam;
 import autodagger.AutoComponent;
 import autodagger.compiler.utils.AutoComponentClassNameUtil;
 import processorworkflow.AbstractComposer;
@@ -38,7 +40,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
 
     @Override
     public Set<Class<? extends Annotation>> supportedAnnotations() {
-        Set set = ImmutableSet.of(AutoStackable.class);
+        Set set = ImmutableSet.of(AutoScreen.class);
         return set;
     }
 
@@ -91,7 +93,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
             String methodName;
             TypeName typeName;
             Element daggerDependencyElement = MoreTypes.asElement(extractor.getComponentDependency());
-            if (MoreElements.isAnnotationPresent(daggerDependencyElement, AutoStackable.class)) {
+            if (MoreElements.isAnnotationPresent(daggerDependencyElement, AutoScreen.class)) {
                 ClassName daggerDependencyScopeClassName = buildClassName(daggerDependencyElement);
                 ClassName daggerDependencyClassName = AutoComponentClassNameUtil.getComponentClassName(daggerDependencyScopeClassName);
                 methodName = StringUtils.uncapitalize(daggerDependencyClassName.simpleName());
@@ -118,6 +120,14 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
                 spec.setPathLayout(extractor.getPathLayout());
             }
 
+            if (extractor.getSubscreensExtractors() != null && !extractor.getSubscreensExtractors().isEmpty()) {
+                List<SubscreenSpec> subscreenSpecs = new ArrayList<>(extractor.getSubscreensExtractors().size());
+                for (SubscreensExtractor subscreensExtractor : extractor.getSubscreensExtractors()) {
+                    subscreenSpecs.add(new SubscreenSpec(subscreensExtractor.getName(), TypeName.get(subscreensExtractor.getTypeMirror())));
+                }
+                spec.setSubscreenSpecs(subscreenSpecs);
+            }
+
             ModuleSpec moduleSpec = new ModuleSpec(moduleClassName);
             moduleSpec.setPresenterTypeName(presenterTypeName);
             moduleSpec.setScopeAnnotationSpec(spec.getScopeAnnotationSpec());
@@ -128,7 +138,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
 
 //              not supported for now:
 //              || extractor.getFromPathFieldsElements().contains(e)
-                if (MoreElements.isAnnotationPresent(e, FromPath.class)) {
+                if (MoreElements.isAnnotationPresent(e, NavigationParam.class)) {
                     moduleSpec.getInternalParameters().add(parameterSpec);
                 } else {
                     moduleSpec.getProvideParameters().add(parameterSpec);
@@ -153,9 +163,9 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
             if (StringUtils.isBlank(pkg)) {
                 errors.addInvalid("Package name " + pkg);
             }
-            pkg = pkg + ".stackable";
+//            pkg = pkg + ".stackable";
 
-            return ClassName.get(pkg, newName + "Stackable");
+            return ClassName.get(pkg, newName + "Screen");
         }
 
         private String removeEndingName(String text, String term) {

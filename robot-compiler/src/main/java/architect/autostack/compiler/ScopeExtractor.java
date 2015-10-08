@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.inject.Scope;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
@@ -14,7 +15,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import architect.robot.AutoStackable;
+import architect.robot.AutoScreen;
+import architect.robot.ContainsSubscreen;
 import autodagger.compiler.utils.AutoComponentExtractorUtil;
 import processorworkflow.AbstractExtractor;
 import processorworkflow.Errors;
@@ -27,7 +29,8 @@ import processorworkflow.Logger;
 public class ScopeExtractor extends AbstractExtractor {
 
     private static final String COMPONENT = "component";
-    private static final String PATH_VIEW = "pathWithView";
+    private static final String PATH_VIEW = "pathView";
+    private static final String SUBSCREENS = "subScreens";
 
     private AnnotationMirror scopeAnnotationTypeMirror;
     private AnnotationMirror componentAnnotationTypeMirror;
@@ -35,6 +38,7 @@ public class ScopeExtractor extends AbstractExtractor {
     private TypeMirror pathViewTypeMirror;
     private int pathLayout;
     //    private List<VariableElement> fromPathFieldsElements;
+    private List<SubscreensExtractor> subscreensExtractors;
     private List<VariableElement> constructorsParamtersElements;
 
     public ScopeExtractor(Element element, Types types, Elements elements, Errors errors) {
@@ -46,7 +50,7 @@ public class ScopeExtractor extends AbstractExtractor {
 
     @Override
     public void extract() {
-        componentAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStackable.class, COMPONENT);
+        componentAnnotationTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoScreen.class, COMPONENT);
         if (componentAnnotationTypeMirror == null) {
             errors.addMissing("@AutoComponent");
             return;
@@ -60,8 +64,9 @@ public class ScopeExtractor extends AbstractExtractor {
         }
         componentDependency = deps.get(0);
 
-        pathViewTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoStackable.class, PATH_VIEW);
-        pathLayout = element.getAnnotation(AutoStackable.class).pathWithLayout();
+        pathViewTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoScreen.class, PATH_VIEW);
+        pathLayout = element.getAnnotation(AutoScreen.class).pathLayout();
+
         scopeAnnotationTypeMirror = findScope();
 
 //        fromPathFieldsElements = new ArrayList<>();
@@ -85,6 +90,14 @@ public class ScopeExtractor extends AbstractExtractor {
         if (constructorsCount > 1) {
             errors.addInvalid("Cannot have several constructors");
             return;
+        }
+
+        List<AnnotationValue> values = ExtractorUtils.getValueFromAnnotation(element, AutoScreen.class, SUBSCREENS);
+        if (values != null && !values.isEmpty()) {
+            subscreensExtractors = new ArrayList<>(values.size());
+            for (AnnotationValue value : values) {
+                subscreensExtractors.add(new SubscreensExtractor(value));
+            }
         }
     }
 
@@ -139,5 +152,9 @@ public class ScopeExtractor extends AbstractExtractor {
 
     public List<VariableElement> getConstructorsParamtersElements() {
         return constructorsParamtersElements;
+    }
+
+    public List<SubscreensExtractor> getSubscreensExtractors() {
+        return subscreensExtractors;
     }
 }

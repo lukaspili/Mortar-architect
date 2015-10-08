@@ -29,6 +29,6 @@ public class AnnotationProcessor extends AbstractProcessor<Void> {
     }
 
     public AnnotationProcessor() {
-        Logger.init("AutoStack Processor", false);
+        Logger.init("AutoStack Processor", true);
     }
 }

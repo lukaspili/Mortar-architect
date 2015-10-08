@@ -1,4 +1,4 @@
-package architect.commons;
+package architect;
 
 import android.content.Context;
 import android.view.View;
@@ -6,14 +6,12 @@ import android.view.View;
 import java.util.HashMap;
 import java.util.Map;
 
-import architect.Screen;
-
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class SubscreenService {
+public class SubScreenService {
 
-    public static final String SERVICE_NAME = SubscreenService.class.getName();
+    public static final String SERVICE_NAME = SubScreenService.class.getName();
 
     private static <T extends Screen> Map<String, T> get(Context context) {
         //noinspection unchecked, ResourceType

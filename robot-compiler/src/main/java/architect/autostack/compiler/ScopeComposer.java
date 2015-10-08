@@ -18,7 +18,7 @@ import java.util.List;
 import javax.annotation.Generated;
 import javax.lang.model.element.Modifier;
 
-import architect.robot.RobotService;
+import architect.robot.DaggerService;
 import dagger.Module;
 import dagger.Provides;
 import mortar.MortarScope;
@@ -29,9 +29,11 @@ import processorworkflow.AbstractComposer;
  */
 public class ScopeComposer extends AbstractComposer<ScopeSpec> {
 
-    private static final ClassName STACKABLE_CLS = ClassName.get("architect", "Stackable");
-    private static final ClassName PATH_CLS = ClassName.get("architect", "StackablePath");
-    private static final ClassName DAGGERSERVICE_CLS = ClassName.get(RobotService.class);
+    private static final ClassName SCREEN_CLS = ClassName.get("architect", "Screen");
+    private static final ClassName PATH_CLS = ClassName.get("architect", "ScreenPath");
+    private static final ClassName SUBSCREENSERVICE_CLS = ClassName.get("architect", "SubScreenService");
+    private static final ClassName SUBSCREENSERVICE_BUILDER_CLS = ClassName.get("architect", "SubScreenService.Builder");
+    private static final ClassName DAGGERSERVICE_CLS = ClassName.get(DaggerService.class);
     private static final ClassName CONTEXT_CLS = ClassName.get("android.content", "Context");
     private static final ClassName VIEW_CLS = ClassName.get("android.view", "View");
     private static final ClassName VIEWGROUP_CLS = ClassName.get("android.view", "ViewGroup");
@@ -48,19 +50,38 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
     }
 
     private TypeSpec build(ScopeSpec spec) {
+
+        CodeBlock.Builder configureScopeSpecCodeBuilder = CodeBlock.builder()
+                .add("$T.configureScope(builder, $T.class, $T.builder()\n", DAGGERSERVICE_CLS, spec.getClassName(), spec.getDaggerComponentTypeName())
+                .indent().indent()
+                .add(".$L($T.<$T>getTyped(parentScope, $T.class))\n", spec.getDaggerComponentBuilderDependencyMethodName(), DAGGERSERVICE_CLS, spec.getDaggerComponentBuilderDependencyTypeName(), spec.getParentComponentTypeName())
+                .add(".module(new Module())\n")
+                .add(".build());\n")
+                .unindent().unindent();
+
+        if (spec.getSubscreenSpecs() != null && !spec.getSubscreenSpecs().isEmpty()) {
+            CodeBlock.Builder subscreensBuilder = CodeBlock.builder()
+                    .add("\nbuilder.withService($T.SERVICE_NAME, new $T()\n", SUBSCREENSERVICE_CLS, SUBSCREENSERVICE_BUILDER_CLS)
+                    .indent();
+
+            for (SubscreenSpec subscreenSpec : spec.getSubscreenSpecs()) {
+                subscreensBuilder.add(".withScreen($S, $T.class)\n", subscreenSpec.getName(), subscreenSpec.getTypeName());
+            }
+
+            subscreensBuilder
+                    .add(".build());\n")
+                    .unindent();
+
+            configureScopeSpecCodeBuilder.add(subscreensBuilder.build());
+        }
+        configureScopeSpecCodeBuilder.unindent().unindent();
+
         MethodSpec configureScopeSpec = MethodSpec.methodBuilder("configureScope")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
                 .addParameter(ClassName.get(MortarScope.Builder.class), "builder")
                 .addParameter(ClassName.get(MortarScope.class), "parentScope")
-                .addCode(CodeBlock.builder()
-                        .add("builder.withService($T.SERVICE_NAME, $T.builder()\n", DAGGERSERVICE_CLS, spec.getDaggerComponentTypeName())
-                        .indent()
-                        .add(".$L(parentScope.<$T>getService($T.SERVICE_NAME))\n", spec.getDaggerComponentBuilderDependencyMethodName(), spec.getDaggerComponentBuilderDependencyTypeName(), DAGGERSERVICE_CLS)
-                        .add(".module(new Module())\n")
-                        .add(".build());\n")
-                        .unindent()
-                        .build())
+                .addCode(configureScopeSpecCodeBuilder.build())
                 .build();
 
 
@@ -108,7 +129,7 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
             }
             builder.addMethod(createViewSpecBuilder.build());
         } else {
-            builder.addSuperinterface(STACKABLE_CLS);
+            builder.addSuperinterface(SCREEN_CLS);
         }
 
         return builder.build();

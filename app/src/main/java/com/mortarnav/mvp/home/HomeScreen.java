@@ -15,7 +15,7 @@ import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
 
 import architect.ScreenPath;
-import architect.commons.SubscreenService;
+import architect.SubScreenService;
 import architect.nav.ReceivesNavigationResult;
 import dagger.Provides;
 import mortar.MortarScope;
@@ -64,7 +64,7 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
                 .module(new Module())
                 .build());
 
-        builder.withService(SubscreenService.SERVICE_NAME, new SubscreenService.Builder()
+        builder.withService(SubScreenService.SERVICE_NAME, new SubScreenService.Builder()
                 .withScreen("bannerScreen", bannerScreen)
                 .withScreen("bannerScreen2", bannerScreen2)
                 .build());

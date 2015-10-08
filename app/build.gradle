@@ -27,6 +27,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -34,13 +38,8 @@ dependencies {
 
     compile project(':architect')
     compile project(':commons')
-//    compile project(':robot')
-//    apt project(':robot-compiler')
-
-//    compile project(':autopath')
-//    apt project(':autopath-compiler')
-//    compile project(':autostack')
-//    apt project(':autostack-compiler')
+    compile project(':robot')
+    apt project(':robot-compiler')
 
     compile deps.autodagger2
     apt deps.autodagger2_compiler
@@ -51,9 +50,6 @@ dependencies {
 
     compile deps.parceler_api
     apt deps.parceler
-
-//    compile deps.parcelablepls
-//    apt deps.parcelablepls_compiler
 
     compile deps.mortar
     compile deps.appcompat_v7

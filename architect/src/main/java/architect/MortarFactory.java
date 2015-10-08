@@ -15,7 +15,7 @@ public class MortarFactory {
 
     public static Context createContext(Context parentContext, Screen screen, String identifier) {
         Preconditions.checkNotNull(parentContext, "Parent context cannot be null");
-        Preconditions.checkNotNull(screen, "Stackable cannot be null");
+        Preconditions.checkNotNull(screen, "Screen cannot be null");
 
         MortarScope parentScope = MortarScope.getScope(parentContext);
         Preconditions.checkNotNull(parentScope, "Parent scope cannot be null");
