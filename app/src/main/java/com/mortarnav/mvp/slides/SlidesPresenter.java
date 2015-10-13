@@ -19,7 +19,7 @@ import mortar.ViewPresenter;
         component = @AutoComponent(includes = StandardAutoComponent.class),
         pathView = SlidesView.class,
         subScreens = {
-                @ContainsSubscreen(type = BannerScreen.class, name = "banner1")
+                @ContainsSubscreen(type = BannerScreen.class, name = "banner")
         }
 )
 @DaggerScope(SlidesPresenter.class)

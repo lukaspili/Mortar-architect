@@ -41,6 +41,9 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
     private static final ClassName VIEWGROUP_CLS = ClassName.get("android.view", "ViewGroup");
     private static final ClassName LAYOUTINFLATER_CLS = ClassName.get("android.view", "LayoutInflater");
 
+    static final String SUBSCREEN_FIELD_PREFIX = "_subscreen_";
+    static final String DATA_FIELD_PREFIX = "_data_";
+
     public ScopeComposer(List<ScopeSpec> specs) {
         super(specs);
     }
@@ -92,7 +95,7 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
                     .indent();
 
             for (FieldSpec subscreenSpec : spec.getSubscreenSpecs()) {
-                subscreensBuilder.add(".withScreen($S, $T.class)\n", subscreenSpec.name, subscreenSpec.type);
+                subscreensBuilder.add(".withScreen($S, $L)\n", getSubscreenName(subscreenSpec.name), subscreenSpec.name);
 
                 // every subscreen must be initialized
                 initCodeBlockBuider.addStatement("this.$L = new $T()", subscreenSpec.name, subscreenSpec.type);
@@ -233,5 +236,9 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
                 .addAnnotation(Module.class)
                 .addMethod(methodSpecBuilder.build())
                 .build();
+    }
+
+    private String getSubscreenName(String name) {
+        return name.substring(SUBSCREEN_FIELD_PREFIX.length());
     }
 }

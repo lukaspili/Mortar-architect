@@ -29,7 +29,6 @@ import autodagger.compiler.utils.AutoComponentClassNameUtil;
 import processorworkflow.AbstractComposer;
 import processorworkflow.AbstractProcessing;
 import processorworkflow.Errors;
-import processorworkflow.Logger;
 import processorworkflow.ProcessingBuilder;
 
 /**
@@ -126,7 +125,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
             if (extractor.getSubscreensExtractors() != null && !extractor.getSubscreensExtractors().isEmpty()) {
                 List<FieldSpec> subscreenSpecs = new ArrayList<>(extractor.getSubscreensExtractors().size());
                 for (SubscreensExtractor subscreensExtractor : extractor.getSubscreensExtractors()) {
-                    subscreenSpecs.add(FieldSpec.builder(TypeName.get(subscreensExtractor.getTypeMirror()), subscreensExtractor.getName()).build());
+                    subscreenSpecs.add(FieldSpec.builder(TypeName.get(subscreensExtractor.getTypeMirror()), ScopeComposer.SUBSCREEN_FIELD_PREFIX + subscreensExtractor.getName()).build());
                 }
                 spec.setSubscreenSpecs(subscreenSpecs);
             }
