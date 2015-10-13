@@ -2,7 +2,6 @@ package architect;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
@@ -234,7 +233,6 @@ public class History {
 //        return dead;
 //    }
 
-    @NonNull
     Entry getLast() {
         Preconditions.checkArgument(!entries.isEmpty(), "Cannot get last entry on empty history");
         return entries.get(entries.size() - 1);
@@ -256,7 +254,6 @@ public class History {
         return entries.contains(entry);
     }
 
-    @NonNull
     List<Entry> getLastWithModals() {
         Preconditions.checkArgument(entries.size() > 1, "At least 2 entries (non-modal + n modals)");
         List<Entry> previous = new ArrayList<>(entries.size() - 2);

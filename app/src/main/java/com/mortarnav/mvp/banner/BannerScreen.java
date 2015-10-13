@@ -1,7 +1,6 @@
 package com.mortarnav.mvp.banner;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.DaggerService;
 import com.mortarnav.MainActivity;
 import com.mortarnav.MainActivityComponent;
 
@@ -9,6 +8,7 @@ import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
 
 import architect.Screen;
+import architect.robot.DaggerService;
 import autodagger.AutoComponent;
 import dagger.Provides;
 import mortar.MortarScope;

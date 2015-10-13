@@ -5,7 +5,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mortarnav.DaggerScope;
-import com.mortarnav.DaggerService;
 import com.mortarnav.MainActivity;
 import com.mortarnav.MainActivityComponent;
 import com.mortarnav.deps.WithActivityDependencies;
@@ -17,6 +16,7 @@ import org.parceler.ParcelConstructor;
 import architect.ScreenPath;
 import architect.SubScreenService;
 import architect.nav.HandlesNavigationResult;
+import architect.robot.DaggerService;
 import dagger.Provides;
 import mortar.MortarScope;
 
@@ -52,7 +52,6 @@ public class HomeScreen implements ScreenPath, HandlesNavigationResult<String> {
         this.name = name;
         this.result = result;
     }
-
 
 
     @Override

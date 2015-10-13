@@ -2,6 +2,8 @@ package com.mortarnav.mvp.home;
 
 import android.os.Bundle;
 
+import com.mortarnav.mvp.slides.screen.SlidesScreen;
+
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
 
@@ -76,7 +78,7 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     }
 
     public void pagerClick() {
-//        Navigator.get(getView()).push(new SlidesStackable());
+        Navigator.get(getView()).push(new SlidesScreen("test param1", "test param2"));
     }
 
     public void showPopupClick() {

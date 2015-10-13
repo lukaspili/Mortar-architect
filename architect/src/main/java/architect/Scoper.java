@@ -1,7 +1,5 @@
 package architect;
 
-import android.support.v4.util.SimpleArrayMap;
-
 import mortar.MortarScope;
 
 /**
@@ -27,25 +25,10 @@ public class Scoper {
 
         MortarScope scope = navigator.getScope().findChild(name);
         if (scope == null) {
-            return createNewScope(screen, cls, id, true, 1);
+            Logger.d("Create scope: %s", name);
+            scope = MortarFactory.createScope(navigator.getScope(), screen, name);
         }
         return scope;
-    }
-
-    public MortarScope getNewScope(Screen screen, boolean forward, int depth) {
-        Class cls = screen.getClass();
-        return createNewScope(screen, cls, getId(cls), forward, depth);
-    }
-
-    private MortarScope createNewScope(Screen screen, Class cls, int currentId, boolean forward, int depth) {
-        currentId = forward ? currentId + depth : currentId - depth;
-        Preconditions.checkArgument(currentId > 0, "Scoper name id must be > 0");
-
-        ids.put(cls, currentId);
-        String name = getName(cls, currentId);
-
-        Logger.d("Create scope: %s", name);
-        return MortarFactory.createScope(navigator.getScope(), screen, name);
     }
 
     private int getId(Class cls) {
@@ -53,7 +36,8 @@ public class Scoper {
         if (ids.containsKey(cls)) {
             id = ids.get(cls);
         } else {
-            id = 0;
+            id = 1;
+            ids.put(cls, 1);
         }
 
         return id;
@@ -61,5 +45,21 @@ public class Scoper {
 
     private String getName(Class cls, int id) {
         return String.format("ARCHITECT_SCOPE_%s_%d", cls, id);
+    }
+
+    public void increment(Screen screen) {
+        update(screen, true);
+    }
+
+    public void decrement(Screen screen) {
+        update(screen, false);
+    }
+
+    private void update(Screen screen, boolean increment) {
+        Class cls = screen.getClass();
+        int id = ids.containsKey(cls) ? ids.get(cls) : 0;
+        ids.put(cls, id + (increment ? 1 : -1));
+
+        Logger.d("Scoper update scope count for %s = %d", cls.getSimpleName(), ids.get(cls));
     }
 }

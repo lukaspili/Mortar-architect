@@ -5,10 +5,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
-import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 
 import architect.commons.view.PresentedLinearLayout;
+import architect.robot.DaggerService;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

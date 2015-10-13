@@ -1,9 +1,9 @@
 package architect;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
-import architect.nav.HandlesNavigationResult;
 import mortar.MortarScope;
 
 /**
@@ -166,21 +166,13 @@ class Dispatcher {
         Preconditions.checkArgument(!navigator.history.isEmpty(), "Cannot dispatch on empty history");
         Preconditions.checkArgument(!entries.isEmpty(), "Cannot dispatch on empty stack");
 
-        final int dispatchIndex = getDispatchIndex();
-        Logger.d("Entries to dispatch at once: %d", dispatchIndex + 1);
-
-        final Dispatch dispatch;
-        if (dispatchIndex == 0) {
-            dispatch = entries.remove(dispatchIndex);
-        } else {
-            dispatch = entries.get(dispatchIndex);
-            entries.subList(0, dispatchIndex + 1).clear();
-        }
+        final Lookup lookup = getDispatch();
+        final Dispatch dispatch = lookup.dispatch;
         Logger.d("Entry to dispatch: %s", dispatch.entry);
 
         // in case of forward, the entry to dispatch is already added to history
         // in opposite in case of backward, the entry to dispatch is not in history anymore
-        final boolean forward = navigator.history.existInHistory(dispatch.entry);
+        final boolean forward = lookup.forward;
         final History.Entry enterEntry;
         final History.Entry exitEntry;
         if (forward) {
@@ -228,8 +220,7 @@ class Dispatcher {
 //        }
 
         final int direction = dispatch.direction != 0 ? dispatch.direction : (forward ? ViewTransition.DIRECTION_FORWARD : ViewTransition.DIRECTION_BACKWARD);
-        final ScopedEntry scopedEntry = createDispatchEntry(enterEntry, forward, dispatchIndex + 1);
-
+        final ScopedEntry scopedEntry = new ScopedEntry(enterEntry, navigator.scoper.getCurrentScope(enterEntry.path));
         final MortarScope exitScope = navigator.presenter.getCurrentScope();
         Preconditions.checkNotNull(exitScope, "Exit scope cannot be null");
 
@@ -245,45 +236,42 @@ class Dispatcher {
         });
     }
 
-    private int getDispatchIndex() {
-        Dispatch dispatch = entries.get(0);
-        int index = 0;
-
+    private Lookup getDispatch() {
+        Lookup lookup = new Lookup();
         Dispatch next;
-        for (int i = 1; i < entries.size(); i++) {
+        int index = 0;
+        for (int i = 0; i < entries.size(); i++) {
             next = entries.get(i);
 
-            if ((dispatch.entry.isModal() && !next.entry.isModal()) ||
-                    (!dispatch.entry.isModal() && next.entry.isModal())) {
+            if (lookup.dispatch != null &&
+                    ((lookup.dispatch.entry.isModal() && !next.entry.isModal()) ||
+                            (!lookup.dispatch.entry.isModal() && next.entry.isModal()))) {
                 break;
             }
 
+            Logger.d("Will dispatch: %s", next.entry);
+
+            lookup.forward = navigator.history.existInHistory(next.entry);
+            if (lookup.forward) {
+                navigator.scoper.increment(next.entry.path);
+            } else {
+                navigator.scoper.decrement(next.entry.path);
+            }
+
+            lookup.dispatch = next;
             index = i;
         }
 
-        return index;
+        Preconditions.checkNotNull(lookup.dispatch, "Lookup dispatch cannot be null");
+        if (index == 0) {
+            entries.remove(0);
+        } else {
+            entries.subList(0, index + 1).clear();
+        }
+
+        return lookup;
     }
 
-//    private Dispatch get() {
-//        Dispatch dispatch = entries.remove(0);
-//        int end = 0;
-//
-//        Dispatch next;
-//        for (int i = 0; i < entries.size(); i++) {
-//            next = entries.get(i);
-//
-//            if ((dispatch.entry.isModal() && !next.entry.isModal()) ||
-//                    (!dispatch.entry.isModal() && next.entry.isModal())) {
-//                break;
-//            }
-//
-//            end = i;
-//            dispatch = next;
-//        }
-//
-//        entries.subList(0, end).clear();
-//        return dispatch;
-//    }
 
 //    private void present(final History.Entry enterEntry, final History.Entry exitEntry, final boolean forward, final int transitionDirection) {
 ////        MortarScope currentScope = navigator.presenter.getCurrentScope();
@@ -385,9 +373,9 @@ class Dispatcher {
 //        return true;
 //    }
 
-    private ScopedEntry createDispatchEntry(History.Entry entry, boolean forward, int depth) {
-        return new ScopedEntry(entry, navigator.scoper.getNewScope(entry.path, forward, depth));
-    }
+//    private ScopedEntry createDispatchEntry(History.Entry entry, boolean forward, int depth) {
+//        return new ScopedEntry(entry, navigator.scoper.getNewScope(entry.path, forward, depth));
+//    }
 
 //    private void cleanExit(History.Entry entry) {
 //
@@ -422,5 +410,10 @@ class Dispatcher {
             this.entry = entry;
             this.scope = scope;
         }
+    }
+
+    private static class Lookup {
+        Dispatch dispatch;
+        boolean forward;
     }
 }

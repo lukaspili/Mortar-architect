@@ -5,11 +5,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 
 import javax.inject.Inject;
 
+import architect.robot.DaggerService;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 

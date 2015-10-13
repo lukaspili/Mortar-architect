@@ -1,12 +1,5 @@
-<android.support.design.widget.CoordinatorLayout
+<architect.NavigatorView
+    android:id="@+id/navigator_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <architect.NavigatorView
-        android:id="@+id/navigator_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="com.mortarnav.NavigatorViewBehavior"/>
-</android.support.design.widget.CoordinatorLayout>
+    android:layout_height="match_parent"/>

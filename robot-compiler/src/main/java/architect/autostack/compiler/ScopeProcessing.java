@@ -217,14 +217,6 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
             return null;
         }
 
-        private String convertToHungarian(String name) {
-            if (name.startsWith("m") && name.length() > 1) {
-                return StringUtils.uncapitalize(name.substring(1));
-            }
-
-            return null;
-        }
-
         private ClassName buildClassName(Element element) {
             String name = element.getSimpleName().toString();
 

@@ -13,6 +13,7 @@ import architect.NavigatorView;
 import architect.commons.ActivityArchitector;
 import architect.commons.Architected;
 import architect.commons.transition.StandardTransition;
+import architect.robot.DaggerService;
 import autodagger.AutoComponent;
 import autodagger.AutoInjector;
 import butterknife.Bind;

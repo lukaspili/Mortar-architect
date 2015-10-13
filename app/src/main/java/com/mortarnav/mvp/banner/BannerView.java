@@ -5,12 +5,12 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.mortarnav.DaggerService;
 import com.mortarnav.R;
 
 import architect.MortarFactory;
 import architect.SubScreenService;
 import architect.commons.view.PresentedLinearLayout;
+import architect.robot.DaggerService;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
