@@ -15,7 +15,6 @@ public class Navigation {
     static final int TYPE_BACK_ROOT = 5;
 
     List<Step> steps = new ArrayList<>();
-    Object result;
 
     public Navigation push(ScreenPath screen) {
         steps.add(new Step(screen, TYPE_PUSH));
@@ -53,8 +52,7 @@ public class Navigation {
     }
 
     public Navigation back(Object result) {
-        checkResult(result);
-        steps.add(new Step(TYPE_BACK));
+        steps.add(new Step(result, TYPE_BACK));
         return this;
     }
 
@@ -64,23 +62,27 @@ public class Navigation {
     }
 
     public Navigation backToRoot(Object result) {
-        checkResult(result);
-        steps.add(new Step(TYPE_BACK_ROOT));
+        steps.add(new Step(result, TYPE_BACK_ROOT));
         return this;
-    }
-
-    private void checkResult(Object result) {
-        Preconditions.checkArgument(result != null && this.result == null, "Cannot have several results in one navigation");
     }
 
     static class Step {
         final ScreenPath path;
         final PathBuilder builder;
+        final Object result;
         final int type;
 
         public Step(int type) {
             this.path = null;
             this.builder = null;
+            this.result = null;
+            this.type = type;
+        }
+
+        public Step(Object result, int type) {
+            this.path = null;
+            this.builder = null;
+            this.result = result;
             this.type = type;
         }
 
@@ -88,6 +90,7 @@ public class Navigation {
             Preconditions.checkNotNull(path, "ScreenPath cannot be null");
             this.path = path;
             this.builder = null;
+            this.result = null;
             this.type = type;
         }
 
@@ -95,6 +98,7 @@ public class Navigation {
             Preconditions.checkNotNull(builder, "PathBuilder cannot be null");
             this.path = null;
             this.builder = builder;
+            this.result = null;
             this.type = type;
         }
     }

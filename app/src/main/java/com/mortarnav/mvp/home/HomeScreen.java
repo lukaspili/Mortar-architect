@@ -16,7 +16,7 @@ import org.parceler.ParcelConstructor;
 
 import architect.ScreenPath;
 import architect.SubScreenService;
-import architect.nav.ReceivesNavigationResult;
+import architect.nav.HandlesNavigationResult;
 import dagger.Provides;
 import mortar.MortarScope;
 
@@ -27,7 +27,7 @@ import mortar.MortarScope;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @Parcel(parcelsIndex = false)
-public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> {
+public class HomeScreen implements ScreenPath, HandlesNavigationResult<String> {
 
     HomePresenter.HomeState state;
 
@@ -45,12 +45,15 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
     }
 
     @ParcelConstructor
-    HomeScreen(HomePresenter.HomeState state, BannerScreen bannerScreen, BannerScreen bannerScreen2, String name) {
+    public HomeScreen(HomePresenter.HomeState state, BannerScreen bannerScreen, BannerScreen bannerScreen2, String name, String result) {
         this.state = state;
         this.bannerScreen = bannerScreen;
         this.bannerScreen2 = bannerScreen2;
         this.name = name;
+        this.result = result;
     }
+
+
 
     @Override
     public View createView(Context context, ViewGroup parent) {
@@ -71,7 +74,7 @@ public class HomeScreen implements ScreenPath, ReceivesNavigationResult<String> 
     }
 
     @Override
-    public void onReceiveNavigationResult(String result) {
+    public void setNavigationResult(String result) {
         this.result = result;
     }
 

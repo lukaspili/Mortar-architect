@@ -7,6 +7,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import org.parceler.Parcel;
@@ -33,6 +34,7 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
     private static final ClassName PATH_CLS = ClassName.get("architect", "ScreenPath");
     private static final ClassName SUBSCREENSERVICE_CLS = ClassName.get("architect", "SubScreenService");
     private static final ClassName SUBSCREENSERVICE_BUILDER_CLS = ClassName.get("architect", "SubScreenService.Builder");
+    private static final ClassName RECEIVESNAVRESULT_CLS = ClassName.get("architect.nav", "HandlesNavigationResult");
     private static final ClassName DAGGERSERVICE_CLS = ClassName.get(DaggerService.class);
     private static final ClassName CONTEXT_CLS = ClassName.get("android.content", "Context");
     private static final ClassName VIEW_CLS = ClassName.get("android.view", "View");
@@ -50,7 +52,22 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
     }
 
     private TypeSpec build(ScopeSpec spec) {
+        List<MethodSpec> methodSpecs = new ArrayList<>();
+        List<FieldSpec> fieldSpecs = new ArrayList<>();
 
+        TypeSpec.Builder builder = TypeSpec.classBuilder(spec.getClassName().simpleName())
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(AnnotationSpec.builder(Generated.class).addMember("value", "$S", architect.autostack.compiler.AnnotationProcessor.class.getName()).build())
+                .addAnnotation(spec.getComponentAnnotationSpec())
+                .addAnnotation(AnnotationSpec.builder(Parcel.class).addMember("parcelsIndex", "false").build());
+
+
+//        for (ParameterSpec parameterSpec : spec.getModuleSpec().getInternalParameters()) {
+//            fieldSpecs.add(FieldSpec.builder(parameterSpec.type, parameterSpec.name)
+//                    .build());
+//        }
+
+        // configureScope()
         CodeBlock.Builder configureScopeSpecCodeBuilder = CodeBlock.builder()
                 .add("$T.configureScope(builder, $T.class, $T.builder()\n", DAGGERSERVICE_CLS, spec.getClassName(), spec.getDaggerComponentTypeName())
                 .indent().indent()
@@ -59,54 +76,107 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
                 .add(".build());\n")
                 .unindent().unindent();
 
+        boolean constructorShouldCallInit = false;
+        CodeBlock.Builder initCodeBlockBuider = CodeBlock.builder();
+
+        List<ParameterSpec> parcelConstructorParameterSpecs = new ArrayList<>();
+        CodeBlock.Builder parcelConstructorCodeBlockBuider = CodeBlock.builder();
+
+        // subscreens
         if (spec.getSubscreenSpecs() != null && !spec.getSubscreenSpecs().isEmpty()) {
+            constructorShouldCallInit = true;
+            fieldSpecs.addAll(spec.getSubscreenSpecs());
+
             CodeBlock.Builder subscreensBuilder = CodeBlock.builder()
                     .add("\nbuilder.withService($T.SERVICE_NAME, new $T()\n", SUBSCREENSERVICE_CLS, SUBSCREENSERVICE_BUILDER_CLS)
                     .indent();
 
-            for (SubscreenSpec subscreenSpec : spec.getSubscreenSpecs()) {
-                subscreensBuilder.add(".withScreen($S, $T.class)\n", subscreenSpec.getName(), subscreenSpec.getTypeName());
+            for (FieldSpec subscreenSpec : spec.getSubscreenSpecs()) {
+                subscreensBuilder.add(".withScreen($S, $T.class)\n", subscreenSpec.name, subscreenSpec.type);
+
+                // every subscreen must be initialized
+                initCodeBlockBuider.addStatement("this.$L = new $T()", subscreenSpec.name, subscreenSpec.type);
+
+                parcelConstructorParameterSpecs.add(ParameterSpec.builder(subscreenSpec.type, subscreenSpec.name).build());
+                parcelConstructorCodeBlockBuider.addStatement("this.$L = $L", subscreenSpec.name, subscreenSpec.name);
             }
 
-            subscreensBuilder
-                    .add(".build());\n")
-                    .unindent();
-
+            subscreensBuilder.add(".build());\n").unindent();
             configureScopeSpecCodeBuilder.add(subscreensBuilder.build());
         }
-        configureScopeSpecCodeBuilder.unindent().unindent();
 
-        MethodSpec configureScopeSpec = MethodSpec.methodBuilder("configureScope")
+        // navigation result
+        if (spec.getNavigationResultSpec() != null) {
+            fieldSpecs.add(spec.getNavigationResultSpec());
+            builder.addSuperinterface(ParameterizedTypeName.get(RECEIVESNAVRESULT_CLS, spec.getNavigationResultSpec().type));
+
+            builder.addMethod(MethodSpec.methodBuilder("setNavigationResult")
+                    .addAnnotation(Override.class)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(spec.getNavigationResultSpec().type, spec.getNavigationResultSpec().name)
+                    .addStatement("this.$L = $L", spec.getNavigationResultSpec().name, spec.getNavigationResultSpec().name)
+                    .build());
+
+            parcelConstructorParameterSpecs.add(ParameterSpec.builder(spec.getNavigationResultSpec().type, spec.getNavigationResultSpec().name).build());
+            parcelConstructorCodeBlockBuider.addStatement("this.$L = $L", spec.getNavigationResultSpec().name, spec.getNavigationResultSpec().name);
+        }
+
+        // navigation param
+        if (spec.getNavigationParamFieldSpecs() != null && !spec.getNavigationParamFieldSpecs().isEmpty()) {
+            fieldSpecs.addAll(spec.getNavigationParamFieldSpecs());
+
+            for (List<ParameterSpec> parameterSpecs : spec.getNavigationParamConstructorSpecs()) {
+                CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+                for (ParameterSpec ps : parameterSpecs) {
+                    codeBlockBuilder.addStatement("this.$L = $L", ps.name, ps.name);
+                }
+                if (constructorShouldCallInit) {
+                    codeBlockBuilder.addStatement("init()");
+                }
+
+                methodSpecs.add(MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameters(parameterSpecs)
+                        .addCode(codeBlockBuilder.build())
+                        .build());
+            }
+
+            for (FieldSpec fieldSpec : spec.getNavigationParamFieldSpecs()) {
+                parcelConstructorParameterSpecs.add(ParameterSpec.builder(fieldSpec.type, fieldSpec.name).build());
+                parcelConstructorCodeBlockBuider.addStatement("this.$L = $L", fieldSpec.name, fieldSpec.name);
+            }
+        }
+
+        if (methodSpecs.isEmpty()) {
+            methodSpecs.add(MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC)
+                    .build());
+        }
+
+        // parcel constructor
+        if (!parcelConstructorParameterSpecs.isEmpty()) {
+            methodSpecs.add(MethodSpec.constructorBuilder()
+                    .addAnnotation(ParcelConstructor.class)
+                    .addParameters(parcelConstructorParameterSpecs)
+                    .addCode(parcelConstructorCodeBlockBuider.build())
+                    .build());
+        }
+
+        methodSpecs.add(MethodSpec.methodBuilder("configureScope")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
                 .addParameter(ClassName.get(MortarScope.Builder.class), "builder")
                 .addParameter(ClassName.get(MortarScope.class), "parentScope")
                 .addCode(configureScopeSpecCodeBuilder.build())
-                .build();
+                .build());
 
+        methodSpecs.add(MethodSpec.methodBuilder("init")
+                .addModifiers(Modifier.PRIVATE)
+                .addCode(initCodeBlockBuider.build())
+                .build());
 
-        List<FieldSpec> fieldSpecs = new ArrayList<>();
-        for (ParameterSpec parameterSpec : spec.getModuleSpec().getInternalParameters()) {
-            fieldSpecs.add(FieldSpec.builder(parameterSpec.type, parameterSpec.name)
-                    .build());
-        }
-
-        MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(AnnotationSpec.builder(ParcelConstructor.class).build())
-                .addParameters(spec.getModuleSpec().getInternalParameters());
-        for (ParameterSpec parameterSpec : spec.getModuleSpec().getInternalParameters()) {
-            constructorBuilder.addStatement("this.$L = $L", parameterSpec.name, parameterSpec.name);
-        }
-
-        TypeSpec.Builder builder = TypeSpec.classBuilder(spec.getClassName().simpleName())
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(AnnotationSpec.builder(Generated.class).addMember("value", "$S", architect.autostack.compiler.AnnotationProcessor.class.getName()).build())
-                .addAnnotation(spec.getComponentAnnotationSpec())
-                .addAnnotation(AnnotationSpec.builder(Parcel.class).addMember("parcelsIndex", "false").build())
-                .addType(buildModule(spec.getModuleSpec()))
-                .addMethod(constructorBuilder.build())
-                .addMethod(configureScopeSpec)
+        builder.addType(buildModule(spec.getModuleSpec()))
+                .addMethods(methodSpecs)
                 .addFields(fieldSpecs);
 
         if (spec.getScopeAnnotationSpec() != null) {
@@ -138,10 +208,10 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
     private TypeSpec buildModule(ModuleSpec spec) {
         CodeBlock.Builder blockBuilder = CodeBlock.builder().add("return new $T(", spec.getPresenterTypeName());
         int i = 0;
-        for (ParameterSpec parameterSpec : spec.getPresenterArgs()) {
+        for (ParameterSpec parameterSpec : spec.getAllParameterSpecs()) {
             blockBuilder.add(parameterSpec.name);
 
-            if (i++ < spec.getPresenterArgs().size() - 1) {
+            if (i++ < spec.getAllParameterSpecs().size() - 1) {
                 blockBuilder.add(", ");
             }
         }
@@ -151,7 +221,7 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(spec.getPresenterTypeName())
                 .addAnnotation(Provides.class)
-                .addParameters(spec.getProvideParameters())
+                .addParameters(spec.getDaggerParameterSpecs())
                 .addCode(blockBuilder.build());
 
         if (spec.getScopeAnnotationSpec() != null) {

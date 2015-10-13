@@ -3,7 +3,9 @@ package architect.autostack.compiler;
 import com.google.auto.common.MoreElements;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Scope;
 import javax.lang.model.element.AnnotationMirror;
@@ -16,7 +18,9 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import architect.robot.AutoScreen;
-import architect.robot.ContainsSubscreen;
+import architect.robot.NavigationParam;
+import architect.robot.NavigationResult;
+import architect.robot.ScreenData;
 import autodagger.compiler.utils.AutoComponentExtractorUtil;
 import processorworkflow.AbstractExtractor;
 import processorworkflow.Errors;
@@ -37,9 +41,11 @@ public class ScopeExtractor extends AbstractExtractor {
     private TypeMirror componentDependency;
     private TypeMirror pathViewTypeMirror;
     private int pathLayout;
-    //    private List<VariableElement> fromPathFieldsElements;
+    private VariableElement navigationResultElement;
     private List<SubscreensExtractor> subscreensExtractors;
     private List<VariableElement> constructorsParamtersElements;
+    private List<VariableElement> screenDataElements;
+    private Map<Integer, List<VariableElement>> navigationParamsElements;
 
     public ScopeExtractor(Element element, Types types, Elements elements, Errors errors) {
         super(element, types, elements, errors);
@@ -92,6 +98,7 @@ public class ScopeExtractor extends AbstractExtractor {
             return;
         }
 
+        // subScreens
         List<AnnotationValue> values = ExtractorUtils.getValueFromAnnotation(element, AutoScreen.class, SUBSCREENS);
         if (values != null && !values.isEmpty()) {
             subscreensExtractors = new ArrayList<>(values.size());
@@ -99,7 +106,50 @@ public class ScopeExtractor extends AbstractExtractor {
                 subscreensExtractors.add(new SubscreensExtractor(value));
             }
         }
+
+        navigationParamsElements = new HashMap<>();
+        screenDataElements = new ArrayList<>();
+
+        for (Element enclosedElement : element.getEnclosedElements()) {
+            if (enclosedElement.getKind() == ElementKind.FIELD) {
+                // nav result
+                if (MoreElements.isAnnotationPresent(enclosedElement, NavigationResult.class)) {
+                    if (navigationResultElement != null) {
+                        errors.addInvalid("Cannot have several @NavigationResult");
+                        return;
+                    }
+
+                    navigationResultElement = MoreElements.asVariable(enclosedElement);
+                }
+                // nav param
+                else if (MoreElements.isAnnotationPresent(enclosedElement, NavigationParam.class)) {
+                    int[] group = enclosedElement.getAnnotation(NavigationParam.class).group();
+                    if (group == null || group.length == 0) {
+                        addNavigationParam(0, enclosedElement);
+                        continue;
+                    }
+
+                    for (int gr : group) {
+                        addNavigationParam(gr, enclosedElement);
+                    }
+                }
+                // screen data
+                else if (MoreElements.isAnnotationPresent(enclosedElement, ScreenData.class)) {
+                    screenDataElements.add(MoreElements.asVariable(enclosedElement));
+                }
+            }
+        }
     }
+
+    private void addNavigationParam(int group, Element element) {
+        List<VariableElement> elements = navigationParamsElements.get(group);
+        if (elements == null) {
+            elements = new ArrayList<>();
+            navigationParamsElements.put(group, elements);
+        }
+        elements.add(MoreElements.asVariable(element));
+    }
+
 
     /**
      * Find annotation that is itself annoted with @Scope
@@ -146,9 +196,9 @@ public class ScopeExtractor extends AbstractExtractor {
         return pathLayout;
     }
 
-    //    public List<VariableElement> getFromPathFieldsElements() {
-//        return fromPathFieldsElements;
-//    }
+    public VariableElement getNavigationResultElement() {
+        return navigationResultElement;
+    }
 
     public List<VariableElement> getConstructorsParamtersElements() {
         return constructorsParamtersElements;
@@ -156,5 +206,13 @@ public class ScopeExtractor extends AbstractExtractor {
 
     public List<SubscreensExtractor> getSubscreensExtractors() {
         return subscreensExtractors;
+    }
+
+    public List<VariableElement> getScreenDataElements() {
+        return screenDataElements;
+    }
+
+    public Map<Integer, List<VariableElement>> getNavigationParamsElements() {
+        return navigationParamsElements;
     }
 }

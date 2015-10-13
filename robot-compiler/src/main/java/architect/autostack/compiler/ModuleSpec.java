@@ -5,7 +5,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,15 +16,15 @@ public class ModuleSpec {
     private final ClassName className;
     private TypeName presenterTypeName;
     private AnnotationSpec scopeAnnotationSpec;
-    private final List<ParameterSpec> provideParameters;
-    private final List<ParameterSpec> internalParameters;
-    private final List<ParameterSpec> presenterArgs;
+    private final List<ParameterSpec> daggerParameterSpecs;
+    private final List<ParameterSpec> screenParameterSpecs;
+    private final List<ParameterSpec> allParameterSpecs;
 
     public ModuleSpec(ClassName className) {
         this.className = className;
-        provideParameters = new LinkedList<>();
-        internalParameters = new LinkedList<>();
-        presenterArgs = new LinkedList<>();
+        daggerParameterSpecs = new ArrayList<>();
+        screenParameterSpecs = new ArrayList<>();
+        allParameterSpecs = new ArrayList<>();
     }
 
     public ClassName getClassName() {
@@ -47,15 +47,15 @@ public class ModuleSpec {
         this.scopeAnnotationSpec = scopeAnnotationSpec;
     }
 
-    public List<ParameterSpec> getProvideParameters() {
-        return provideParameters;
+    public List<ParameterSpec> getDaggerParameterSpecs() {
+        return daggerParameterSpecs;
     }
 
-    public List<ParameterSpec> getInternalParameters() {
-        return internalParameters;
+    public List<ParameterSpec> getScreenParameterSpecs() {
+        return screenParameterSpecs;
     }
 
-    public List<ParameterSpec> getPresenterArgs() {
-        return presenterArgs;
+    public List<ParameterSpec> getAllParameterSpecs() {
+        return allParameterSpecs;
     }
 }

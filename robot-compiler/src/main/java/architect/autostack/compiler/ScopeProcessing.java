@@ -5,6 +5,7 @@ import com.google.auto.common.MoreTypes;
 import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 
@@ -12,7 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
@@ -21,12 +24,12 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import architect.robot.AutoScreen;
-import architect.robot.NavigationParam;
 import autodagger.AutoComponent;
 import autodagger.compiler.utils.AutoComponentClassNameUtil;
 import processorworkflow.AbstractComposer;
 import processorworkflow.AbstractProcessing;
 import processorworkflow.Errors;
+import processorworkflow.Logger;
 import processorworkflow.ProcessingBuilder;
 
 /**
@@ -121,33 +124,105 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
             }
 
             if (extractor.getSubscreensExtractors() != null && !extractor.getSubscreensExtractors().isEmpty()) {
-                List<SubscreenSpec> subscreenSpecs = new ArrayList<>(extractor.getSubscreensExtractors().size());
+                List<FieldSpec> subscreenSpecs = new ArrayList<>(extractor.getSubscreensExtractors().size());
                 for (SubscreensExtractor subscreensExtractor : extractor.getSubscreensExtractors()) {
-                    subscreenSpecs.add(new SubscreenSpec(subscreensExtractor.getName(), TypeName.get(subscreensExtractor.getTypeMirror())));
+                    subscreenSpecs.add(FieldSpec.builder(TypeName.get(subscreensExtractor.getTypeMirror()), subscreensExtractor.getName()).build());
                 }
                 spec.setSubscreenSpecs(subscreenSpecs);
+            }
+
+            List<FieldSpec> allFields = new ArrayList<>();
+
+            if (extractor.getNavigationResultElement() != null) {
+                spec.setNavigationResultSpec(FieldSpec.builder(TypeName.get(extractor.getNavigationResultElement().asType()), extractor.getNavigationResultElement().getSimpleName().toString()).build());
+                allFields.add(spec.getNavigationResultSpec());
+            }
+
+            if (extractor.getNavigationParamsElements() != null && !extractor.getNavigationParamsElements().isEmpty()) {
+                Set<String> addFields = new HashSet<>();
+                List<FieldSpec> fieldSpecs = new ArrayList<>();
+                List<List<ParameterSpec>> paramSpecs = new ArrayList<>();
+
+                for (Map.Entry<Integer, List<VariableElement>> entry : extractor.getNavigationParamsElements().entrySet()) {
+                    List<ParameterSpec> p = new ArrayList<>();
+                    for (VariableElement paramElement : entry.getValue()) {
+                        String name = paramElement.getSimpleName().toString();
+                        TypeName paramTypeName = TypeName.get(paramElement.asType());
+                        p.add(ParameterSpec.builder(paramTypeName, name).build());
+
+                        if (!addFields.contains(name)) {
+                            addFields.add(name);
+                            FieldSpec fieldSpec = FieldSpec.builder(paramTypeName, name).build();
+                            fieldSpecs.add(fieldSpec);
+                            allFields.add(fieldSpec);
+                        }
+                    }
+                    paramSpecs.add(p);
+                }
+                spec.setNavigationParamFieldSpecs(fieldSpecs);
+                spec.setNavigationParamConstructorSpecs(paramSpecs);
             }
 
             ModuleSpec moduleSpec = new ModuleSpec(moduleClassName);
             moduleSpec.setPresenterTypeName(presenterTypeName);
             moduleSpec.setScopeAnnotationSpec(spec.getScopeAnnotationSpec());
 
-            for (VariableElement e : extractor.getConstructorsParamtersElements()) {
-                ParameterSpec parameterSpec = ParameterSpec.builder(TypeName.get(e.asType()), e.getSimpleName().toString()).build();
-                moduleSpec.getPresenterArgs().add(parameterSpec);
 
-//              not supported for now:
-//              || extractor.getFromPathFieldsElements().contains(e)
-                if (MoreElements.isAnnotationPresent(e, NavigationParam.class)) {
-                    moduleSpec.getInternalParameters().add(parameterSpec);
+            for (VariableElement e : extractor.getConstructorsParamtersElements()) {
+                String name = e.getSimpleName().toString();
+                String screenFieldName = getMatchingFieldName(name, spec);
+
+                ParameterSpec parameterSpec = ParameterSpec.builder(TypeName.get(e.asType()), screenFieldName != null ? screenFieldName : name).build();
+                moduleSpec.getAllParameterSpecs().add(parameterSpec);
+
+                if (screenFieldName != null) {
+                    moduleSpec.getScreenParameterSpecs().add(parameterSpec);
                 } else {
-                    moduleSpec.getProvideParameters().add(parameterSpec);
+                    moduleSpec.getDaggerParameterSpecs().add(parameterSpec);
                 }
             }
 
             spec.setModuleSpec(moduleSpec);
 
             return spec;
+        }
+
+        private String getMatchingFieldName(String parameter, ScopeSpec spec) {
+            String name = getMatchingFieldName(parameter, spec.getNavigationResultSpec().name);
+            if (name != null) {
+                return name;
+            }
+
+            for (FieldSpec fieldSpec : spec.getNavigationParamFieldSpecs()) {
+                name = getMatchingFieldName(parameter, fieldSpec.name);
+                if (name != null) {
+                    return name;
+                }
+            }
+
+            return null;
+        }
+
+        private String getMatchingFieldName(String parameter, String field) {
+            if (field.equals(parameter)) {
+                return field;
+            }
+
+            if (field.startsWith("m") && field.length() > 1) {
+                if (parameter.equals(StringUtils.uncapitalize(field.substring(1)))) {
+                    return field;
+                }
+            }
+
+            return null;
+        }
+
+        private String convertToHungarian(String name) {
+            if (name.startsWith("m") && name.length() > 1) {
+                return StringUtils.uncapitalize(name.substring(1));
+            }
+
+            return null;
         }
 
         private ClassName buildClassName(Element element) {
@@ -163,7 +238,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
             if (StringUtils.isBlank(pkg)) {
                 errors.addInvalid("Package name " + pkg);
             }
-//            pkg = pkg + ".stackable";
+            pkg = pkg + ".screen";
 
             return ClassName.get(pkg, newName + "Screen");
         }

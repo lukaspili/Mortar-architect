@@ -3,7 +3,7 @@ package architect;
 import java.util.ArrayList;
 import java.util.List;
 
-import architect.nav.ReceivesNavigationResult;
+import architect.nav.HandlesNavigationResult;
 import mortar.MortarScope;
 
 /**
@@ -130,35 +130,27 @@ class Dispatcher {
     }
 
     void dispatch(List<History.Entry> e) {
-        dispatch(e, null, 0);
+        dispatch(e, 0);
     }
 
-    void dispatch(List<History.Entry> e, Object result) {
-        dispatch(e, result, 0);
-    }
-
-    void dispatch(List<History.Entry> e, Object result, int direction) {
+    void dispatch(List<History.Entry> e, int direction) {
         if (!active) return;
 
         for (int i = 0; i < e.size(); i++) {
             // add the result to the last entry only
-            entries.add(new Dispatch(e.get(i), i == e.size() - 1 ? result : null, direction));
+            entries.add(new Dispatch(e.get(i), direction));
         }
         startDispatch();
     }
 
     void dispatch(History.Entry entry) {
-        dispatch(entry, null, 0);
+        dispatch(entry, 0);
     }
 
-    void dispatch(History.Entry entry, Object result) {
-        dispatch(entry, result, 0);
-    }
-
-    void dispatch(History.Entry entry, Object result, int direction) {
+    void dispatch(History.Entry entry, int direction) {
         if (!active) return;
 
-        entries.add(new Dispatch(entry, result, direction));
+        entries.add(new Dispatch(entry, direction));
         startDispatch();
     }
 
@@ -204,13 +196,6 @@ class Dispatcher {
         Logger.d("Exit entry: %s - in history: %b", exitEntry, forward);
         Preconditions.checkNotNull(enterEntry, "Next entry cannot be null");
         Preconditions.checkNotNull(exitEntry, "Previous entry cannot be null");
-        Preconditions.checkArgument(!forward || dispatch.result == null, "In forward dispatch, there is no result");
-
-        if (dispatch.result != null) {
-            if (enterEntry.path instanceof ReceivesNavigationResult) {
-                ((ReceivesNavigationResult) enterEntry.path).onReceiveNavigationResult(dispatch.result);
-            }
-        }
 
 //        if (enterEntry.navigationResult != null) {
 //            Preconditions.checkArgument(!forward, "Enter entry result only if going back in history");
@@ -419,12 +404,10 @@ class Dispatcher {
 
     static class Dispatch {
         final History.Entry entry;
-        final Object result;
         final int direction;
 
-        public Dispatch(History.Entry entry, Object result, int direction) {
+        public Dispatch(History.Entry entry, int direction) {
             this.entry = entry;
-            this.result = result;
             this.direction = direction;
         }
     }

@@ -8,6 +8,8 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import architect.nav.HandlesNavigationResult;
+
 /**
  * Navigation history
  *
@@ -136,8 +138,21 @@ public class History {
      *
      * @return the killed entry
      */
-    Entry kill() {
-        return entries.remove(entries.size() - 1);
+    Entry kill(Object result) {
+        Entry killed = entries.remove(entries.size() - 1);
+        setResult(result);
+        return killed;
+    }
+
+    /**
+     * Set the result, or null if no result (result = null)
+     */
+    void setResult(Object result) {
+        Entry entry = entries.get(entries.size() - 1);
+        if (entry.path instanceof HandlesNavigationResult) {
+            //noinspection unchecked
+            ((HandlesNavigationResult) entry.path).setNavigationResult(result);
+        }
     }
 
     /**
@@ -145,7 +160,8 @@ public class History {
      *
      * @return the killed entries, in the historical order
      */
-    List<Entry> killAllButRoot() {
+    List<Entry> killAllButRoot(Object result) {
+        // nothing to kill
         if (entries.size() == 1) {
             return new ArrayList<>(0);
         }
@@ -159,6 +175,8 @@ public class History {
                 killed.add(entries.remove(i));
             }
         }
+
+        setResult(result);
 
         return killed;
     }

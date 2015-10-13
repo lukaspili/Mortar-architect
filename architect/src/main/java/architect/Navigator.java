@@ -78,7 +78,7 @@ public class Navigator implements Scoped {
      */
     public void push(ScreenPath path) {
         check();
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path, null, null), null, 0);
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, path, null, null), 0);
     }
 
     /**
@@ -86,7 +86,7 @@ public class Navigator implements Scoped {
      */
     public void push(ScreenPath... paths) {
         check();
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths), null, 0);
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, paths), 0);
     }
 
     /**
@@ -94,7 +94,7 @@ public class Navigator implements Scoped {
      */
     public void push(PathBuilder builder) {
         check();
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builder.path, builder.transition, builder.id), null, 0);
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builder.path, builder.transition, builder.id), 0);
     }
 
     /**
@@ -102,7 +102,7 @@ public class Navigator implements Scoped {
      */
     public void push(PathBuilder... builders) {
         check();
-        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builders), null, 0);
+        dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builders), 0);
     }
 
 
@@ -136,9 +136,9 @@ public class Navigator implements Scoped {
         checkWithDirection(viewTransitionDirection);
 
         List<History.Entry> entries = new ArrayList<>();
-        entries.add(history.kill());
+        entries.add(history.kill(null));
         entries.addAll(add(History.NAV_TYPE_PUSH, paths));
-        dispatcher.dispatch(entries, null, viewTransitionDirection);
+        dispatcher.dispatch(entries, viewTransitionDirection);
     }
 
     /**
@@ -169,9 +169,9 @@ public class Navigator implements Scoped {
         checkWithDirection(viewTransitionDirection);
 
         List<History.Entry> entries = new ArrayList<>();
-        entries.add(history.kill());
+        entries.add(history.kill(null));
         entries.addAll(add(History.NAV_TYPE_PUSH, builders));
-        dispatcher.dispatch(entries, null, viewTransitionDirection);
+        dispatcher.dispatch(entries, viewTransitionDirection);
     }
 
 
@@ -243,7 +243,7 @@ public class Navigator implements Scoped {
             return false;
         }
 
-        dispatcher.dispatch(history.kill(), result);
+        dispatcher.dispatch(history.kill(result));
         return true;
     }
 
@@ -257,7 +257,7 @@ public class Navigator implements Scoped {
             return false;
         }
 
-        dispatcher.dispatch(history.killAllButRoot(), result);
+        dispatcher.dispatch(history.killAllButRoot(result));
         return true;
     }
 
@@ -312,7 +312,7 @@ public class Navigator implements Scoped {
         checkWithDirection(viewTransitionDirection);
         List<History.Entry> entries = history.killAll();
         entries.addAll(add(History.NAV_TYPE_PUSH, paths));
-        dispatcher.dispatch(entries, null, viewTransitionDirection);
+        dispatcher.dispatch(entries, viewTransitionDirection);
     }
 
     /**
@@ -329,7 +329,7 @@ public class Navigator implements Scoped {
         checkWithDirection(viewTransitionDirection);
         List<History.Entry> entries = history.killAll();
         entries.addAll(add(History.NAV_TYPE_PUSH, builders));
-        dispatcher.dispatch(entries, null, viewTransitionDirection);
+        dispatcher.dispatch(entries, viewTransitionDirection);
     }
 
 
@@ -349,9 +349,9 @@ public class Navigator implements Scoped {
             if (step.path == null && step.builder == null) {
                 if (history.canKill()) {
                     if (step.type == Navigation.TYPE_BACK) {
-                        entries.add(history.kill());
+                        entries.add(history.kill(step.result));
                     } else {
-                        entries.addAll(history.killAllButRoot());
+                        entries.addAll(history.killAllButRoot(step.result));
                     }
                 }
             } else {
@@ -360,7 +360,7 @@ public class Navigator implements Scoped {
                         continue;
                     }
 
-                    entries.add(history.kill());
+                    entries.add(history.kill(null));
                 }
 
                 // push type for push and replace, modal for show
@@ -374,7 +374,7 @@ public class Navigator implements Scoped {
             }
         }
 
-        dispatcher.dispatch(entries, nav.result, viewTransitionDirection);
+        dispatcher.dispatch(entries, viewTransitionDirection);
     }
 
     private List<History.Entry> add(int navType, ScreenPath... paths) {

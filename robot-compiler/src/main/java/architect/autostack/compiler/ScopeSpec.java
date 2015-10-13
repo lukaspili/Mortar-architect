@@ -2,6 +2,8 @@ package architect.autostack.compiler;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 
 import java.util.List;
@@ -19,9 +21,12 @@ public class ScopeSpec {
     private TypeName daggerComponentTypeName;
     private TypeName parentComponentTypeName;
     private TypeName pathViewTypeName;
+    private FieldSpec navigationResultSpec;
     private AnnotationSpec scopeAnnotationSpec;
     private AnnotationSpec componentAnnotationSpec;
-    private List<SubscreenSpec> subscreenSpecs;
+    private List<FieldSpec> subscreenSpecs;
+    private List<FieldSpec> navigationParamFieldSpecs;
+    private List<List<ParameterSpec>> navigationParamConstructorSpecs;
 
     public ScopeSpec(ClassName className) {
         this.className = className;
@@ -87,6 +92,14 @@ public class ScopeSpec {
         this.pathViewTypeName = pathViewTypeName;
     }
 
+    public FieldSpec getNavigationResultSpec() {
+        return navigationResultSpec;
+    }
+
+    public void setNavigationResultSpec(FieldSpec navigationResultSpec) {
+        this.navigationResultSpec = navigationResultSpec;
+    }
+
     public AnnotationSpec getScopeAnnotationSpec() {
         return scopeAnnotationSpec;
     }
@@ -103,11 +116,27 @@ public class ScopeSpec {
         this.componentAnnotationSpec = componentAnnotationSpec;
     }
 
-    public List<SubscreenSpec> getSubscreenSpecs() {
+    public List<FieldSpec> getSubscreenSpecs() {
         return subscreenSpecs;
     }
 
-    public void setSubscreenSpecs(List<SubscreenSpec> subscreenSpecs) {
+    public void setSubscreenSpecs(List<FieldSpec> subscreenSpecs) {
         this.subscreenSpecs = subscreenSpecs;
+    }
+
+    public List<FieldSpec> getNavigationParamFieldSpecs() {
+        return navigationParamFieldSpecs;
+    }
+
+    public void setNavigationParamFieldSpecs(List<FieldSpec> navigationParamFieldSpecs) {
+        this.navigationParamFieldSpecs = navigationParamFieldSpecs;
+    }
+
+    public List<List<ParameterSpec>> getNavigationParamConstructorSpecs() {
+        return navigationParamConstructorSpecs;
+    }
+
+    public void setNavigationParamConstructorSpecs(List<List<ParameterSpec>> navigationParamConstructorSpecs) {
+        this.navigationParamConstructorSpecs = navigationParamConstructorSpecs;
     }
 }
