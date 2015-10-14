@@ -45,7 +45,7 @@ public class HomeScreen implements ScreenPath, HandlesNavigationResult<String> {
     }
 
     @ParcelConstructor
-    public HomeScreen(HomePresenter.HomeState state, BannerScreen bannerScreen, BannerScreen bannerScreen2, String name, String result) {
+    HomeScreen(HomePresenter.HomeState state, BannerScreen bannerScreen, BannerScreen bannerScreen2, String name, String result) {
         this.state = state;
         this.bannerScreen = bannerScreen;
         this.bannerScreen2 = bannerScreen2;

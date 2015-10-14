@@ -12,6 +12,7 @@ import architect.robot.DaggerService;
 import autodagger.AutoInjector;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -32,5 +33,10 @@ public class SlidePageView extends PresentedFrameLayout<SlidePagePresenter> {
 
     public void configure(String title) {
         titleTextView.setText(title);
+    }
+
+    @OnClick(R.id.page_button)
+    void buttonClick() {
+        presenter.buttonClick();
     }
 }

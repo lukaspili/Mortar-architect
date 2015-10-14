@@ -4,8 +4,10 @@ import android.os.Bundle;
 
 import com.mortarnav.DaggerScope;
 import com.mortarnav.deps.WithActivityDependencies;
+import com.mortarnav.mvp.home.HomeScreen;
 import com.mortarnav.mvp.slides.SlidesPresenter;
 
+import architect.Navigator;
 import architect.robot.AutoScreen;
 import architect.robot.NavigationParam;
 import autodagger.AutoComponent;
@@ -31,5 +33,9 @@ public class SlidePagePresenter extends ViewPresenter<SlidePageView> {
     @Override
     protected void onLoad(Bundle savedInstanceState) {
         getView().configure(name);
+    }
+
+    public void buttonClick() {
+        Navigator.get(getView()).push(new HomeScreen("New Home from SlidePage"));
     }
 }
