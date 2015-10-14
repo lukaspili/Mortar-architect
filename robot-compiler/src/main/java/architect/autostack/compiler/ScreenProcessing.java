@@ -29,6 +29,7 @@ import autodagger.compiler.utils.AutoComponentClassNameUtil;
 import processorworkflow.AbstractComposer;
 import processorworkflow.AbstractProcessing;
 import processorworkflow.Errors;
+import processorworkflow.Logger;
 import processorworkflow.ProcessingBuilder;
 
 /**
@@ -89,26 +90,33 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
             spec.setDaggerComponentTypeName(ClassName.get(spec.getClassName().packageName(), String.format("Dagger%sComponent", spec.getClassName().simpleName())));
 
             // dagger2 builder dependency method name and type can have 3 diff values
-            // - name and type of the generated scope if dependency is annotated with @AutoScope
+            // - name and type of the generated scope if dependency is annotated with @AutoScreen
             // - name and type of the target if dependency is annotated with @AutoComponent (valid also for #2, so check #2 condition first)
             // - name and type of the class if dependency is a manually written component
             String methodName;
             TypeName typeName;
+            TypeName parentTypeName;
             Element daggerDependencyElement = MoreTypes.asElement(extractor.getComponentDependency());
             if (MoreElements.isAnnotationPresent(daggerDependencyElement, AutoScreen.class)) {
                 ClassName daggerDependencyScopeClassName = buildClassName(daggerDependencyElement);
                 ClassName daggerDependencyClassName = AutoComponentClassNameUtil.getComponentClassName(daggerDependencyScopeClassName);
                 methodName = StringUtils.uncapitalize(daggerDependencyClassName.simpleName());
                 typeName = daggerDependencyClassName;
+                parentTypeName = ClassName.get(daggerDependencyClassName.packageName(), daggerDependencyClassName.simpleName().substring(0, daggerDependencyClassName.simpleName().length() - "Component".length()));
             } else if (MoreElements.isAnnotationPresent(daggerDependencyElement, AutoComponent.class)) {
+                ClassName daggerDependencyClassName = AutoComponentClassNameUtil.getComponentClassName(daggerDependencyElement);
                 methodName = StringUtils.uncapitalize(daggerDependencyElement.getSimpleName().toString()) + "Component";
-                typeName = AutoComponentClassNameUtil.getComponentClassName(daggerDependencyElement);
+                typeName = daggerDependencyClassName;
+                parentTypeName = ClassName.get(daggerDependencyClassName.packageName(), daggerDependencyClassName.simpleName().substring(0, daggerDependencyClassName.simpleName().length() - "Component".length()));
             } else {
                 methodName = StringUtils.uncapitalize(daggerDependencyElement.getSimpleName().toString());
                 typeName = TypeName.get(extractor.getComponentDependency());
+                parentTypeName = typeName;
             }
             spec.setDaggerComponentBuilderDependencyTypeName(typeName);
             spec.setDaggerComponentBuilderDependencyMethodName(methodName);
+            spec.setParentTypeName(parentTypeName);
+            Logger.d("Component parent typename = %s", parentTypeName);
 
             if (extractor.getScopeAnnotationTypeMirror() != null) {
                 spec.setScopeAnnotationSpec(AnnotationSpec.get(extractor.getScopeAnnotationTypeMirror()));
@@ -198,22 +206,28 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
          * Get a matching field name in navigation result, navigation params, screen data
          */
         private String getMatchingFieldName(String parameter, ScreenSpec spec) {
-            String name = getMatchingFieldName(parameter, spec.getNavigationResultSpec().name);
-            if (name != null) {
-                return name;
-            }
-
-            for (FieldSpec fieldSpec : spec.getNavigationParamFieldSpecs()) {
-                name = getMatchingFieldName(parameter, fieldSpec.name);
+            if (spec.getNavigationResultSpec() != null) {
+                String name = getMatchingFieldName(parameter, spec.getNavigationResultSpec().name);
                 if (name != null) {
                     return name;
                 }
             }
 
-            for (FieldSpec fieldSpec : spec.getScreenDataSpecs()) {
-                name = getMatchingFieldName(parameter, fieldSpec.name.substring(ScreenComposer.DATA_FIELD_PREFIX.length()));
-                if (name != null) {
-                    return ScreenComposer.DATA_FIELD_PREFIX + name;
+            if (spec.getNavigationParamFieldSpecs() != null) {
+                for (FieldSpec fieldSpec : spec.getNavigationParamFieldSpecs()) {
+                    String name = getMatchingFieldName(parameter, fieldSpec.name);
+                    if (name != null) {
+                        return name;
+                    }
+                }
+            }
+
+            if (spec.getScreenDataSpecs() != null) {
+                for (FieldSpec fieldSpec : spec.getScreenDataSpecs()) {
+                    String name = getMatchingFieldName(parameter, fieldSpec.name.substring(ScreenComposer.DATA_FIELD_PREFIX.length()));
+                    if (name != null) {
+                        return ScreenComposer.DATA_FIELD_PREFIX + name;
+                    }
                 }
             }
 

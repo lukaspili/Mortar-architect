@@ -18,11 +18,9 @@ ext.deps = [
         autodagger2                  : 'com.github.lukaspili.autodagger2:autodagger2:1.1',
         autodagger2_compiler         : 'com.github.lukaspili.autodagger2:autodagger2-compiler:1.1',
         autodagger2_compiler_utils   : 'com.github.lukaspili.autodagger2:autodagger2-compiler-utils:1.1',
-        parcelablepls                : 'com.hannesdorfmann.parcelableplease:annotation:1.0.1',
-        parcelablepls_compiler       : 'com.hannesdorfmann.parcelableplease:processor:1.0.1',
         processor_workflow           : 'com.github.lukaspili.processor-workflow:processor-workflow:1.0.1',
-        parceler                     : 'org.parceler:parceler:1.0.1',
-        parceler_api                 : 'org.parceler:parceler-api:1.0.1'
+        parceler                     : 'org.parceler:parceler:1.0.3',
+        parceler_api                 : 'org.parceler:parceler-api:1.0.3'
 ]
 ext.minSdkVersion = 14
 ext.targetSdkVersion = 22

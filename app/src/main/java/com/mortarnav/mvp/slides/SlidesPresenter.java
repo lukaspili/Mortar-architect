@@ -1,11 +1,17 @@
 package com.mortarnav.mvp.slides;
 
+import android.os.Bundle;
+
 import com.mortarnav.DaggerScope;
 import com.mortarnav.StandardAutoComponent;
 import com.mortarnav.deps.RestClient;
 import com.mortarnav.mvp.banner.BannerScreen;
+import com.mortarnav.mvp.slides.page.screen.SlidePageScreen;
 
 import org.parceler.Parcel;
+import org.parceler.ParcelConstructor;
+
+import java.util.Random;
 
 import architect.robot.AutoScreen;
 import architect.robot.ContainsSubscreen;
@@ -14,6 +20,7 @@ import architect.robot.NavigationResult;
 import architect.robot.ScreenData;
 import autodagger.AutoComponent;
 import mortar.ViewPresenter;
+import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -26,7 +33,7 @@ import mortar.ViewPresenter;
         }
 )
 @DaggerScope(SlidesPresenter.class)
-public class SlidesPresenter extends ViewPresenter {
+public class SlidesPresenter extends ViewPresenter<SlidesView> {
 
     private final RestClient restClient;
 
@@ -54,8 +61,28 @@ public class SlidesPresenter extends ViewPresenter {
         this.result = result;
     }
 
+    @Override
+    protected void onLoad(Bundle savedInstanceState) {
+        Timber.d("SlidesPresenter onLoad() with random = %d", mState.random);
+
+        getView().show(mState.pages);
+    }
+
     @Parcel(parcelsIndex = false)
     public static class State {
 
+        int random;
+        SlidePageScreen[] pages;
+
+        public State() {
+            random = new Random().nextInt(100);
+            pages = new SlidePageScreen[]{new SlidePageScreen("page 1"), new SlidePageScreen("page 2"), new SlidePageScreen("page 3")};
+        }
+
+        @ParcelConstructor
+        public State(int random, SlidePageScreen[] pages) {
+            this.random = random;
+            this.pages = pages;
+        }
     }
 }

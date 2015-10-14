@@ -52,9 +52,4 @@ public class BannerScreen implements Screen {
             return new BannerPresenter(bannerState);
         }
     }
-
-//    public interface StateWithBannerScreen {
-//
-//        BannerScreen getBannerScreen();
-//    }
 }

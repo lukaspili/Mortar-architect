@@ -20,6 +20,7 @@ public class ScreenSpec {
     private TypeName daggerComponentBuilderDependencyTypeName;
     private TypeName daggerComponentTypeName;
     private TypeName parentComponentTypeName;
+    private TypeName parentTypeName;
     private TypeName pathViewTypeName;
     private FieldSpec navigationResultSpec;
     private AnnotationSpec scopeAnnotationSpec;
@@ -83,6 +84,14 @@ public class ScreenSpec {
 
     public void setParentComponentTypeName(TypeName parentComponentTypeName) {
         this.parentComponentTypeName = parentComponentTypeName;
+    }
+
+    public TypeName getParentTypeName() {
+        return parentTypeName;
+    }
+
+    public void setParentTypeName(TypeName parentTypeName) {
+        this.parentTypeName = parentTypeName;
     }
 
     public TypeName getPathViewTypeName() {

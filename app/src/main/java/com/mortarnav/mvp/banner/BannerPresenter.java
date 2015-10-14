@@ -18,9 +18,7 @@ import timber.log.Timber;
 @DaggerScope(BannerPresenter.class)
 public class BannerPresenter extends ViewPresenter<BannerView> {
 
-    //    @ScreenData
     private final BannerState state;
-
 
     public BannerPresenter(BannerState state) {
         this.state = state;

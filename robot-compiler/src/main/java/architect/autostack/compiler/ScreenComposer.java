@@ -64,7 +64,6 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
                 .addAnnotation(spec.getComponentAnnotationSpec())
                 .addAnnotation(AnnotationSpec.builder(Parcel.class).addMember("parcelsIndex", "false").build());
 
-
 //        for (ParameterSpec parameterSpec : spec.getModuleSpec().getInternalParameters()) {
 //            fieldSpecs.add(FieldSpec.builder(parameterSpec.type, parameterSpec.name)
 //                    .build());
@@ -74,16 +73,13 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
         CodeBlock.Builder configureScopeSpecCodeBuilder = CodeBlock.builder()
                 .add("$T.configureScope(builder, $T.class, $T.builder()\n", DAGGERSERVICE_CLS, spec.getClassName(), spec.getDaggerComponentTypeName())
                 .indent().indent()
-                .add(".$L($T.<$T>getTyped(parentScope, $T.class))\n", spec.getDaggerComponentBuilderDependencyMethodName(), DAGGERSERVICE_CLS, spec.getDaggerComponentBuilderDependencyTypeName(), spec.getParentComponentTypeName())
+                .add(".$L($T.<$T>getTyped(parentScope, $T.class))\n", spec.getDaggerComponentBuilderDependencyMethodName(), DAGGERSERVICE_CLS, spec.getDaggerComponentBuilderDependencyTypeName(), spec.getParentTypeName())
                 .add(".module(new Module())\n")
                 .add(".build());\n")
                 .unindent().unindent();
 
         boolean constructorShouldCallInit = false;
         CodeBlock.Builder initCodeBlockBuider = CodeBlock.builder();
-
-        List<ParameterSpec> parcelConstructorParameterSpecs = new ArrayList<>();
-        CodeBlock.Builder parcelConstructorCodeBlockBuider = CodeBlock.builder();
 
         // subscreens
         if (spec.getSubscreenSpecs() != null && !spec.getSubscreenSpecs().isEmpty()) {
@@ -99,9 +95,6 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
 
                 // every subscreen must be initialized
                 initCodeBlockBuider.addStatement("this.$L = new $T()", subscreenSpec.name, subscreenSpec.type);
-
-                parcelConstructorParameterSpecs.add(ParameterSpec.builder(subscreenSpec.type, subscreenSpec.name).build());
-                parcelConstructorCodeBlockBuider.addStatement("this.$L = $L", subscreenSpec.name, subscreenSpec.name);
             }
 
             subscreensBuilder.add(".build());\n").unindent();
@@ -111,6 +104,10 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
         // screen data
         if (spec.getScreenDataSpecs() != null && !spec.getScreenDataSpecs().isEmpty()) {
             fieldSpecs.addAll(spec.getScreenDataSpecs());
+
+            for (FieldSpec fieldSpec : spec.getScreenDataSpecs()) {
+                initCodeBlockBuider.add("this.$L = new $T();\n", fieldSpec.name, fieldSpec.type);
+            }
         }
 
         // navigation result
@@ -124,10 +121,9 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
                     .addParameter(spec.getNavigationResultSpec().type, spec.getNavigationResultSpec().name)
                     .addStatement("this.$L = $L", spec.getNavigationResultSpec().name, spec.getNavigationResultSpec().name)
                     .build());
-
-            parcelConstructorParameterSpecs.add(ParameterSpec.builder(spec.getNavigationResultSpec().type, spec.getNavigationResultSpec().name).build());
-            parcelConstructorCodeBlockBuider.addStatement("this.$L = $L", spec.getNavigationResultSpec().name, spec.getNavigationResultSpec().name);
         }
+
+        final MethodSpec parcelConstructorMethodSpec = buildParcelConstructor(spec);
 
         // navigation param
         if (spec.getNavigationParamFieldSpecs() != null && !spec.getNavigationParamFieldSpecs().isEmpty()) {
@@ -142,16 +138,16 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
                     codeBlockBuilder.addStatement("init()");
                 }
 
-                methodSpecs.add(MethodSpec.constructorBuilder()
+                MethodSpec.Builder b = MethodSpec.constructorBuilder()
                         .addModifiers(Modifier.PUBLIC)
                         .addParameters(parameterSpecs)
-                        .addCode(codeBlockBuilder.build())
-                        .build());
-            }
+                        .addCode(codeBlockBuilder.build());
 
-            for (FieldSpec fieldSpec : spec.getNavigationParamFieldSpecs()) {
-                parcelConstructorParameterSpecs.add(ParameterSpec.builder(fieldSpec.type, fieldSpec.name).build());
-                parcelConstructorCodeBlockBuider.addStatement("this.$L = $L", fieldSpec.name, fieldSpec.name);
+                if (parcelConstructorMethodSpec == null && spec.getNavigationParamConstructorSpecs().size() == 1) {
+                    b.addAnnotation(ParcelConstructor.class);
+                }
+
+                methodSpecs.add(b.build());
             }
         }
 
@@ -161,13 +157,8 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
                     .build());
         }
 
-        // parcel constructor
-        if (!parcelConstructorParameterSpecs.isEmpty()) {
-            methodSpecs.add(MethodSpec.constructorBuilder()
-                    .addAnnotation(ParcelConstructor.class)
-                    .addParameters(parcelConstructorParameterSpecs)
-                    .addCode(parcelConstructorCodeBlockBuider.build())
-                    .build());
+        if (parcelConstructorMethodSpec != null) {
+            methodSpecs.add(parcelConstructorMethodSpec);
         }
 
         methodSpecs.add(MethodSpec.methodBuilder("configureScope")
@@ -178,10 +169,12 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
                 .addCode(configureScopeSpecCodeBuilder.build())
                 .build());
 
-        methodSpecs.add(MethodSpec.methodBuilder("init")
-                .addModifiers(Modifier.PRIVATE)
-                .addCode(initCodeBlockBuider.build())
-                .build());
+        if (constructorShouldCallInit) {
+            methodSpecs.add(MethodSpec.methodBuilder("init")
+                    .addModifiers(Modifier.PRIVATE)
+                    .addCode(initCodeBlockBuider.build())
+                    .build());
+        }
 
         builder.addType(buildModule(spec.getModuleSpec()))
                 .addMethods(methodSpecs)
@@ -211,6 +204,57 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
         }
 
         return builder.build();
+    }
+
+    /**
+     * Build the parcel constructor if necessary, otherwise return null
+     * When returning null, and if there a non default constructor, the latter should be annotated
+     * with @ParcelConstructor
+     */
+    private MethodSpec buildParcelConstructor(ScreenSpec spec) {
+        List<ParameterSpec> parcelConstructorParameterSpecs = new ArrayList<>();
+        CodeBlock.Builder parcelConstructorCodeBlockBuider = CodeBlock.builder();
+
+        if (spec.getSubscreenSpecs() != null && !spec.getSubscreenSpecs().isEmpty()) {
+            for (FieldSpec subscreenSpec : spec.getSubscreenSpecs()) {
+                parcelConstructorParameterSpecs.add(ParameterSpec.builder(subscreenSpec.type, subscreenSpec.name).build());
+                parcelConstructorCodeBlockBuider.addStatement("this.$L = $L", subscreenSpec.name, subscreenSpec.name);
+            }
+        }
+
+        if (spec.getScreenDataSpecs() != null && !spec.getScreenDataSpecs().isEmpty()) {
+            for (FieldSpec dataSpec : spec.getScreenDataSpecs()) {
+                parcelConstructorParameterSpecs.add(ParameterSpec.builder(dataSpec.type, dataSpec.name).build());
+                parcelConstructorCodeBlockBuider.addStatement("this.$L = $L", dataSpec.name, dataSpec.name);
+            }
+        }
+
+        if (spec.getNavigationParamFieldSpecs() != null && !spec.getNavigationParamFieldSpecs().isEmpty()) {
+            for (FieldSpec fieldSpec : spec.getNavigationParamFieldSpecs()) {
+                parcelConstructorParameterSpecs.add(ParameterSpec.builder(fieldSpec.type, fieldSpec.name).build());
+                parcelConstructorCodeBlockBuider.addStatement("this.$L = $L", fieldSpec.name, fieldSpec.name);
+            }
+        }
+
+        if (spec.getNavigationResultSpec() != null) {
+            parcelConstructorParameterSpecs.add(ParameterSpec.builder(spec.getNavigationResultSpec().type, spec.getNavigationResultSpec().name).build());
+            parcelConstructorCodeBlockBuider.addStatement("this.$L = $L", spec.getNavigationResultSpec().name, spec.getNavigationResultSpec().name);
+        }
+
+        if (parcelConstructorParameterSpecs.isEmpty()) {
+            return null;
+        }
+
+        if (spec.getNavigationParamConstructorSpecs().size() == 1 &&
+                spec.getNavigationParamConstructorSpecs().get(0).size() == parcelConstructorParameterSpecs.size()) {
+            return null;
+        }
+
+        return MethodSpec.constructorBuilder()
+                .addAnnotation(ParcelConstructor.class)
+                .addParameters(parcelConstructorParameterSpecs)
+                .addCode(parcelConstructorCodeBlockBuider.build())
+                .build();
     }
 
     private TypeSpec buildModule(ModuleSpec spec) {
@@ -245,9 +289,5 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
 
     private String getSubscreenName(String name) {
         return name.substring(SUBSCREEN_FIELD_PREFIX.length());
-    }
-
-    private String getScreenDataName(String name) {
-        return name.substring(DATA_FIELD_PREFIX.length());
     }
 }
