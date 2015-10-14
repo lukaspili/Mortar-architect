@@ -24,11 +24,11 @@ public class AnnotationProcessor extends AbstractProcessor<Void> {
     @Override
     protected LinkedList<AbstractProcessing> processings() {
         LinkedList<AbstractProcessing> processings = new LinkedList<>();
-        processings.add(new ScopeProcessing(elements, types, errors, null));
+        processings.add(new ScreenProcessing(elements, types, errors, null));
         return processings;
     }
 
     public AnnotationProcessor() {
-        Logger.init("AutoStack Processor", true);
+        Logger.init("Robot Processor", true);
     }
 }

@@ -30,7 +30,7 @@ import processorworkflow.Logger;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScopeExtractor extends AbstractExtractor {
+public class ScreenExtractor extends AbstractExtractor {
 
     private static final String COMPONENT = "component";
     private static final String PATH_VIEW = "pathView";
@@ -47,7 +47,7 @@ public class ScopeExtractor extends AbstractExtractor {
     private List<VariableElement> screenDataElements;
     private Map<Integer, List<VariableElement>> navigationParamsElements;
 
-    public ScopeExtractor(Element element, Types types, Elements elements, Errors errors) {
+    public ScreenExtractor(Element element, Types types, Elements elements, Errors errors) {
         super(element, types, elements, errors);
 
         Logger.d("Extract %s", element.getSimpleName());

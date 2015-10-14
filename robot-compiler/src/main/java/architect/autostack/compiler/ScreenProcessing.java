@@ -34,9 +34,9 @@ import processorworkflow.ProcessingBuilder;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
+public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
 
-    public ScopeProcessing(Elements elements, Types types, Errors errors, Void aVoid) {
+    public ScreenProcessing(Elements elements, Types types, Errors errors, Void aVoid) {
         super(elements, types, errors, aVoid);
     }
 
@@ -48,12 +48,12 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
 
     @Override
     public boolean processElement(Element element, Errors.ElementErrors elementErrors) {
-        ScopeExtractor extractor = new ScopeExtractor(element, types, elements, errors);
+        ScreenExtractor extractor = new ScreenExtractor(element, types, elements, errors);
         if (errors.hasErrors()) {
             return false;
         }
 
-        ScopeSpec spec = new ElementBuilder(extractor, errors).build();
+        ScreenSpec spec = new ElementBuilder(extractor, errors).build();
         if (errors.hasErrors()) {
             return false;
         }
@@ -63,19 +63,19 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
     }
 
     @Override
-    public AbstractComposer<ScopeSpec> createComposer() {
-        return new ScopeComposer(specs);
+    public AbstractComposer<ScreenSpec> createComposer() {
+        return new ScreenComposer(specs);
     }
 
-    private class ElementBuilder extends ProcessingBuilder<ScopeExtractor, ScopeSpec> {
+    private class ElementBuilder extends ProcessingBuilder<ScreenExtractor, ScreenSpec> {
 
-        public ElementBuilder(ScopeExtractor extractor, Errors errors) {
+        public ElementBuilder(ScreenExtractor extractor, Errors errors) {
             super(extractor, errors);
         }
 
         @Override
-        protected ScopeSpec build() {
-            architect.autostack.compiler.ScopeSpec spec = new ScopeSpec(buildClassName(extractor.getElement()));
+        protected ScreenSpec build() {
+            ScreenSpec spec = new ScreenSpec(buildClassName(extractor.getElement()));
             spec.setParentComponentTypeName(TypeName.get(extractor.getComponentDependency()));
 
             TypeName presenterTypeName = TypeName.get(extractor.getElement().asType());
@@ -125,7 +125,7 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
             if (extractor.getSubscreensExtractors() != null && !extractor.getSubscreensExtractors().isEmpty()) {
                 List<FieldSpec> subscreenSpecs = new ArrayList<>(extractor.getSubscreensExtractors().size());
                 for (SubscreensExtractor subscreensExtractor : extractor.getSubscreensExtractors()) {
-                    subscreenSpecs.add(FieldSpec.builder(TypeName.get(subscreensExtractor.getTypeMirror()), ScopeComposer.SUBSCREEN_FIELD_PREFIX + subscreensExtractor.getName()).build());
+                    subscreenSpecs.add(FieldSpec.builder(TypeName.get(subscreensExtractor.getTypeMirror()), ScreenComposer.SUBSCREEN_FIELD_PREFIX + subscreensExtractor.getName()).build());
                 }
                 spec.setSubscreenSpecs(subscreenSpecs);
             }
@@ -162,6 +162,14 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
                 spec.setNavigationParamConstructorSpecs(paramSpecs);
             }
 
+            if (extractor.getScreenDataElements() != null && !extractor.getScreenDataElements().isEmpty()) {
+                List<FieldSpec> screenDataSpecs = new ArrayList<>();
+                for (VariableElement screenDataElement : extractor.getScreenDataElements()) {
+                    screenDataSpecs.add(FieldSpec.builder(TypeName.get(screenDataElement.asType()), ScreenComposer.DATA_FIELD_PREFIX + screenDataElement.getSimpleName().toString()).build());
+                }
+                spec.setScreenDataSpecs(screenDataSpecs);
+            }
+
             ModuleSpec moduleSpec = new ModuleSpec(moduleClassName);
             moduleSpec.setPresenterTypeName(presenterTypeName);
             moduleSpec.setScopeAnnotationSpec(spec.getScopeAnnotationSpec());
@@ -186,7 +194,10 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
             return spec;
         }
 
-        private String getMatchingFieldName(String parameter, ScopeSpec spec) {
+        /**
+         * Get a matching field name in navigation result, navigation params, screen data
+         */
+        private String getMatchingFieldName(String parameter, ScreenSpec spec) {
             String name = getMatchingFieldName(parameter, spec.getNavigationResultSpec().name);
             if (name != null) {
                 return name;
@@ -199,9 +210,20 @@ public class ScopeProcessing extends AbstractProcessing<ScopeSpec, Void> {
                 }
             }
 
+            for (FieldSpec fieldSpec : spec.getScreenDataSpecs()) {
+                name = getMatchingFieldName(parameter, fieldSpec.name.substring(ScreenComposer.DATA_FIELD_PREFIX.length()));
+                if (name != null) {
+                    return ScreenComposer.DATA_FIELD_PREFIX + name;
+                }
+            }
+
             return null;
         }
 
+        /**
+         * Get a matching name between the parameter name and the field name
+         * Take in account the hungarian notation
+         */
         private String getMatchingFieldName(String parameter, String field) {
             if (field.equals(parameter)) {
                 return field;

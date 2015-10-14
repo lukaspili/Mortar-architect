@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScopeSpec {
+public class ScreenSpec {
 
     private ClassName className;
     private ModuleSpec moduleSpec;
@@ -26,9 +26,10 @@ public class ScopeSpec {
     private AnnotationSpec componentAnnotationSpec;
     private List<FieldSpec> subscreenSpecs;
     private List<FieldSpec> navigationParamFieldSpecs;
+    private List<FieldSpec> screenDataSpecs;
     private List<List<ParameterSpec>> navigationParamConstructorSpecs;
 
-    public ScopeSpec(ClassName className) {
+    public ScreenSpec(ClassName className) {
         this.className = className;
     }
 
@@ -130,6 +131,14 @@ public class ScopeSpec {
 
     public void setNavigationParamFieldSpecs(List<FieldSpec> navigationParamFieldSpecs) {
         this.navigationParamFieldSpecs = navigationParamFieldSpecs;
+    }
+
+    public List<FieldSpec> getScreenDataSpecs() {
+        return screenDataSpecs;
+    }
+
+    public void setScreenDataSpecs(List<FieldSpec> screenDataSpecs) {
+        this.screenDataSpecs = screenDataSpecs;
     }
 
     public List<List<ParameterSpec>> getNavigationParamConstructorSpecs() {

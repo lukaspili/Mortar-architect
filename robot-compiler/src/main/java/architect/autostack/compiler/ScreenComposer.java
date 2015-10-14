@@ -28,7 +28,7 @@ import processorworkflow.AbstractComposer;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ScopeComposer extends AbstractComposer<ScopeSpec> {
+public class ScreenComposer extends AbstractComposer<ScreenSpec> {
 
     private static final ClassName SCREEN_CLS = ClassName.get("architect", "Screen");
     private static final ClassName PATH_CLS = ClassName.get("architect", "ScreenPath");
@@ -44,17 +44,17 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
     static final String SUBSCREEN_FIELD_PREFIX = "_subscreen_";
     static final String DATA_FIELD_PREFIX = "_data_";
 
-    public ScopeComposer(List<ScopeSpec> specs) {
+    public ScreenComposer(List<ScreenSpec> specs) {
         super(specs);
     }
 
     @Override
-    protected JavaFile compose(ScopeSpec spec) {
+    protected JavaFile compose(ScreenSpec spec) {
         TypeSpec typeSpec = build(spec);
         return JavaFile.builder(spec.getClassName().packageName(), typeSpec).build();
     }
 
-    private TypeSpec build(ScopeSpec spec) {
+    private TypeSpec build(ScreenSpec spec) {
         List<MethodSpec> methodSpecs = new ArrayList<>();
         List<FieldSpec> fieldSpecs = new ArrayList<>();
 
@@ -106,6 +106,11 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
 
             subscreensBuilder.add(".build());\n").unindent();
             configureScopeSpecCodeBuilder.add(subscreensBuilder.build());
+        }
+
+        // screen data
+        if (spec.getScreenDataSpecs() != null && !spec.getScreenDataSpecs().isEmpty()) {
+            fieldSpecs.addAll(spec.getScreenDataSpecs());
         }
 
         // navigation result
@@ -240,5 +245,9 @@ public class ScopeComposer extends AbstractComposer<ScopeSpec> {
 
     private String getSubscreenName(String name) {
         return name.substring(SUBSCREEN_FIELD_PREFIX.length());
+    }
+
+    private String getScreenDataName(String name) {
+        return name.substring(DATA_FIELD_PREFIX.length());
     }
 }
