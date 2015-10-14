@@ -29,6 +29,6 @@ public class AnnotationProcessor extends AbstractProcessor<Void> {
     }
 
     public AnnotationProcessor() {
-        Logger.init("Robot Processor", true);
+        Logger.init("Robot Processor", false);
     }
 }
