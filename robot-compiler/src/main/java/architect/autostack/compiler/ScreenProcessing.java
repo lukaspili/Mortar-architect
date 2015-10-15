@@ -29,7 +29,6 @@ import autodagger.compiler.utils.AutoComponentClassNameUtil;
 import processorworkflow.AbstractComposer;
 import processorworkflow.AbstractProcessing;
 import processorworkflow.Errors;
-import processorworkflow.Logger;
 import processorworkflow.ProcessingBuilder;
 
 /**
@@ -118,7 +117,6 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
             spec.setDaggerComponentBuilderDependencyTypeName(typeName);
             spec.setDaggerComponentBuilderDependencyMethodName(methodName);
             spec.setParentTypeName(parentTypeName);
-            Logger.d("Component parent typename = %s", parentTypeName);
 
             if (extractor.getScopeAnnotationTypeMirror() != null) {
                 spec.setScopeAnnotationSpec(AnnotationSpec.get(extractor.getScopeAnnotationTypeMirror()));
@@ -142,7 +140,6 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
                     } else {
                         tn = TypeName.get(subscreensExtractor.getTypeMirror());
                     }
-                    Logger.d("REF subscreen: %s", tn);
                     subscreenSpecs.add(FieldSpec.builder(tn, ScreenComposer.SUBSCREEN_FIELD_PREFIX + subscreensExtractor.getName()).build());
                 }
                 spec.setSubscreenSpecs(subscreenSpecs);
