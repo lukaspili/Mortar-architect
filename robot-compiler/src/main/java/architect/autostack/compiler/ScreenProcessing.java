@@ -80,6 +80,8 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
             spec.setParentComponentTypeName(TypeName.get(extractor.getComponentDependency()));
 
             TypeName presenterTypeName = TypeName.get(extractor.getElement().asType());
+            spec.setPresenterTypeName(presenterTypeName);
+
             ClassName moduleClassName = ClassName.get(spec.getClassName().packageName(), spec.getClassName().simpleName(), "Module");
 
             AnnotationSpec.Builder builder = AnnotationSpec.get(extractor.getComponentAnnotationTypeMirror()).toBuilder();
@@ -133,7 +135,15 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
             if (extractor.getSubscreensExtractors() != null && !extractor.getSubscreensExtractors().isEmpty()) {
                 List<FieldSpec> subscreenSpecs = new ArrayList<>(extractor.getSubscreensExtractors().size());
                 for (SubscreensExtractor subscreensExtractor : extractor.getSubscreensExtractors()) {
-                    subscreenSpecs.add(FieldSpec.builder(TypeName.get(subscreensExtractor.getTypeMirror()), ScreenComposer.SUBSCREEN_FIELD_PREFIX + subscreensExtractor.getName()).build());
+                    Element e = MoreTypes.asElement(subscreensExtractor.getTypeMirror());
+                    TypeName tn;
+                    if (MoreElements.isAnnotationPresent(e, AutoScreen.class)) {
+                        tn = buildClassName(e);
+                    } else {
+                        tn = TypeName.get(subscreensExtractor.getTypeMirror());
+                    }
+                    Logger.d("REF subscreen: %s", tn);
+                    subscreenSpecs.add(FieldSpec.builder(tn, ScreenComposer.SUBSCREEN_FIELD_PREFIX + subscreensExtractor.getName()).build());
                 }
                 spec.setSubscreenSpecs(subscreenSpecs);
             }

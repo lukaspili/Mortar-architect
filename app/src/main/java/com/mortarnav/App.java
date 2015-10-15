@@ -4,7 +4,8 @@ import android.app.Application;
 
 import com.mortarnav.deps.WithAppDependencies;
 
-import architect.robot.DaggerService;
+import architect.robot.dagger.DaggerScope;
+import architect.robot.dagger.DaggerService;
 import autodagger.AutoComponent;
 import mortar.MortarScope;
 import timber.log.Timber;

@@ -17,6 +17,7 @@ public class ScreenSpec {
     private ModuleSpec moduleSpec;
     private String daggerComponentBuilderDependencyMethodName;
     private Integer pathLayout;
+    private TypeName presenterTypeName;
     private TypeName daggerComponentBuilderDependencyTypeName;
     private TypeName daggerComponentTypeName;
     private TypeName parentComponentTypeName;
@@ -56,6 +57,14 @@ public class ScreenSpec {
 
     public void setPathLayout(Integer pathLayout) {
         this.pathLayout = pathLayout;
+    }
+
+    public TypeName getPresenterTypeName() {
+        return presenterTypeName;
+    }
+
+    public void setPresenterTypeName(TypeName presenterTypeName) {
+        this.presenterTypeName = presenterTypeName;
     }
 
     public TypeName getDaggerComponentBuilderDependencyTypeName() {

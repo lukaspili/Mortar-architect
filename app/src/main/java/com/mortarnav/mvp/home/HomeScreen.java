@@ -4,11 +4,10 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mortarnav.DaggerScope;
 import com.mortarnav.MainActivity;
 import com.mortarnav.MainActivityComponent;
 import com.mortarnav.deps.WithActivityDependencies;
-import com.mortarnav.mvp.banner.BannerScreen;
+import com.mortarnav.mvp.banner.screen.BannerScreen;
 
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
@@ -16,7 +15,8 @@ import org.parceler.ParcelConstructor;
 import architect.ScreenPath;
 import architect.SubScreenService;
 import architect.nav.HandlesNavigationResult;
-import architect.robot.DaggerService;
+import architect.robot.dagger.DaggerScope;
+import architect.robot.dagger.DaggerService;
 import dagger.Provides;
 import mortar.MortarScope;
 

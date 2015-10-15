@@ -2,22 +2,28 @@ package com.mortarnav.mvp.banner;
 
 import android.os.Bundle;
 
-import com.mortarnav.DaggerScope;
+import com.mortarnav.MainActivity;
 
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
 
 import java.util.Random;
 
+import architect.robot.AutoScreen;
+import architect.robot.ScreenData;
+import autodagger.AutoComponent;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-@DaggerScope(BannerPresenter.class)
+@AutoScreen(
+        component = @AutoComponent(dependencies = MainActivity.class)
+)
 public class BannerPresenter extends ViewPresenter<BannerView> {
 
+    @ScreenData
     private final BannerState state;
 
     public BannerPresenter(BannerState state) {

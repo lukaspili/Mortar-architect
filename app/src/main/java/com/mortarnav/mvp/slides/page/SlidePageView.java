@@ -8,7 +8,7 @@ import com.mortarnav.R;
 import com.mortarnav.mvp.slides.page.screen.SlidePageScreenComponent;
 
 import architect.commons.view.PresentedFrameLayout;
-import architect.robot.DaggerService;
+import architect.robot.dagger.DaggerService;
 import autodagger.AutoInjector;
 import butterknife.Bind;
 import butterknife.ButterKnife;

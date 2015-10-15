@@ -19,7 +19,8 @@ import java.util.List;
 import javax.annotation.Generated;
 import javax.lang.model.element.Modifier;
 
-import architect.robot.DaggerService;
+import architect.robot.dagger.DaggerScope;
+import architect.robot.dagger.DaggerService;
 import dagger.Module;
 import dagger.Provides;
 import mortar.MortarScope;
@@ -36,6 +37,7 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
     private static final ClassName SUBSCREENSERVICE_BUILDER_CLS = ClassName.get("architect", "SubScreenService.Builder");
     private static final ClassName RECEIVESNAVRESULT_CLS = ClassName.get("architect.nav", "HandlesNavigationResult");
     private static final ClassName DAGGERSERVICE_CLS = ClassName.get(DaggerService.class);
+//    private static final ClassName DAGGERSCOPE_CLS = ClassName.get(DaggerScope.class);
     private static final ClassName CONTEXT_CLS = ClassName.get("android.content", "Context");
     private static final ClassName VIEW_CLS = ClassName.get("android.view", "View");
     private static final ClassName VIEWGROUP_CLS = ClassName.get("android.view", "ViewGroup");
@@ -62,6 +64,7 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(AnnotationSpec.builder(Generated.class).addMember("value", "$S", architect.autostack.compiler.AnnotationProcessor.class.getName()).build())
                 .addAnnotation(spec.getComponentAnnotationSpec())
+                .addAnnotation(AnnotationSpec.builder(DaggerScope.class).addMember("value", "$T.class", spec.getPresenterTypeName()).build())
                 .addAnnotation(AnnotationSpec.builder(Parcel.class).addMember("parcelsIndex", "false").build());
 
 //        for (ParameterSpec parameterSpec : spec.getModuleSpec().getInternalParameters()) {
@@ -103,6 +106,7 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
 
         // screen data
         if (spec.getScreenDataSpecs() != null && !spec.getScreenDataSpecs().isEmpty()) {
+            constructorShouldCallInit = true;
             fieldSpecs.addAll(spec.getScreenDataSpecs());
 
             for (FieldSpec fieldSpec : spec.getScreenDataSpecs()) {
@@ -152,9 +156,12 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
         }
 
         if (methodSpecs.isEmpty()) {
-            methodSpecs.add(MethodSpec.constructorBuilder()
-                    .addModifiers(Modifier.PUBLIC)
-                    .build());
+            MethodSpec.Builder b = MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC);
+            if (constructorShouldCallInit) {
+                b.addStatement("init()");
+            }
+            methodSpecs.add(b.build());
         }
 
         if (parcelConstructorMethodSpec != null) {
@@ -245,7 +252,8 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
             return null;
         }
 
-        if (spec.getNavigationParamConstructorSpecs().size() == 1 &&
+        if (spec.getNavigationParamConstructorSpecs() != null &&
+                spec.getNavigationParamConstructorSpecs().size() == 1 &&
                 spec.getNavigationParamConstructorSpecs().get(0).size() == parcelConstructorParameterSpecs.size()) {
             return null;
         }

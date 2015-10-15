@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.mortarnav.R;
 
 import architect.commons.view.PresentedLinearLayout;
-import architect.robot.DaggerService;
+import architect.robot.dagger.DaggerService;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

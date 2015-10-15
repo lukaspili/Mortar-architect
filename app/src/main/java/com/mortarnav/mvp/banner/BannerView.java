@@ -6,11 +6,12 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.mortarnav.R;
+import com.mortarnav.mvp.banner.screen.BannerScreenComponent;
 
 import architect.MortarFactory;
 import architect.SubScreenService;
 import architect.commons.view.PresentedLinearLayout;
-import architect.robot.DaggerService;
+import architect.robot.dagger.DaggerService;
 import autodagger.AutoInjector;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

@@ -2,10 +2,9 @@ package com.mortarnav.mvp.slides;
 
 import android.os.Bundle;
 
-import com.mortarnav.DaggerScope;
 import com.mortarnav.StandardAutoComponent;
 import com.mortarnav.deps.RestClient;
-import com.mortarnav.mvp.banner.BannerScreen;
+import com.mortarnav.mvp.banner.BannerPresenter;
 import com.mortarnav.mvp.slides.page.screen.SlidePageScreen;
 
 import org.parceler.Parcel;
@@ -29,10 +28,9 @@ import timber.log.Timber;
         component = @AutoComponent(includes = StandardAutoComponent.class),
         pathView = SlidesView.class,
         subScreens = {
-                @ContainsSubscreen(type = BannerScreen.class, name = "banner")
+                @ContainsSubscreen(type = BannerPresenter.class, name = "banner")
         }
 )
-@DaggerScope(SlidesPresenter.class)
 public class SlidesPresenter extends ViewPresenter<SlidesView> {
 
     private final RestClient restClient;

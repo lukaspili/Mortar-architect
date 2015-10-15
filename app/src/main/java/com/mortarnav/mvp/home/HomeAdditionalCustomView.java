@@ -9,7 +9,7 @@ import com.mortarnav.R;
 
 import javax.inject.Inject;
 
-import architect.robot.DaggerService;
+import architect.robot.dagger.DaggerService;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 

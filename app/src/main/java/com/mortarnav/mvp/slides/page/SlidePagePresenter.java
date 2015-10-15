@@ -2,7 +2,6 @@ package com.mortarnav.mvp.slides.page;
 
 import android.os.Bundle;
 
-import com.mortarnav.DaggerScope;
 import com.mortarnav.deps.WithActivityDependencies;
 import com.mortarnav.mvp.home.HomeScreen;
 import com.mortarnav.mvp.slides.SlidesPresenter;
@@ -20,7 +19,6 @@ import mortar.ViewPresenter;
         component = @AutoComponent(dependencies = SlidesPresenter.class, superinterfaces = WithActivityDependencies.class),
         pathView = SlidePageView.class
 )
-@DaggerScope(SlidePagePresenter.class)
 public class SlidePagePresenter extends ViewPresenter<SlidePageView> {
 
     @NavigationParam

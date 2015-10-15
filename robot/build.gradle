@@ -25,6 +25,7 @@ dependencies {
     provided deps.autodagger2
     provided deps.android
     provided deps.mortar
+    provided deps.javax_inject
 }
 
 apply from: '../mvn-publish.gradle'

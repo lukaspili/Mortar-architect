@@ -1,4 +1,4 @@
-package com.mortarnav;
+package architect.robot.dagger;
 
 import javax.inject.Scope;
 
