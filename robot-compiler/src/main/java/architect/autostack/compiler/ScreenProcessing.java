@@ -158,6 +158,7 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
                 List<List<ParameterSpec>> paramSpecs = new ArrayList<>();
 
                 for (Map.Entry<Integer, List<VariableElement>> entry : extractor.getNavigationParamsElements().entrySet()) {
+
                     List<ParameterSpec> p = new ArrayList<>();
                     for (VariableElement paramElement : entry.getValue()) {
                         String name = paramElement.getSimpleName().toString();
@@ -190,11 +191,10 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
             moduleSpec.setScopeAnnotationSpec(spec.getScopeAnnotationSpec());
 
 
-            for (VariableElement e : extractor.getConstructorsParamtersElements()) {
-                String name = e.getSimpleName().toString();
-                String screenFieldName = getMatchingFieldName(name, spec);
+            for (ConstructorParameterExtractor e : extractor.getConstructorsParameterExctractors()) {
+                String screenFieldName = getMatchingFieldName(e.getName(), spec);
 
-                ParameterSpec parameterSpec = ParameterSpec.builder(TypeName.get(e.asType()), screenFieldName != null ? screenFieldName : name).build();
+                ParameterSpec parameterSpec = ParameterSpec.builder(TypeName.get(e.getType()), screenFieldName != null ? screenFieldName : e.getName()).build();
                 moduleSpec.getAllParameterSpecs().add(parameterSpec);
 
                 if (screenFieldName != null) {

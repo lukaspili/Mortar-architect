@@ -43,8 +43,9 @@ public class ScreenExtractor extends AbstractExtractor {
     private int pathLayout;
     private VariableElement navigationResultElement;
     private List<SubscreensExtractor> subscreensExtractors;
-    private List<VariableElement> constructorsParamtersElements;
+    private List<ConstructorParameterExtractor> constructorsParameterExctractors;
     private List<VariableElement> screenDataElements;
+    private List<VariableElement> fieldElements;
     private Map<Integer, List<VariableElement>> navigationParamsElements;
 
     public ScreenExtractor(Element element, Types types, Elements elements, Errors errors) {
@@ -75,29 +76,6 @@ public class ScreenExtractor extends AbstractExtractor {
 
         scopeAnnotationTypeMirror = findScope();
 
-//        fromPathFieldsElements = new ArrayList<>();
-        constructorsParamtersElements = new ArrayList<>();
-        int constructorsCount = 0;
-        for (Element enclosedElement : element.getEnclosedElements()) {
-//            if (enclosedElement.getKind() == ElementKind.FIELD &&
-//                    MoreElements.isAnnotationPresent(enclosedElement, FromPath.class)) {
-//                Logger.d("Get field : %s", enclosedElement.getSimpleName());
-//                fromPathFieldsElements.add(MoreElements.asVariable(enclosedElement));
-//            } else
-
-            if (enclosedElement.getKind() == ElementKind.CONSTRUCTOR) {
-                constructorsCount++;
-                for (VariableElement variableElement : MoreElements.asExecutable(enclosedElement).getParameters()) {
-                    constructorsParamtersElements.add(variableElement);
-                }
-            }
-        }
-
-        if (constructorsCount > 1) {
-            errors.addInvalid("Cannot have several constructors");
-            return;
-        }
-
         // subScreens
         List<AnnotationValue> values = ExtractorUtils.getValueFromAnnotation(element, AutoScreen.class, SUBSCREENS);
         if (values != null && !values.isEmpty()) {
@@ -109,45 +87,73 @@ public class ScreenExtractor extends AbstractExtractor {
 
         navigationParamsElements = new HashMap<>();
         screenDataElements = new ArrayList<>();
+        fieldElements = new ArrayList<>();
 
         for (Element enclosedElement : element.getEnclosedElements()) {
             if (enclosedElement.getKind() == ElementKind.FIELD) {
-                // nav result
-                if (MoreElements.isAnnotationPresent(enclosedElement, NavigationResult.class)) {
-                    if (navigationResultElement != null) {
-                        errors.addInvalid("Cannot have several @NavigationResult");
-                        return;
-                    }
+                processEnclosedElement(enclosedElement);
+            }
+        }
 
-                    navigationResultElement = MoreElements.asVariable(enclosedElement);
+        // constructor parameters
+        constructorsParameterExctractors = new ArrayList<>();
+        int constructorsCount = 0;
+        for (Element enclosedElement : element.getEnclosedElements()) {
+            if (enclosedElement.getKind() == ElementKind.CONSTRUCTOR) {
+                constructorsCount++;
+                if (constructorsCount > 1) {
+                    errors.addInvalid("Cannot have several constructors");
+                    return;
                 }
-                // nav param
-                else if (MoreElements.isAnnotationPresent(enclosedElement, NavigationParam.class)) {
-                    int[] group = enclosedElement.getAnnotation(NavigationParam.class).group();
-                    if (group == null || group.length == 0) {
-                        addNavigationParam(0, enclosedElement);
-                        continue;
-                    }
 
-                    for (int gr : group) {
-                        addNavigationParam(gr, enclosedElement);
-                    }
-                }
-                // screen data
-                else if (MoreElements.isAnnotationPresent(enclosedElement, ScreenData.class)) {
-                    screenDataElements.add(MoreElements.asVariable(enclosedElement));
+                for (VariableElement variableElement : MoreElements.asExecutable(enclosedElement).getParameters()) {
+                    constructorsParameterExctractors.add(new ConstructorParameterExtractor(variableElement, fieldElements));
                 }
             }
         }
     }
 
-    private void addNavigationParam(int group, Element element) {
+    private void processEnclosedElement(Element enclosedElement) {
+        VariableElement variableElement = MoreElements.asVariable(enclosedElement);
+
+        // nav result
+        if (MoreElements.isAnnotationPresent(enclosedElement, NavigationResult.class)) {
+            if (navigationResultElement != null) {
+                errors.addInvalid("Cannot have several @NavigationResult");
+                return;
+            }
+
+            navigationResultElement = variableElement;
+            fieldElements.add(variableElement);
+        }
+        // nav param
+        else if (MoreElements.isAnnotationPresent(enclosedElement, NavigationParam.class)) {
+            int[] group = enclosedElement.getAnnotation(NavigationParam.class).group();
+            if (group == null || group.length == 0) {
+                addNavigationParam(0, variableElement);
+                fieldElements.add(variableElement);
+                return;
+            }
+
+            fieldElements.add(variableElement);
+            for (int gr : group) {
+                addNavigationParam(gr, variableElement);
+            }
+        }
+        // screen data
+        else if (MoreElements.isAnnotationPresent(enclosedElement, ScreenData.class)) {
+            screenDataElements.add(variableElement);
+            fieldElements.add(variableElement);
+        }
+    }
+
+    private void addNavigationParam(int group, VariableElement element) {
         List<VariableElement> elements = navigationParamsElements.get(group);
         if (elements == null) {
             elements = new ArrayList<>();
             navigationParamsElements.put(group, elements);
         }
-        elements.add(MoreElements.asVariable(element));
+        elements.add(element);
     }
 
 
@@ -200,8 +206,8 @@ public class ScreenExtractor extends AbstractExtractor {
         return navigationResultElement;
     }
 
-    public List<VariableElement> getConstructorsParamtersElements() {
-        return constructorsParamtersElements;
+    public List<ConstructorParameterExtractor> getConstructorsParameterExctractors() {
+        return constructorsParameterExctractors;
     }
 
     public List<SubscreensExtractor> getSubscreensExtractors() {

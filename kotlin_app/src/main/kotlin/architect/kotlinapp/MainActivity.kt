@@ -1,0 +1,111 @@
+package architect.kotlinapp
+
+import android.content.Intent
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import architect.Navigator
+import architect.NavigatorView
+import architect.commons.ActivityArchitector
+import architect.commons.Architected
+import architect.commons.transition.StandardTransition
+import architect.kotlinapp.mvp.home.screen.HomeScreen
+import architect.kotlinapp.util.GlobalDependencies
+import architect.kotlinapp.util.navigatorView
+import architect.robot.dagger.DaggerScope
+import architect.robot.dagger.DaggerService
+import autodagger.AutoComponent
+import autodagger.AutoInjector
+import mortar.MortarScope
+import mortar.bundler.BundleServiceRunner
+import org.jetbrains.anko.UI
+
+/**
+ * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
+ */
+@AutoComponent(dependencies = arrayOf(App::class), superinterfaces = arrayOf(GlobalDependencies::class))
+@AutoInjector
+@DaggerScope(MainActivity::class)
+public class MainActivity : AppCompatActivity() {
+
+    private var scope: MortarScope? = null
+    private var navigator: Navigator? = null
+    private lateinit var containerView: NavigatorView
+
+    override fun getSystemService(name: String?): Any? {
+        return if (scope?.hasService(name) ?: false) scope?.getService(name) else super.getSystemService(name);
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        scope = ActivityArchitector.onCreateScope(this, savedInstanceState, object : Architected {
+            override fun createNavigator(): Navigator {
+                val navigator = Navigator(Parceler())
+                navigator.transitions().setDefault(StandardTransition())
+                return navigator
+            }
+
+            override fun configureScope(builder: MortarScope.Builder, parentScope: MortarScope) {
+                DaggerService.configureScope(builder, MainActivity::class.java, DaggerMainActivityComponent.builder()
+                        .appComponent(parentScope.getService<AppComponent>(DaggerService.SERVICE_NAME))
+                        .build())
+            }
+        })
+
+        setupView()
+
+        DaggerService.get<MainActivityComponent>(this).inject(this)
+        navigator = ActivityArchitector.onCreateNavigator(this, scope, savedInstanceState, containerView, HomeScreen("test1", "test2"))
+    }
+
+    private fun setupView() {
+        UI {
+            containerView = navigatorView {
+                layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        navigator?.delegate()?.onNewIntent(intent)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        BundleServiceRunner.getBundleServiceRunner(scope).onSaveInstanceState(outState)
+        navigator?.delegate()?.onSaveInstanceState(outState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        navigator?.delegate()?.onStart()
+    }
+
+    override fun onStop() {
+        navigator?.delegate()?.onStop()
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        navigator?.delegate()?.onDestroy()
+        navigator = null
+
+        if (isFinishing) {
+            scope?.destroy()
+            scope = null
+        }
+
+        super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        if (navigator?.delegate()?.onBackPressed() ?: false) {
+            return
+        }
+
+        super.onBackPressed()
+    }
+}

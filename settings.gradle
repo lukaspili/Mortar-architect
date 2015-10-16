@@ -1,4 +1,4 @@
 include ':architect',
         ':robot', 'robot-compiler',
         ':commons',
-        ':app'
+        ':app', ':kotlin_app'
