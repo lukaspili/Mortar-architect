@@ -168,6 +168,9 @@ class Dispatcher {
         Preconditions.checkArgument(!navigator.history.isEmpty(), "Cannot dispatch on empty history");
         Preconditions.checkArgument(!entries.isEmpty(), "Cannot dispatch on empty stack");
 
+        // it's imperative to get the current top dispatched before dequeuing, because
+        // the latter operation mark new to-be disaptched entries as dispatched
+        final History.Entry currentTop = navigator.history.getTopDispatched();
         final Dispatch dispatch = dequeue();
         Logger.d("Entry to dispatch: %s", dispatch.entry);
 
@@ -178,9 +181,9 @@ class Dispatcher {
         final History.Entry exitEntry;
         if (forward) {
             enterEntry = dispatch.entry;
-            exitEntry = navigator.history.getTopDispatched();
+            exitEntry = currentTop;
         } else {
-            enterEntry = navigator.history.getTopDispatched();
+            enterEntry = currentTop;
             exitEntry = dispatch.entry;
         }
 
