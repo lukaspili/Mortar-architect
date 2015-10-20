@@ -281,6 +281,7 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(spec.getPresenterTypeName())
                 .addAnnotation(Provides.class)
+                .addAnnotation(AnnotationSpec.builder(DaggerScope.class).addMember("value", "$T.class", spec.getPresenterTypeName()).build())
                 .addParameters(spec.getDaggerParameterSpecs())
                 .addCode(blockBuilder.build());
 

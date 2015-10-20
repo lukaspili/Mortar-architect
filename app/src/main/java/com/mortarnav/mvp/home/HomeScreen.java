@@ -22,7 +22,8 @@ import mortar.MortarScope;
 
 /**
  * Manually created Screen
- * You should rather use @AutoStackable if you can
+ * For showcase/clarity purposes only
+ * You have all the reasons to use @AutoScreen and let Robot generates that code for you
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
