@@ -21,7 +21,7 @@ import org.parceler.Parcel
 )
 class HomePresenter(@field:NavigationParam val navParam1: String,
                     @field:NavigationParam val navParam2: String,
-                    @field:NavigationResult val navResult: String,
+                    @field:NavigationResult val navResult: String?,
                     @field:ScreenData val state: HomePresenter.State) : ViewPresenter<HomeView>() {
 
 //    @NavigationParam

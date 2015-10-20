@@ -57,7 +57,6 @@ public class Navigator implements Scoped {
     final Transitions transitions;
     final Presenter presenter;
     final NavigatorLifecycleDelegate delegate;
-    final Scoper scoper;
     final Dispatcher dispatcher;
     private MortarScope scope;
 
@@ -65,7 +64,6 @@ public class Navigator implements Scoped {
         history = new History(parceler);
         transitions = new Transitions();
         delegate = new NavigatorLifecycleDelegate(this);
-        scoper = new Scoper(this);
         dispatcher = new Dispatcher(this);
         presenter = new Presenter(transitions);
     }
@@ -136,7 +134,7 @@ public class Navigator implements Scoped {
         checkWithDirection(viewTransitionDirection);
 
         List<History.Entry> entries = new ArrayList<>();
-        entries.add(history.kill(null));
+        entries.add(history.kill(null, true));
         entries.addAll(add(History.NAV_TYPE_PUSH, paths));
         dispatcher.dispatch(entries, viewTransitionDirection);
     }
@@ -169,7 +167,7 @@ public class Navigator implements Scoped {
         checkWithDirection(viewTransitionDirection);
 
         List<History.Entry> entries = new ArrayList<>();
-        entries.add(history.kill(null));
+        entries.add(history.kill(null, true));
         entries.addAll(add(History.NAV_TYPE_PUSH, builders));
         dispatcher.dispatch(entries, viewTransitionDirection);
     }
@@ -243,7 +241,7 @@ public class Navigator implements Scoped {
             return false;
         }
 
-        dispatcher.dispatch(history.kill(result));
+        dispatcher.dispatch(history.kill(result, false));
         return true;
     }
 
@@ -349,7 +347,7 @@ public class Navigator implements Scoped {
             if (step.path == null && step.builder == null) {
                 if (history.canKill()) {
                     if (step.type == Navigation.TYPE_BACK) {
-                        entries.add(history.kill(step.result));
+                        entries.add(history.kill(step.result, false));
                     } else {
                         entries.addAll(history.killAllButRoot(step.result));
                     }
@@ -360,7 +358,7 @@ public class Navigator implements Scoped {
                         continue;
                     }
 
-                    entries.add(history.kill(null));
+                    entries.add(history.kill(null, true));
                 }
 
                 // push type for push and replace, modal for show

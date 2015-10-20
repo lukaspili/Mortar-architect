@@ -176,7 +176,7 @@ class Presenter {
         // either when present is done, or when presenter is desactivated
         dispatchingCallback = callback;
 
-        if (forward) {
+        if (forward && exitEntry != null) {
             Logger.d("Save view state for: %s", exitEntry);
             exitEntry.viewState = getCurrentViewState();
         }

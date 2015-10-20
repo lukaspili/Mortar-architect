@@ -12,13 +12,6 @@ import architect.nav.HandlesNavigationResult;
 /**
  * Navigation history
  *
- * History restoration from instance state bundle is only used during app process kill
- * During simple configuration change, the navigator scope is preserved, and thus the history also
- * See NavigatorLifecycleDelegate.onCreate() to see implementation details
- *
- * History also persists its ScopeNamer instance, in order to preserve scope names
- * between state restoration (process kill)
- *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class History {
@@ -28,23 +21,14 @@ public class History {
     private static final String STATE_KEY = "VIEW_STATE";
     private static final String NAV_TYPE_KEY = "NAV_TYPE";
     private static final String TRANSITION_KEY = "TRANSITION";
-    private static final String ID_KEY = "ID";
+    private static final String TAG_KEY = "ID";
 
     static final int NAV_TYPE_PUSH = 1;
     static final int NAV_TYPE_MODAL = 2;
 
     private final ScreenParceler parceler;
+    private final EntryCounter entryCounter = new EntryCounter();
     private List<Entry> entries;
-
-//    /**
-//     * In case of replacing the root entry by a new one,
-//     * we will keep a reference to the old one for the dispatcher to dispatch between the old
-//     * and the new one
-//     *
-//     * The previousRoot is not persisted during config changes, so it will disappear either
-//     * by lifecycle events or by the dispatcher
-//     */
-//    private Entry previousRoot;
 
     History(ScreenParceler parceler) {
         this.parceler = parceler;
@@ -55,8 +39,13 @@ public class History {
         if (entryBundles != null) {
             entries = new ArrayList<>(entryBundles.size());
             if (!entryBundles.isEmpty()) {
+                Entry entry;
                 for (int i = 0; i < entryBundles.size(); i++) {
-                    entries.add(Entry.fromBundle(entryBundles.get(i), parceler));
+                    entry = Entry.fromBundle(entryBundles.get(i), parceler);
+                    entry.dispatched = true;
+                    entryCounter.increment(entry);
+
+                    entries.add(entry);
                 }
             }
         }
@@ -65,8 +54,10 @@ public class History {
     void init(ScreenPath... paths) {
         entries = new ArrayList<>();
 
+        Entry entry;
         for (int i = 0; i < paths.length; i++) {
-            add(paths[i], NAV_TYPE_PUSH, null, null);
+            entry = add(paths[i], NAV_TYPE_PUSH, null, null);
+            entry.dispatched = true;
         }
     }
 
@@ -92,22 +83,6 @@ public class History {
         return entries == null;
     }
 
-    Entry add(ScreenPath path, int navType, String transition, String id) {
-        if (navType == NAV_TYPE_MODAL) {
-            // modal
-            Preconditions.checkArgument(!entries.isEmpty(), "Cannot add modal on empty history");
-        } else {
-            // push and history not empty
-            if (!entries.isEmpty()) {
-                Preconditions.checkArgument(!getLast().isModal(), "Cannot push new path on modal");
-            }
-        }
-
-        Entry entry = new Entry(path, navType, transition, id);
-        entries.add(entry);
-        return entry;
-    }
-
     boolean canReplace() {
         return entries.size() > 0;
     }
@@ -117,19 +92,27 @@ public class History {
      */
     boolean canKill() {
         return entries.size() > 1;
+    }
 
-//        int notdead = 0;
-//        for (int i = entries.size() - 1; i >= 0; i--) {
-//            if (!entries.get(i).dead) {
-//                notdead++;
-//            }
-//
-//            if (notdead > 1) {
-//                return true;
+    /**
+     * Create new entry in history
+     */
+    Entry add(ScreenPath path, int navType, String transition, String id) {
+//        if (navType == NAV_TYPE_MODAL) {
+//            // modal
+//            Preconditions.checkArgument(!entries.isEmpty(), "Cannot add modal on empty history");
+//        } else {
+//            // push and history not empty
+//            if (!entries.isEmpty()) {
+//                Preconditions.checkArgument(!getLast().isModal(), "Cannot push new path on modal");
 //            }
 //        }
-//
-//        return false;
+
+        Entry entry = new Entry(path, navType, transition, id);
+        entries.add(entry);
+        entryCounter.increment(entry);
+
+        return entry;
     }
 
     /**
@@ -137,21 +120,20 @@ public class History {
      *
      * @return the killed entry
      */
-    Entry kill(Object result) {
+    Entry kill(Object result, boolean forReplace) {
         Entry killed = entries.remove(entries.size() - 1);
-        setResult(result);
-        return killed;
-    }
 
-    /**
-     * Set the result, or null if no result (result = null)
-     */
-    void setResult(Object result) {
-        Entry entry = entries.get(entries.size() - 1);
-        if (entry.path instanceof HandlesNavigationResult) {
-            //noinspection unchecked
-            ((HandlesNavigationResult) entry.path).setNavigationResult(result);
+        // when replacing, we won't decrement the scope of the exit entry because
+        // it can create conflict between enter and exit scope names during dispatch
+        if (!forReplace) {
+            entryCounter.decrement(killed);
         }
+
+        if (!entries.isEmpty()) {
+            setResult(result);
+        }
+
+        return killed;
     }
 
     /**
@@ -166,13 +148,11 @@ public class History {
         }
 
         List<Entry> killed = new ArrayList<>(entries.size() - 1);
-
-        if (entries.size() == 2) {
-            killed.add(entries.remove(1));
-        } else {
-            for (int i = entries.size() - 1; i >= 1; i--) {
-                killed.add(entries.remove(i));
-            }
+        Entry entry;
+        for (int i = entries.size() - 1; i >= 1; i--) {
+            entry = entries.remove(i);
+            entryCounter.decrement(entry);
+            killed.add(entry);
         }
 
         setResult(result);
@@ -187,15 +167,25 @@ public class History {
      */
     List<Entry> killAll() {
         List<Entry> killed = new ArrayList<>(entries.size());
-
-        if (entries.size() == 1) {
-            killed.add(entries.remove(0));
-        } else {
-            for (int i = entries.size() - 1; i >= 0; i--) {
-                killed.add(entries.remove(i));
-            }
+        Entry entry;
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            entry = entries.remove(i);
+            entryCounter.decrement(entry);
+            killed.add(entry);
         }
+
         return killed;
+    }
+
+    /**
+     * Set the result, or null if no result (result = null)
+     */
+    private void setResult(Object result) {
+        Entry entry = entries.get(entries.size() - 1);
+        if (entry.path instanceof HandlesNavigationResult) {
+            //noinspection unchecked
+            ((HandlesNavigationResult) entry.path).setNavigationResult(result);
+        }
     }
 
 //    Entry getLastAlive() {
@@ -233,25 +223,57 @@ public class History {
 //        return dead;
 //    }
 
-    Entry getLast() {
-        Preconditions.checkArgument(!entries.isEmpty(), "Cannot get last entry on empty history");
-        return entries.get(entries.size() - 1);
+//    Entry getLast() {
+//        Preconditions.checkArgument(!entries.isEmpty(), "Cannot get last entry on empty history");
+//        return entries.get(entries.size() - 1);
+//    }
+//
+//    Entry getLeftOf(Entry entry) {
+//        int index = entries.indexOf(entry);
+//        Preconditions.checkArgument(index >= 0, "Get left of an entry that does not exist in history");
+////        if (index == 0) {
+////            Entry previous = previousRoot;
+////            previousRoot = null;
+////            return previous;
+////        }
+//
+//        return entries.get(index - 1);
+//    }
+
+    Entry getTopDispatched() {
+        if (!entries.isEmpty()) {
+            Entry entry;
+            for (int i = entries.size() - 1; i >= 0; i--) {
+                entry = entries.get(i);
+                if (entry.dispatched) {
+                    return entry;
+                }
+            }
+        }
+
+        return null;
     }
 
-    Entry getLeftOf(Entry entry) {
-        int index = entries.indexOf(entry);
-        Preconditions.checkArgument(index >= 0, "Get left of an entry that does not exist in history");
-//        if (index == 0) {
-//            Entry previous = previousRoot;
-//            previousRoot = null;
-//            return previous;
+//    Entry getTop() {
+//        if (!entries.isEmpty()) {
+//            Entry entry;
+//            for (int i = entries.size() - 1; i >= 0; i--) {
+//                entry = entries.get(i);
+//                if (entry.dispatched) {
+//                    return entry;
+//                }
+//            }
 //        }
-
-        return entries.get(index - 1);
-    }
+//
+//        return null;
+//    }
 
     boolean existInHistory(Entry entry) {
         return entries.contains(entry);
+    }
+
+    int getEntryScopeId(Entry entry) {
+        return entryCounter.get(entry);
     }
 
     List<Entry> getLastWithModals() {
@@ -276,14 +298,17 @@ public class History {
         final ScreenPath path;
         final int navType;
         final String transition;
+        final String tag;
         SparseArray<Parcelable> viewState;
+        boolean dispatched;
 
-        public Entry(ScreenPath path, int navType, String transition, String id) {
+        public Entry(ScreenPath path, int navType, String transition, String tag) {
             Preconditions.checkNotNull(path, "Path cannot be null");
             Preconditions.checkArgument(navType == NAV_TYPE_PUSH || navType == NAV_TYPE_MODAL, "Nav type invalid");
             this.path = path;
             this.navType = navType;
             this.transition = transition;
+            this.tag = tag;
         }
 
         boolean isModal() {
@@ -296,11 +321,12 @@ public class History {
             bundle.putSparseParcelableArray(STATE_KEY, viewState);
             bundle.putInt(NAV_TYPE_KEY, navType);
             bundle.putString(TRANSITION_KEY, transition);
+            bundle.putString(TAG_KEY, tag);
             return bundle;
         }
 
         private static Entry fromBundle(Bundle bundle, ScreenParceler parceler) {
-            Entry entry = new Entry(parceler.unwrap(bundle.getParcelable(PATH_KEY)), bundle.getInt(NAV_TYPE_KEY), bundle.getString(TRANSITION_KEY), bundle.getString(ID_KEY));
+            Entry entry = new Entry(parceler.unwrap(bundle.getParcelable(PATH_KEY)), bundle.getInt(NAV_TYPE_KEY), bundle.getString(TRANSITION_KEY), bundle.getString(TAG_KEY));
             entry.viewState = bundle.getSparseParcelableArray(STATE_KEY);
             return entry;
         }

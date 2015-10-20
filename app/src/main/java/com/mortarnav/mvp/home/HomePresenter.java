@@ -86,7 +86,8 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     }
 
     public void replaceNewHomeClick() {
-        Navigator.get(getView()).replace(new HomeScreen("Replaced!"), new HomeScreen("Replaced 2!"));
+        Navigator.get(getView()).replace(new HomeScreen("Replaced 2!"));
+//        Navigator.get(getView()).replace(new HomeScreen("Replaced!"), new HomeScreen("Replaced 2!"));
     }
 
     public void showReturnsResultClick() {
