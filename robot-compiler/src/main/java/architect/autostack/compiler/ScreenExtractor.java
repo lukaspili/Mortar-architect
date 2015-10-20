@@ -36,7 +36,7 @@ public class ScreenExtractor extends AbstractExtractor {
     private static final String PATH_VIEW = "pathView";
     private static final String SUBSCREENS = "subScreens";
 
-    private AnnotationMirror scopeAnnotationTypeMirror;
+//    private AnnotationMirror scopeAnnotationTypeMirror;
     private AnnotationMirror componentAnnotationTypeMirror;
     private TypeMirror componentDependency;
     private TypeMirror pathViewTypeMirror;
@@ -74,7 +74,7 @@ public class ScreenExtractor extends AbstractExtractor {
         pathViewTypeMirror = ExtractorUtils.getValueFromAnnotation(element, AutoScreen.class, PATH_VIEW);
         pathLayout = element.getAnnotation(AutoScreen.class).pathLayout();
 
-        scopeAnnotationTypeMirror = findScope();
+//        scopeAnnotationTypeMirror = findScope();
 
         // subScreens
         List<AnnotationValue> values = ExtractorUtils.getValueFromAnnotation(element, AutoScreen.class, SUBSCREENS);
@@ -182,9 +182,9 @@ public class ScreenExtractor extends AbstractExtractor {
         return annotationTypeMirror;
     }
 
-    public AnnotationMirror getScopeAnnotationTypeMirror() {
-        return scopeAnnotationTypeMirror;
-    }
+//    public AnnotationMirror getScopeAnnotationTypeMirror() {
+//        return scopeAnnotationTypeMirror;
+//    }
 
     public AnnotationMirror getComponentAnnotationTypeMirror() {
         return componentAnnotationTypeMirror;

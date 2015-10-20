@@ -187,9 +187,9 @@ public class ScreenComposer extends AbstractComposer<ScreenSpec> {
                 .addMethods(methodSpecs)
                 .addFields(fieldSpecs);
 
-        if (spec.getScopeAnnotationSpec() != null) {
-            builder.addAnnotation(spec.getScopeAnnotationSpec());
-        }
+//        if (spec.getScopeAnnotationSpec() != null) {
+//            builder.addAnnotation(spec.getScopeAnnotationSpec());
+//        }
 
         if (spec.getPathViewTypeName() != null || spec.getPathLayout() != null) {
             builder.addSuperinterface(PATH_CLS);

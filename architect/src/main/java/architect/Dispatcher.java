@@ -186,6 +186,9 @@ class Dispatcher {
 
         // exit entry can be null but enter entry never can
         Preconditions.checkNotNull(enterEntry, "Enter entry cannot be null");
+        Logger.d("Enter entry: %s", enterEntry);
+        Logger.d("Exit entry: %s", exitEntry);
+
 
 //        Logger.d("Exit entry: %s - in history: %b", exitEntry, forward);
 //        Preconditions.checkNotNull(exitEntry, "Previous entry cannot be null");
@@ -250,6 +253,7 @@ class Dispatcher {
             }
 
             Logger.d("Dequeuing: %s", next.entry);
+            next.entry.dispatched = true;
             result = next;
             index = i;
         }

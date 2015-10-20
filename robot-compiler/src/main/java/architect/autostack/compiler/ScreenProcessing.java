@@ -118,9 +118,9 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
             spec.setDaggerComponentBuilderDependencyMethodName(methodName);
             spec.setParentTypeName(parentTypeName);
 
-            if (extractor.getScopeAnnotationTypeMirror() != null) {
-                spec.setScopeAnnotationSpec(AnnotationSpec.get(extractor.getScopeAnnotationTypeMirror()));
-            }
+//            if (extractor.getScopeAnnotationTypeMirror() != null) {
+//                spec.setScopeAnnotationSpec(AnnotationSpec.get(extractor.getScopeAnnotationTypeMirror()));
+//            }
 
             if (extractor.getPathViewTypeMirror() != null) {
                 spec.setPathViewTypeName(TypeName.get(extractor.getPathViewTypeMirror()));
@@ -188,7 +188,7 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
 
             ModuleSpec moduleSpec = new ModuleSpec(moduleClassName);
             moduleSpec.setPresenterTypeName(presenterTypeName);
-            moduleSpec.setScopeAnnotationSpec(spec.getScopeAnnotationSpec());
+//            moduleSpec.setScopeAnnotationSpec(spec.getScopeAnnotationSpec());
 
 
             for (ConstructorParameterExtractor e : extractor.getConstructorsParameterExctractors()) {

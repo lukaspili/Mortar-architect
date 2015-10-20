@@ -24,7 +24,7 @@ public class ScreenSpec {
     private TypeName parentTypeName;
     private TypeName pathViewTypeName;
     private FieldSpec navigationResultSpec;
-    private AnnotationSpec scopeAnnotationSpec;
+//    private AnnotationSpec scopeAnnotationSpec;
     private AnnotationSpec componentAnnotationSpec;
     private List<FieldSpec> subscreenSpecs;
     private List<FieldSpec> navigationParamFieldSpecs;
@@ -119,13 +119,13 @@ public class ScreenSpec {
         this.navigationResultSpec = navigationResultSpec;
     }
 
-    public AnnotationSpec getScopeAnnotationSpec() {
-        return scopeAnnotationSpec;
-    }
-
-    public void setScopeAnnotationSpec(AnnotationSpec scopeAnnotationSpec) {
-        this.scopeAnnotationSpec = scopeAnnotationSpec;
-    }
+//    public AnnotationSpec getScopeAnnotationSpec() {
+//        return scopeAnnotationSpec;
+//    }
+//
+//    public void setScopeAnnotationSpec(AnnotationSpec scopeAnnotationSpec) {
+//        this.scopeAnnotationSpec = scopeAnnotationSpec;
+//    }
 
     public AnnotationSpec getComponentAnnotationSpec() {
         return componentAnnotationSpec;

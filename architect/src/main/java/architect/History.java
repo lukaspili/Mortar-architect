@@ -112,6 +112,8 @@ public class History {
         entries.add(entry);
         entryCounter.increment(entry);
 
+        Logger.d("Add entry: %s", entry.path);
+
         return entry;
     }
 
