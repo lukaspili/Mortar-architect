@@ -63,7 +63,7 @@ class Dispatcher {
 //            }
         } else {
             dispatchedEntries = new ArrayList<>(1);
-            dispatchedEntries.add(buildScopedEntry(entry));
+            dispatchedEntries.add(buildScopedEntry(entry, true));
         }
 
         navigator.presenter.restore(dispatchedEntries);
@@ -227,7 +227,7 @@ class Dispatcher {
 //        }
 
         final int direction = dispatch.direction != 0 ? dispatch.direction : (forward ? ViewTransition.DIRECTION_FORWARD : ViewTransition.DIRECTION_BACKWARD);
-        final ScopedEntry scopedEntry = buildScopedEntry(enterEntry);
+        final ScopedEntry scopedEntry = buildScopedEntry(enterEntry, false);
         final MortarScope exitScope = navigator.presenter.getCurrentScope();
         Preconditions.checkNotNull(exitScope, "Exit scope cannot be null");
 
@@ -380,10 +380,27 @@ class Dispatcher {
 //
 //    }
 
-    private ScopedEntry buildScopedEntry(History.Entry entry) {
-        String scopeName = String.format("ARCHITECT_SCOPE_%s_%d", entry.path.getClass().getName(), navigator.history.getEntryScopeId(entry));
-        Logger.d("Dispatching new scope: %s", scopeName);
-        return new ScopedEntry(entry, MortarFactory.createScope(navigator.getScope(), entry.path, scopeName));
+
+    private MortarScope buildScope(History.Entry entry, String scopeName) {
+        return MortarFactory.createScope(navigator.getScope(), entry.path, scopeName);
+    }
+
+    private String buildScopeName(History.Entry entry) {
+        return String.format("ARCHITECT_SCOPE_%s_%d", entry.path.getClass().getName(), navigator.history.getEntryScopeId(entry));
+    }
+
+    private ScopedEntry buildScopedEntry(History.Entry entry, boolean findFirst) {
+        String scopeName = buildScopeName(entry);
+
+        if (findFirst) {
+            MortarScope scope = navigator.getScope().findChild(scopeName);
+            if (scope != null) {
+                return new ScopedEntry(entry, scope);
+            }
+        }
+
+        Logger.d("Building new scope: %s", scopeName);
+        return new ScopedEntry(entry, buildScope(entry, scopeName));
     }
 
     private void endDispatch() {
