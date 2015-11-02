@@ -12,30 +12,30 @@ import mortar.Scoped;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class Navigator implements Scoped {
+public class Architect implements Scoped {
 
-    public static final String SERVICE_NAME = Navigator.class.getName();
+    public static final String SERVICE_NAME = Architect.class.getName();
 
-    public static Navigator get(Context context) {
+    public static Architect get(Context context) {
         //noinspection ResourceType
-        return (Navigator) context.getSystemService(SERVICE_NAME);
+        return (Architect) context.getSystemService(SERVICE_NAME);
     }
 
-    public static Navigator get(View view) {
+    public static Architect get(View view) {
         return get(view.getContext());
     }
 
     final History history;
     final Transitions transitions;
     final Presenter presenter;
-    final NavigatorLifecycleDelegate delegate;
+    final ArchitectDelegate delegate;
     final Dispatcher dispatcher;
     private MortarScope scope;
 
-    public Navigator(ScreenParceler parceler) {
+    public Architect(ScreenParceler parceler) {
         history = new History(parceler);
         transitions = new Transitions();
-        delegate = new NavigatorLifecycleDelegate(this);
+        delegate = new ArchitectDelegate(this);
         dispatcher = new Dispatcher(this);
         presenter = new Presenter(transitions);
     }
@@ -73,6 +73,17 @@ public class Navigator implements Scoped {
     public void push(PathBuilder... builders) {
         check();
         dispatcher.dispatch(add(History.NAV_TYPE_PUSH, builders), 0);
+    }
+
+
+    // SHOW
+
+    /**
+     * Show one path
+     */
+    public void show(ScreenPath path) {
+        check();
+        dispatcher.dispatch(add(History.NAV_TYPE_MODAL, path, null, null), 0);
     }
 
 
@@ -305,7 +316,7 @@ public class Navigator implements Scoped {
         return scope;
     }
 
-    public NavigatorLifecycleDelegate delegate() {
+    public ArchitectDelegate delegate() {
         return delegate;
     }
 

@@ -2,6 +2,7 @@ package com.mortarnav.mvp.home;
 
 import android.os.Bundle;
 
+import com.mortarnav.mvp.popup1.screen.Popup1Screen;
 import com.mortarnav.mvp.slides.screen.SlidesScreen;
 
 import org.parceler.Parcel;
@@ -9,8 +10,8 @@ import org.parceler.ParcelConstructor;
 
 import java.util.Random;
 
+import architect.Architect;
 import architect.Navigation;
-import architect.Navigator;
 import mortar.ViewPresenter;
 import timber.log.Timber;
 
@@ -58,12 +59,12 @@ public class HomePresenter extends ViewPresenter<HomeView> {
 
     public void nextHomeClick() {
 //        Navigator.get(getView()).push(new HomeScreen("Home " + ++count));
-        Navigator.get(getView()).push(new HomeScreen("Home " + ++count), new HomeScreen("Home " + ++count));
+        Architect.get(getView()).push(new HomeScreen("Home " + ++count), new HomeScreen("Home " + ++count));
     }
 
 
     public void subnavClick() {
-        Navigator.get(getView()).navigate(new Navigation()
+        Architect.get(getView()).navigate(new Navigation()
                 .push(new HomeScreen("Nav pushed 1"))
                 .push(new HomeScreen("Nav pushed 2"))
                 .replace(new HomeScreen("Nav replace 1"))
@@ -78,15 +79,15 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     }
 
     public void pagerClick() {
-        Navigator.get(getView()).push(new SlidesScreen("test param1", "test param2"));
+        Architect.get(getView()).push(new SlidesScreen("test param1", "test param2"));
     }
 
     public void showPopupClick() {
-//        Navigator.get(getView()).show(new MyPopupStackable());
+        Architect.get(getView()).show(new Popup1Screen());
     }
 
     public void replaceNewHomeClick() {
-        Navigator.get(getView()).replace(new HomeScreen("Replaced 2!"));
+        Architect.get(getView()).replace(new HomeScreen("Replaced 2!"));
 //        Navigator.get(getView()).replace(new HomeScreen("Replaced!"), new HomeScreen("Replaced 2!"));
     }
 
@@ -96,7 +97,7 @@ public class HomePresenter extends ViewPresenter<HomeView> {
 
     public void backToRootClick() {
 //        Navigator.get(getView()).back("This is a navigation result");
-        Navigator.get(getView()).backToRoot("This is a navigation result backtoroot");
+        Architect.get(getView()).backToRoot("This is a navigation result backtoroot");
     }
 
     public void showTwoPopupsClick() {
@@ -108,7 +109,7 @@ public class HomePresenter extends ViewPresenter<HomeView> {
     }
 
     public void setNewStackClick() {
-        Navigator.get(getView()).set(new HomeScreen("NEW STACK 1"),
+        Architect.get(getView()).set(new HomeScreen("NEW STACK 1"),
                 new HomeScreen("NEW STACK 2"),
                 new HomeScreen("NEW STACK 3"));
     }

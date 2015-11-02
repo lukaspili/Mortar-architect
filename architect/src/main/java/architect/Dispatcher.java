@@ -13,15 +13,15 @@ import mortar.MortarScope;
  */
 class Dispatcher {
 
-    private final Navigator navigator;
+    private final Architect architect;
     private final List<Dispatch> entries = new ArrayList<>();
 
     private boolean dispatching;
     private boolean killed;
     private boolean active;
 
-    Dispatcher(Navigator navigator) {
-        this.navigator = navigator;
+    Dispatcher(Architect architect) {
+        this.architect = architect;
     }
 
     /**
@@ -39,9 +39,9 @@ class Dispatcher {
     void activate() {
         Preconditions.checkArgument(!active, "Dispatcher already active");
         Preconditions.checkArgument(entries.isEmpty(), "Dispatcher stack must be empty");
-        Preconditions.checkNotNull(navigator.getScope(), "Navigator scope cannot be null");
+        Preconditions.checkNotNull(architect.getScope(), "Navigator scope cannot be null");
 
-        History.Entry entry = navigator.history.getTopDispatched();
+        History.Entry entry = architect.history.getTopDispatched();
         Preconditions.checkNotNull(entry, "Entry to activate cannot be null");
         Logger.d("Activate top entry: %s", entry);
 
@@ -63,10 +63,10 @@ class Dispatcher {
 //            }
         } else {
             dispatchedEntries = new ArrayList<>(1);
-            dispatchedEntries.add(buildScopedEntry(entry, true));
+            dispatchedEntries.add(buildScopedEntry(entry, architect.getScope(), true, false));
         }
 
-        navigator.presenter.restore(dispatchedEntries);
+        architect.presenter.restore(dispatchedEntries);
         active = true;
 
 
@@ -162,21 +162,21 @@ class Dispatcher {
     void startDispatch() {
         Preconditions.checkArgument(active, "Dispatcher must be active");
 
-        if (killed || dispatching || !navigator.presenter.isActive() || entries.isEmpty()) return;
+        if (killed || dispatching || !architect.presenter.isActive() || entries.isEmpty()) return;
         dispatching = true;
-        Preconditions.checkNotNull(navigator.getScope(), "Dispatcher navigator scope cannot be null");
-        Preconditions.checkArgument(!navigator.history.isEmpty(), "Cannot dispatch on empty history");
+        Preconditions.checkNotNull(architect.getScope(), "Dispatcher navigator scope cannot be null");
+        Preconditions.checkArgument(!architect.history.isEmpty(), "Cannot dispatch on empty history");
         Preconditions.checkArgument(!entries.isEmpty(), "Cannot dispatch on empty stack");
 
         // it's imperative to get the current top dispatched before dequeuing, because
         // the latter operation mark new to-be disaptched entries as dispatched
-        final History.Entry currentTop = navigator.history.getTopDispatched();
+        final History.Entry currentTop = architect.history.getTopDispatched();
         final Dispatch dispatch = dequeue();
         Logger.d("Entry to dispatch: %s", dispatch.entry);
 
         // in case of forward, the entry to dispatch is already added to history
         // in opposite in case of backward, the entry to dispatch is not in history anymore
-        final boolean forward = navigator.history.existInHistory(dispatch.entry);
+        final boolean forward = architect.history.existInHistory(dispatch.entry);
         final History.Entry enterEntry;
         final History.Entry exitEntry;
         if (forward) {
@@ -227,15 +227,27 @@ class Dispatcher {
 //        }
 
         final int direction = dispatch.direction != 0 ? dispatch.direction : (forward ? ViewTransition.DIRECTION_FORWARD : ViewTransition.DIRECTION_BACKWARD);
-        final ScopedEntry scopedEntry = buildScopedEntry(enterEntry, false);
-        final MortarScope exitScope = navigator.presenter.getCurrentScope();
-        Preconditions.checkNotNull(exitScope, "Exit scope cannot be null");
+        final MortarScope currentScope = architect.presenter.getCurrentScope();
+        Preconditions.checkNotNull(currentScope, "Exit scope cannot be null");
 
-        navigator.presenter.present(scopedEntry, exitEntry, forward, direction, new Callback() {
+        MortarScope parent;
+        boolean findFirstAndOnly;
+        if (enterEntry.isModal()) {
+            parent = currentScope;
+            findFirstAndOnly = false;
+        } else {
+            parent = architect.getScope();
+            findFirstAndOnly = !forward && exitEntry.isModal();
+        }
+        final ScopedEntry scopedEntry = buildScopedEntry(enterEntry, parent, findFirstAndOnly, findFirstAndOnly);
+
+        architect.presenter.present(scopedEntry, exitEntry, forward, direction, new Callback() {
             @Override
             public void onComplete() {
-                Logger.d("Destroy scope: %s", exitScope.getName());
-                exitScope.destroy();
+                if (!enterEntry.isModal()) {
+                    currentScope.destroy();
+                    Logger.d("Destroy scope: %s", currentScope.getName());
+                }
 
                 endDispatch();
                 startDispatch(); // maybe something else to dispatch
@@ -382,20 +394,23 @@ class Dispatcher {
 
 
     private MortarScope buildScope(History.Entry entry, String scopeName) {
-        return MortarFactory.createScope(navigator.getScope(), entry.path, scopeName);
+        return MortarFactory.createScope(architect.getScope(), entry.path, scopeName);
     }
 
     private String buildScopeName(History.Entry entry) {
-        return String.format("ARCHITECT_SCOPE_%s_%d", entry.path.getClass().getName(), navigator.history.getEntryScopeId(entry));
+        return String.format("ARCHITECT_SCOPE_%s_%d", entry.path.getClass().getName(), architect.history.getEntryScopeId(entry));
     }
 
-    private ScopedEntry buildScopedEntry(History.Entry entry, boolean findFirst) {
+    private ScopedEntry buildScopedEntry(History.Entry entry, MortarScope parent, boolean findFirst, boolean findOnly) {
         String scopeName = buildScopeName(entry);
 
         if (findFirst) {
-            MortarScope scope = navigator.getScope().findChild(scopeName);
+            MortarScope scope = parent.findChild(scopeName);
             if (scope != null) {
+                Logger.d("Reusing existing scope: %s", scopeName);
                 return new ScopedEntry(entry, scope);
+            } else if (findOnly) {
+                throw new IllegalStateException("Cannot find scope with find only: " + scopeName);
             }
         }
 

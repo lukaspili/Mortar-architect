@@ -18,7 +18,7 @@ import mortar.MortarScope;
 class Presenter {
 
     private final Transitions transitions;
-    private NavigatorView view;
+    private ArchitectView view;
     private Dispatcher.Callback dispatchingCallback;
     private boolean active;
 
@@ -47,7 +47,7 @@ class Presenter {
         sessionId *= -1;
     }
 
-    void attach(NavigatorView view) {
+    void attach(ArchitectView view) {
         Preconditions.checkNotNull(view, "Cannot attach null navigator view");
         Preconditions.checkNull(this.view, "Current navigator view not null, did you forget to detach the previous view?");
         Preconditions.checkArgument(!active, "Navigator view must be inactive before attaching");
@@ -182,13 +182,19 @@ class Presenter {
         }
 
         final View enterView;
-        if (enterDispatchEntry.entry.isModal()) {
+        if (!forward && enterDispatchEntry.entry.isModal()) {
+            // modal and backward means reuse bottom view as enter view
             enterView = null;
-            throw new RuntimeException("Yo");
         } else {
             Context context = enterDispatchEntry.scope.createContext(view.getContext());
             enterView = enterDispatchEntry.entry.path.createView(context, view);
         }
+
+        final boolean dontRemoveExitView = forward && enterDispatchEntry.entry.isModal();
+
+        // modal
+        // forward: create new view for modal - dont remove exit view
+        // backward: bottom view is new view - remove exit view
 
 
         // create or reuse view
@@ -225,7 +231,7 @@ class Presenter {
         // find transition
         final ViewTransition transition;
         if (view.hasCurrentView()) {
-            transition = transitions.find(enterDispatchEntry.entry.transition);
+            transition = transitions.find(enterDispatchEntry.entry.transition, !enterDispatchEntry.entry.isModal());
         } else {
             transition = null;
         }
@@ -236,16 +242,16 @@ class Presenter {
             enterView.restoreHierarchyState(enterDispatchEntry.entry.viewState);
         }
 
-        view.beginTransition(enterView, forward, sessionId, new NavigatorView.Callback2() {
+        view.beginTransition(enterView, forward, sessionId, new ArchitectView.Callback2() {
 
             @Override
             public void onViewReady(View enterView, final View exitView, int sessionId) {
                 if (!isCurrentSession(sessionId)) return;
 
                 if (transition != null) {
-                    performTransition(enterView, exitView, transition, viewTransitionDirection, sessionId);
+                    performTransition(enterView, exitView, dontRemoveExitView, transition, viewTransitionDirection, sessionId);
                 } else {
-                    commitTransition(exitView, sessionId);
+                    commitTransition(exitView, dontRemoveExitView, sessionId);
                 }
             }
         });
@@ -276,22 +282,22 @@ class Presenter {
 //        });
     }
 
-    private void performTransition(View enterView, final View exitView, ViewTransition transition, int transitionDirection, final int sessionId) {
+    private void performTransition(View enterView, final View exitView, final boolean dontRemoveExitView, ViewTransition transition, int transitionDirection, final int sessionId) {
         AnimatorSet set = new AnimatorSet();
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                commitTransition(exitView, sessionId);
+                commitTransition(exitView, dontRemoveExitView, sessionId);
             }
         });
         transition.performTransition(enterView, exitView, transitionDirection, set);
         set.start();
     }
 
-    private void commitTransition(View exitView, int sessionId) {
+    private void commitTransition(View exitView, boolean dontRemoveExitView, int sessionId) {
         if (!isCurrentSession(sessionId)) return;
 
-        view.endTransition(exitView);
+        view.endTransition(exitView, !dontRemoveExitView);
         completeDispatchingCallback();
     }
 

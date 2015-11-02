@@ -6,7 +6,7 @@ import com.mortarnav.deps.WithActivityDependencies;
 import com.mortarnav.mvp.home.HomeScreen;
 import com.mortarnav.mvp.slides.SlidesPresenter;
 
-import architect.Navigator;
+import architect.Architect;
 import architect.robot.AutoScreen;
 import architect.robot.NavigationParam;
 import autodagger.AutoComponent;
@@ -34,6 +34,6 @@ public class SlidePagePresenter extends ViewPresenter<SlidePageView> {
     }
 
     public void buttonClick() {
-        Navigator.get(getView()).push(new HomeScreen("New Home from SlidePage"));
+        Architect.get(getView()).push(new HomeScreen("New Home from SlidePage"));
     }
 }

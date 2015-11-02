@@ -8,8 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.mortarnav.deps.WithActivityDependencies;
 import com.mortarnav.mvp.home.HomeScreen;
 
-import architect.Navigator;
-import architect.NavigatorView;
+import architect.Architect;
+import architect.ArchitectView;
 import architect.commons.ActivityArchitector;
 import architect.commons.Architected;
 import architect.commons.transition.StandardTransition;
@@ -36,10 +36,10 @@ import mortar.bundler.BundleServiceRunner;
 public class MainActivity extends AppCompatActivity {
 
     private MortarScope scope;
-    private Navigator navigator;
+    private Architect architect;
 
     @Bind(R.id.navigator_container)
-    protected NavigatorView containerView;
+    protected ArchitectView containerView;
 
     @Override
     public Object getSystemService(@NonNull String name) {
@@ -56,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
 
         scope = ActivityArchitector.onCreateScope(this, savedInstanceState, new Architected() {
             @Override
-            public Navigator createNavigator() {
-                Navigator navigator = new Navigator(new Parceler());
-                navigator.transitions().setDefault(new StandardTransition());
-                return navigator;
+            public Architect createNavigator() {
+                Architect architect = new Architect(new Parceler());
+                architect.transitions().setPushDefault(new StandardTransition());
+                return architect;
             }
 
             @Override
@@ -76,38 +76,38 @@ public class MainActivity extends AppCompatActivity {
         DaggerService.<MainActivityComponent>get(this).inject(this);
 
         // it is usually the best to create the navigator after everything else
-        navigator = ActivityArchitector.onCreateNavigator(this, scope, savedInstanceState, containerView, new HomeScreen("Default home path"));
+        architect = ActivityArchitector.onCreateNavigator(this, scope, savedInstanceState, containerView, new HomeScreen("Default home path"));
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        navigator.delegate().onNewIntent(intent);
+        architect.delegate().onNewIntent(intent);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         BundleServiceRunner.getBundleServiceRunner(scope).onSaveInstanceState(outState);
-        navigator.delegate().onSaveInstanceState(outState);
+        architect.delegate().onSaveInstanceState(outState);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        navigator.delegate().onStart();
+        architect.delegate().onStart();
     }
 
     @Override
     protected void onStop() {
-        navigator.delegate().onStop();
+        architect.delegate().onStop();
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        navigator.delegate().onDestroy();
-        navigator = null;
+        architect.delegate().onDestroy();
+        architect = null;
 
         if (isFinishing() && scope != null) {
             scope.destroy();
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (navigator.delegate().onBackPressed()) {
+        if (architect.delegate().onBackPressed()) {
             return;
         }
 

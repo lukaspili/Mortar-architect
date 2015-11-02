@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import architect.Navigator
-import architect.NavigatorView
+import architect.Architect
+import architect.ArchitectView
 import architect.commons.ActivityArchitector
 import architect.commons.Architected
 import architect.commons.transition.StandardTransition
@@ -30,8 +30,8 @@ import org.jetbrains.anko.UI
 public class MainActivity : AppCompatActivity() {
 
     private var scope: MortarScope? = null
-    private var navigator: Navigator? = null
-    private lateinit var containerView: NavigatorView
+    private var architect: Architect? = null
+    private lateinit var containerView: ArchitectView
 
     override fun getSystemService(name: String?): Any? {
         return if (scope?.hasService(name) ?: false) scope?.getService(name) else super.getSystemService(name);
@@ -41,9 +41,9 @@ public class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         scope = ActivityArchitector.onCreateScope(this, savedInstanceState, object : Architected {
-            override fun createNavigator(): Navigator {
-                val navigator = Navigator(Parceler())
-                navigator.transitions().setDefault(StandardTransition())
+            override fun createNavigator(): Architect {
+                val navigator = Architect(Parceler())
+                navigator.transitions().setPushDefault(StandardTransition())
                 return navigator
             }
 
@@ -57,7 +57,7 @@ public class MainActivity : AppCompatActivity() {
         setupView()
 
         DaggerService.get<MainActivityComponent>(this).inject(this)
-        navigator = ActivityArchitector.onCreateNavigator(this, scope, savedInstanceState, containerView, HomeScreen("test1", "test2"))
+        architect = ActivityArchitector.onCreateNavigator(this, scope, savedInstanceState, containerView, HomeScreen("test1", "test2"))
     }
 
     private fun setupView() {
@@ -70,28 +70,28 @@ public class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        navigator?.delegate()?.onNewIntent(intent)
+        architect?.delegate()?.onNewIntent(intent)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         BundleServiceRunner.getBundleServiceRunner(scope).onSaveInstanceState(outState)
-        navigator?.delegate()?.onSaveInstanceState(outState)
+        architect?.delegate()?.onSaveInstanceState(outState)
     }
 
     override fun onStart() {
         super.onStart()
-        navigator?.delegate()?.onStart()
+        architect?.delegate()?.onStart()
     }
 
     override fun onStop() {
-        navigator?.delegate()?.onStop()
+        architect?.delegate()?.onStop()
         super.onStop()
     }
 
     override fun onDestroy() {
-        navigator?.delegate()?.onDestroy()
-        navigator = null
+        architect?.delegate()?.onDestroy()
+        architect = null
 
         if (isFinishing) {
             scope?.destroy()
@@ -102,7 +102,7 @@ public class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (navigator?.delegate()?.onBackPressed() ?: false) {
+        if (architect?.delegate()?.onBackPressed() ?: false) {
             return
         }
 

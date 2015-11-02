@@ -1,18 +1,21 @@
 package architect;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class Transitions {
 
-    Map<String, ViewTransition> transitions = new HashMap<>();
-    ViewTransition defaultViewTransition;
+    SimpleArrayMap<String, ViewTransition> transitions = new SimpleArrayMap<>();
+    ViewTransition pushDefaultViewTransition;
+    ViewTransition showDefaultViewTransition;
 
-    public Transitions setDefault(ViewTransition transition) {
-        defaultViewTransition = transition;
+    public Transitions setPushDefault(ViewTransition transition) {
+        pushDefaultViewTransition = transition;
+        return this;
+    }
+
+    public Transitions showPushDefault(ViewTransition transition) {
+        showDefaultViewTransition = transition;
         return this;
     }
 
@@ -21,9 +24,9 @@ public class Transitions {
         return this;
     }
 
-    ViewTransition find(String name) {
+    ViewTransition find(String name, boolean push) {
         if (name == null) {
-            return defaultViewTransition;
+            return push ? pushDefaultViewTransition : showDefaultViewTransition;
         }
 
         return transitions.get(name);

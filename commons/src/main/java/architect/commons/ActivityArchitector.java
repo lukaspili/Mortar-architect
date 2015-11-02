@@ -3,8 +3,8 @@ package architect.commons;
 import android.app.Activity;
 import android.os.Bundle;
 
-import architect.Navigator;
-import architect.NavigatorView;
+import architect.Architect;
+import architect.ArchitectView;
 import architect.ScreenPath;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
@@ -19,14 +19,14 @@ public class ActivityArchitector {
         MortarScope scope = MortarScope.findChild(activity.getApplicationContext(), scopeName);
         if (scope == null) {
             final MortarScope parentScope = MortarScope.getScope(activity.getApplicationContext());
-            final Navigator navigator = architected.createNavigator();
+            final Architect architect = architected.createNavigator();
 
             MortarScope.Builder builder = parentScope.buildChild()
                     .withService(BundleServiceRunner.SERVICE_NAME, new BundleServiceRunner())
-                    .withService(Navigator.SERVICE_NAME, navigator);
+                    .withService(Architect.SERVICE_NAME, architect);
             architected.configureScope(builder, parentScope);
             scope = builder.build(scopeName);
-            scope.register(navigator);
+            scope.register(architect);
         }
 
         BundleServiceRunner.getBundleServiceRunner(scope).onCreate(savedInstanceState);
@@ -34,10 +34,10 @@ public class ActivityArchitector {
         return scope;
     }
 
-    public static Navigator onCreateNavigator(Activity activity, MortarScope scope, Bundle savedInstanceState, NavigatorView navigatorView, ScreenPath... defaultPaths) {
-        Navigator navigator = scope.getService(Navigator.SERVICE_NAME);
-        navigator.delegate().onCreate(activity.getIntent(), savedInstanceState, navigatorView, defaultPaths);
-        return navigator;
+    public static Architect onCreateNavigator(Activity activity, MortarScope scope, Bundle savedInstanceState, ArchitectView architectView, ScreenPath... defaultPaths) {
+        Architect architect = scope.getService(Architect.SERVICE_NAME);
+        architect.delegate().onCreate(activity.getIntent(), savedInstanceState, architectView, defaultPaths);
+        return architect;
     }
 
 }

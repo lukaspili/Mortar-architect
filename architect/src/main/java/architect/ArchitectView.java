@@ -12,16 +12,19 @@ import architect.nav.HandlesBack;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class NavigatorView extends FrameLayout implements HandlesBack {
+public class ArchitectView extends FrameLayout implements HandlesBack {
 
     int sessionId;
     private boolean interactionsDisabled;
 
-    public NavigatorView(Context context) {
+    private View transitionExitView;
+    private boolean transitionRemoveExitView;
+
+    public ArchitectView(Context context) {
         super(context);
     }
 
-    public NavigatorView(Context context, AttributeSet attrs) {
+    public ArchitectView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -46,21 +49,29 @@ public class NavigatorView extends FrameLayout implements HandlesBack {
         Preconditions.checkArgument(sessionId > 0, "Cannot show while session is not valid");
         interactionsDisabled = true;
 
-        View exitView = getCurrentView();
-        Preconditions.checkNotNull(exitView, "exitView cannot be null");
+        transitionExitView = getCurrentView();
+        Preconditions.checkNotNull(transitionExitView, "exitView cannot be null");
 
-        if (forward) {
-            addView(enterView);
+        if (enterView == null) {
+            Preconditions.checkArgument(!forward, "Reuse enter view in forward only");
+            enterView = getChildAt(getChildCount() - 2);
         } else {
-            addView(enterView, getChildCount() - 1);
+            if (forward) {
+                addView(enterView);
+            } else {
+                addView(enterView, getChildCount() - 1);
+            }
         }
 
-        measureAndGetTransition(enterView, exitView, sessionId, callback);
+        measureAndGetTransition(enterView, transitionExitView, sessionId, callback);
     }
 
-    void endTransition(View exitView) {
-        Preconditions.checkArgument(interactionsDisabled, "NavigatorView end but should not");
-        removeView(exitView);
+    void endTransition(View exitView, boolean removeExitView) {
+        Preconditions.checkArgument(interactionsDisabled, "ArchitectView end but should not");
+
+        if (removeExitView) {
+            removeView(exitView);
+        }
 
         interactionsDisabled = false;
     }

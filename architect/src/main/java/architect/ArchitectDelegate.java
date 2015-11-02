@@ -9,22 +9,22 @@ import android.os.Bundle;
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class NavigatorLifecycleDelegate {
+public class ArchitectDelegate {
 
     private static final String HISTORY_KEY =
-            Navigator.class.getSimpleName() + "_history";
+            Architect.class.getSimpleName() + "_history";
 
-    private final Navigator navigator;
+    private final Architect architect;
 
-    public NavigatorLifecycleDelegate(Navigator navigator) {
-        this.navigator = navigator;
+    public ArchitectDelegate(Architect architect) {
+        this.architect = architect;
     }
 
-    public void onCreate(Intent intent, Bundle savedInstanceState, NavigatorView containerView, ScreenPath... defaultPaths) {
+    public void onCreate(Intent intent, Bundle savedInstanceState, ArchitectView containerView, ScreenPath... defaultPaths) {
         Preconditions.checkNotNull(containerView, "Container view cannot not be null");
         Preconditions.checkArgument(defaultPaths != null && defaultPaths.length > 0, "Default path cannot not be null nor empty");
 
-        if (navigator.history.shouldInit()) {
+        if (architect.history.shouldInit()) {
             Bundle bundle = null;
             if (intent != null && intent.hasExtra(HISTORY_KEY)) {
                 bundle = intent.getBundleExtra(HISTORY_KEY);
@@ -33,27 +33,27 @@ public class NavigatorLifecycleDelegate {
             }
 
             if (bundle != null) {
-                navigator.history.init(bundle);
+                architect.history.init(bundle);
             } else {
-                navigator.history.init(defaultPaths);
+                architect.history.init(defaultPaths);
             }
         }
 
-        navigator.presenter.attach(containerView);
-        navigator.dispatcher.activate();
+        architect.presenter.attach(containerView);
+        architect.dispatcher.activate();
     }
 
     //TODO: copy past from Flow, but not tested
     public void onNewIntent(Intent intent) {
         Preconditions.checkNotNull(intent, "Intent may not be null");
-        if (navigator.history.shouldInit() && intent.hasExtra(HISTORY_KEY)) {
-            navigator.history.init(intent.getBundleExtra(HISTORY_KEY));
+        if (architect.history.shouldInit() && intent.hasExtra(HISTORY_KEY)) {
+            architect.history.init(intent.getBundleExtra(HISTORY_KEY));
         }
     }
 
     public void onSaveInstanceState(Bundle outState) {
         Preconditions.checkNotNull(outState, "SaveInstanceState bundle may not be null");
-        Bundle bundle = navigator.history.toBundle();
+        Bundle bundle = architect.history.toBundle();
         if (bundle != null) {
             outState.putBundle(HISTORY_KEY, bundle);
         }
@@ -61,25 +61,25 @@ public class NavigatorLifecycleDelegate {
 
     public void onStart() {
         Logger.d("Lifecycle onStart");
-        navigator.presenter.activate();
-        navigator.dispatcher.startDispatch();
+        architect.presenter.activate();
+        architect.dispatcher.startDispatch();
     }
 
     public void onStop() {
         Logger.d("Lifecycle onStop");
-        navigator.presenter.desactivate();
+        architect.presenter.desactivate();
     }
 
     public void onDestroy() {
-        navigator.dispatcher.desactivate();
-        navigator.presenter.detach();
+        architect.dispatcher.desactivate();
+        architect.presenter.detach();
     }
 
     public boolean onBackPressed() {
-        if (navigator.presenter.containerViewOnBackPressed()) {
+        if (architect.presenter.containerViewOnBackPressed()) {
             return true;
         }
 
-        return navigator.back();
+        return architect.back();
     }
 }
