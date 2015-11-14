@@ -2,7 +2,7 @@ package architect.kotlinapp.util
 
 import android.view.View
 import android.view.ViewManager
-import architect.ArchitectView
+import architect.NavigationView
 import architect.kotlinapp.mvp.home.content.HomeContentView
 import architect.kotlinapp.mvp.home.drawer.HomeDrawerView
 import org.jetbrains.anko.custom.ankoView
@@ -13,8 +13,8 @@ import org.jetbrains.anko.custom.ankoView
 
 public inline fun ViewManager.navigatorView() = navigatorView {}
 
-public inline fun ViewManager.navigatorView(init: ArchitectView.() -> Unit): ArchitectView {
-    return ankoView({ ArchitectView(it) }, init)
+public inline fun ViewManager.navigatorView(init: NavigationView.() -> Unit): NavigationView {
+    return ankoView({ NavigationView(it) }, init)
 }
 
 

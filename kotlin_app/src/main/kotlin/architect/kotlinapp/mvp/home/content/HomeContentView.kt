@@ -2,7 +2,7 @@ package architect.kotlinapp.mvp.home.content
 
 import android.content.Context
 import architect.MortarFactory
-import architect.Screen
+import architect.ArchitectedScope
 import architect.SubScreenService
 import architect.commons.view.PresentedFrameLayout
 import architect.kotlinapp.mvp.home.content.screen.HomeContentScreenComponent

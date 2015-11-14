@@ -15,10 +15,10 @@ import mortar.MortarScope;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-class Presenter {
+class NavigationPresenter {
 
     private final Transitions transitions;
-    private ArchitectView view;
+    private NavigationView view;
     private Dispatcher.Callback dispatchingCallback;
     private boolean active;
 
@@ -32,7 +32,7 @@ class Presenter {
      */
     private int sessionId = 0;
 
-    Presenter(Transitions transitions) {
+    NavigationPresenter(Transitions transitions) {
         this.transitions = transitions;
     }
 
@@ -47,7 +47,7 @@ class Presenter {
         sessionId *= -1;
     }
 
-    void attach(ArchitectView view) {
+    void attach(NavigationView view) {
         Preconditions.checkNotNull(view, "Cannot attach null navigator view");
         Preconditions.checkNull(this.view, "Current navigator view not null, did you forget to detach the previous view?");
         Preconditions.checkArgument(!active, "Navigator view must be inactive before attaching");
@@ -242,7 +242,7 @@ class Presenter {
             enterView.restoreHierarchyState(enterDispatchEntry.entry.viewState);
         }
 
-        view.beginTransition(enterView, forward, sessionId, new ArchitectView.Callback2() {
+        view.beginTransition(enterView, forward, sessionId, new NavigationView.Callback2() {
 
             @Override
             public void onViewReady(View enterView, final View exitView, int sessionId) {

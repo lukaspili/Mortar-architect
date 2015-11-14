@@ -4,7 +4,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
 
-import architect.ViewTransition;
+import architect.Transition;
 
 /**
  * Left / right transition
@@ -24,7 +24,7 @@ public class LateralTransition extends AbstractViewTransition<View, View> {
     public void performTransition(View enterView, View exitView, int direction, AnimatorSet set) {
         super.performTransition(enterView, exitView, direction, set);
 
-        if (direction == ViewTransition.DIRECTION_FORWARD) {
+        if (direction == Transition.DIRECTION_FORWARD) {
             set.play(ObjectAnimator.ofFloat(enterView, View.TRANSLATION_X, enterView.getWidth(), 0));
             set.play(ObjectAnimator.ofFloat(exitView, View.TRANSLATION_X, 0, -exitView.getWidth()));
         } else {

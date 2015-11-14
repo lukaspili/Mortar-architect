@@ -12,9 +12,9 @@ import com.mortarnav.mvp.banner.screen.BannerScreen;
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
 
-import architect.ScreenPath;
+import architect.Screen;
 import architect.SubScreenService;
-import architect.nav.HandlesNavigationResult;
+import architect.behavior.ReceivesResult;
 import architect.robot.dagger.DaggerScope;
 import architect.robot.dagger.DaggerService;
 import dagger.Provides;
@@ -28,7 +28,7 @@ import mortar.MortarScope;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @Parcel(parcelsIndex = false)
-public class HomeScreen implements ScreenPath, HandlesNavigationResult<String> {
+public class HomeScreen implements Screen, ReceivesResult<String> {
 
     HomePresenter.HomeState state;
 
@@ -74,7 +74,7 @@ public class HomeScreen implements ScreenPath, HandlesNavigationResult<String> {
     }
 
     @Override
-    public void setNavigationResult(String result) {
+    public void setResult(String result) {
         this.result = result;
     }
 

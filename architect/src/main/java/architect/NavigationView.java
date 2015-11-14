@@ -12,7 +12,7 @@ import architect.nav.HandlesBack;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ArchitectView extends FrameLayout implements HandlesBack {
+public class NavigationView extends FrameLayout implements HandlesBack {
 
     int sessionId;
     private boolean interactionsDisabled;
@@ -20,11 +20,11 @@ public class ArchitectView extends FrameLayout implements HandlesBack {
     private View transitionExitView;
     private boolean transitionRemoveExitView;
 
-    public ArchitectView(Context context) {
+    public NavigationView(Context context) {
         super(context);
     }
 
-    public ArchitectView(Context context, AttributeSet attrs) {
+    public NavigationView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

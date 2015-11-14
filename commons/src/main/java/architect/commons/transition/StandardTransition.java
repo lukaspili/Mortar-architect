@@ -5,18 +5,17 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
-import architect.ViewTransition;
+import architect.Transition;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class StandardTransition implements ViewTransition<View, View> {
+public class StandardTransition implements Transition<View, View> {
 
     public StandardTransition() {
     }
@@ -24,7 +23,7 @@ public class StandardTransition implements ViewTransition<View, View> {
     @Override
     public void performTransition(View enterView, View exitView, int direction, AnimatorSet set) {
         float translateY = exitView.getHeight() * 8 / 100;
-        if (direction == ViewTransition.DIRECTION_FORWARD) {
+        if (direction == Transition.DIRECTION_FORWARD) {
             Animator animator1 = ObjectAnimator.ofFloat(enterView, View.ALPHA, .0f, 1.f).setDuration(200);
             animator1.setInterpolator(new DecelerateInterpolator(2.0f));
             set.play(animator1);

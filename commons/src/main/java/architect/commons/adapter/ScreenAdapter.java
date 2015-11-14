@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import java.util.Arrays;
 import java.util.List;
 
-import architect.ScreenPath;
+import architect.Screen;
 import architect.MortarFactory;
 import mortar.MortarScope;
 
@@ -18,13 +18,13 @@ import mortar.MortarScope;
 public class ScreenAdapter extends PagerAdapter {
 
     private final Context context;
-    private final List<ScreenPath> paths;
+    private final List<Screen> paths;
 
-    public ScreenAdapter(Context context, ScreenPath... paths) {
+    public ScreenAdapter(Context context, Screen... paths) {
         this(context, Arrays.asList(paths));
     }
 
-    public ScreenAdapter(Context context, List<ScreenPath> paths) {
+    public ScreenAdapter(Context context, List<Screen> paths) {
         this.context = context;
         this.paths = paths;
     }
@@ -36,7 +36,7 @@ public class ScreenAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        ScreenPath path = paths.get(position);
+        Screen path = paths.get(position);
 
         Context pageContext = MortarFactory.createContext(context, path, String.valueOf(position));
         View newChild = path.createView(pageContext, container);

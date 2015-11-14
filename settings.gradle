@@ -1,4 +1,4 @@
-include ':architect',
+include ':core', ':navigation',
         ':robot', 'robot-compiler',
         ':commons',
         ':app', ':kotlin_app'

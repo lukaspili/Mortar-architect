@@ -9,7 +9,7 @@ import com.mortarnav.deps.WithActivityDependencies;
 import com.mortarnav.mvp.home.HomeScreen;
 
 import architect.Architect;
-import architect.ArchitectView;
+import architect.NavigationView;
 import architect.commons.ActivityArchitector;
 import architect.commons.Architected;
 import architect.commons.transition.StandardTransition;
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private Architect architect;
 
     @Bind(R.id.navigator_container)
-    protected ArchitectView containerView;
+    protected NavigationView containerView;
 
     @Override
     public Object getSystemService(@NonNull String name) {

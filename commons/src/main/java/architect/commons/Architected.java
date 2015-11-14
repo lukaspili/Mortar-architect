@@ -1,12 +1,12 @@
 package architect.commons;
 
 import architect.Architect;
-import architect.Screen;
+import architect.ArchitectedScope;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public interface Architected extends Screen {
+public interface Architected extends ArchitectedScope {
 
     Architect createNavigator();
 }

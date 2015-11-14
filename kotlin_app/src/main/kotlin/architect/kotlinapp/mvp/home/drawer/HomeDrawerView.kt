@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
 import architect.MortarFactory
-import architect.Screen
+import architect.ArchitectedScope
 import architect.SubScreenService
 import architect.commons.view.PresentedLinearLayout
 import architect.kotlinapp.mvp.home.drawer.screen.HomeDrawerScreenComponent

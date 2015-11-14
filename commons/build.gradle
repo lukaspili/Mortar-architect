@@ -17,7 +17,7 @@ android {
 }
 
 dependencies {
-    compile project(':architect')
+    compile project(':core')
     compile deps.appcompat_v7
 
     provided deps.javax_inject

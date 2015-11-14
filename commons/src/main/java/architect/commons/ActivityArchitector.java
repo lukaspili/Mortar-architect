@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import architect.Architect;
-import architect.ArchitectView;
-import architect.ScreenPath;
+import architect.NavigationView;
+import architect.Screen;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 
@@ -34,7 +34,7 @@ public class ActivityArchitector {
         return scope;
     }
 
-    public static Architect onCreateNavigator(Activity activity, MortarScope scope, Bundle savedInstanceState, ArchitectView architectView, ScreenPath... defaultPaths) {
+    public static Architect onCreateNavigator(Activity activity, MortarScope scope, Bundle savedInstanceState, NavigationView architectView, Screen... defaultPaths) {
         Architect architect = scope.getService(Architect.SERVICE_NAME);
         architect.delegate().onCreate(activity.getIntent(), savedInstanceState, architectView, defaultPaths);
         return architect;

@@ -8,7 +8,7 @@ import android.view.View;
 import com.mortarnav.R;
 import com.mortarnav.mvp.slides.screen.SlidesScreenComponent;
 
-import architect.ScreenPath;
+import architect.Screen;
 import architect.commons.adapter.ScreenAdapter;
 import architect.commons.view.PresentedFrameLayout;
 import architect.robot.dagger.DaggerService;
@@ -38,7 +38,7 @@ public class SlidesView extends PresentedFrameLayout<SlidesPresenter> {
         toolbar.setTitle("Slide View");
     }
 
-    public void show(ScreenPath... screens) {
+    public void show(Screen... screens) {
         ScreenAdapter adapter = new ScreenAdapter(getContext(), screens);
         viewPager.setAdapter(adapter);
     }

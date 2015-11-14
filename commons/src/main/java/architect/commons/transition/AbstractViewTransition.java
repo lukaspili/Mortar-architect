@@ -3,12 +3,12 @@ package architect.commons.transition;
 import android.animation.AnimatorSet;
 import android.view.View;
 
-import architect.ViewTransition;
+import architect.Transition;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class AbstractViewTransition<T_Enter extends View, T_Exit extends View> implements ViewTransition<T_Enter, T_Exit> {
+public class AbstractViewTransition<T_Enter extends View, T_Exit extends View> implements Transition<T_Enter, T_Exit> {
 
     protected Config config;
 

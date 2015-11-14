@@ -2,19 +2,19 @@ package architect.kotlinapp
 
 import android.os.Parcelable
 import architect.ScreenParceler
-import architect.ScreenPath
+import architect.Screen
 import org.parceler.Parcels
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-class Parceler : ScreenParceler<ScreenPath> {
+class Parceler : ScreenParceler<Screen> {
 
-    override fun wrap(path: ScreenPath?): Parcelable? {
-        return Parcels.wrap<ScreenPath>(path)
+    override fun wrap(path: Screen?): Parcelable? {
+        return Parcels.wrap<Screen>(path)
     }
 
-    override fun unwrap(parcelable: Parcelable?): ScreenPath? {
-        return Parcels.unwrap<ScreenPath>(parcelable)
+    override fun unwrap(parcelable: Parcelable?): Screen? {
+        return Parcels.unwrap<Screen>(parcelable)
     }
 }

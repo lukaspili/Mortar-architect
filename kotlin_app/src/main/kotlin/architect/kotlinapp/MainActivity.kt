@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import architect.Architect
-import architect.ArchitectView
+import architect.NavigationView
 import architect.commons.ActivityArchitector
 import architect.commons.Architected
 import architect.commons.transition.StandardTransition
@@ -31,7 +31,7 @@ public class MainActivity : AppCompatActivity() {
 
     private var scope: MortarScope? = null
     private var architect: Architect? = null
-    private lateinit var containerView: ArchitectView
+    private lateinit var containerView: NavigationView
 
     override fun getSystemService(name: String?): Any? {
         return if (scope?.hasService(name) ?: false) scope?.getService(name) else super.getSystemService(name);

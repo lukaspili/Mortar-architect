@@ -36,7 +36,8 @@ android {
 dependencies {
     compile 'com.android.support:design:22.2.1'
 
-    compile project(':architect')
+    compile project(':core')
+    compile project(':navigation')
     compile project(':commons')
     compile project(':robot')
     apt project(':robot-compiler')

@@ -4,7 +4,7 @@ import android.os.Parcelable;
 
 import org.parceler.Parcels;
 
-import architect.ScreenPath;
+import architect.Screen;
 import architect.ScreenParceler;
 
 /**
@@ -15,12 +15,12 @@ import architect.ScreenParceler;
 public class Parceler implements ScreenParceler {
 
     @Override
-    public Parcelable wrap(ScreenPath path) {
+    public Parcelable wrap(Screen path) {
         return Parcels.wrap(path);
     }
 
     @Override
-    public ScreenPath unwrap(Parcelable parcelable) {
+    public Screen unwrap(Parcelable parcelable) {
         return Parcels.unwrap(parcelable);
     }
 }
