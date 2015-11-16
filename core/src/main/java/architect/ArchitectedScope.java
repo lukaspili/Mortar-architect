@@ -1,7 +1,5 @@
 package architect;
 
-import mortar.MortarScope;
-
 /**
  * Wrapper on top of a MortarScope is:
  * - MortarScope (+ whatever you put inside, such as Dagger2 component)
@@ -14,6 +12,6 @@ import mortar.MortarScope;
  */
 public interface ArchitectedScope {
 
-    void configureScope(MortarScope.Builder builder, MortarScope parentScope);
+//    void configureScope(MortarScope.Builder builder, MortarScope parentScope);
 
 }

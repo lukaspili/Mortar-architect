@@ -4,8 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 /**
- * Hook up Navigator to the Android lifecyle
- * Can be used both in Activity (call the equivalent Activity methods) and in ViewPresenter
+ * Hook up Architect to the Android lifecyle
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
@@ -31,11 +30,11 @@ public class ArchitectDelegate {
             architect.history.fromBundle(bundle);
         }
 
-        architect.presenter.attach(containerView);
+//        architect.presenter.attach(containerView);
         architect.dispatcher.activate();
     }
 
-    //TODO: test
+    //TODO: to be tested
     public void onNewIntent(Intent intent) {
         Preconditions.checkNotNull(intent, "Intent may not be null");
         if (intent.hasExtra(HISTORY_KEY)) {
@@ -52,26 +51,28 @@ public class ArchitectDelegate {
     }
 
     public void onStart() {
-        Logger.d("Lifecycle onStart");
-        architect.presenter.activate();
-        architect.dispatcher.startDispatch();
+//        Logger.d("Lifecycle onStart");
+//        architect.presenter.activate();
+//        architect.dispatcher.startDispatch();
     }
 
     public void onStop() {
-        Logger.d("Lifecycle onStop");
-        architect.presenter.desactivate();
+//        Logger.d("Lifecycle onStop");
+//        architect.presenter.desactivate();
     }
 
     public void onDestroy() {
+        architect.detach();
         architect.dispatcher.desactivate();
-        architect.presenter.detach();
+
+//        architect.presenter.detach();
     }
 
     public boolean onBackPressed() {
-        if (architect.presenter.containerViewOnBackPressed()) {
+        if (architect.getTopPresenter().onBackPressed()) {
             return true;
         }
 
-        return architect.pop();
+        return architect.controller.pop();
     }
 }

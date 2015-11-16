@@ -280,11 +280,11 @@ public class History {
 //    }
 
     public static class Entry {
-        final Screen screen;
         final String service;
         final String tag;
-        final Bundle extras;
-        SparseArray<Parcelable> viewState;
+        public final Screen screen;
+        public final Bundle extras;
+        public SparseArray<Parcelable> viewState;
         boolean dispatched;
 
         public Entry(Screen screen, String service, String tag, Bundle extras) {

@@ -20,9 +20,9 @@ public class ArchitectDelegate {
         this.architect = architect;
     }
 
-    public void onCreate(Intent intent, Bundle savedInstanceState, NavigationView containerView, ScreenPath... defaultPaths) {
-        Preconditions.checkNotNull(containerView, "Container view cannot not be null");
-        Preconditions.checkArgument(defaultPaths != null && defaultPaths.length > 0, "Default path cannot not be null nor empty");
+    public void onCreate(Intent intent, Bundle savedInstanceState) {
+//        Preconditions.checkNotNull(containerView, "Container view cannot not be null");
+//        Preconditions.checkArgument(defaultPaths != null && defaultPaths.length > 0, "Default path cannot not be null nor empty");
 
         if (architect.history.shouldInit()) {
             Bundle bundle = null;
@@ -35,11 +35,11 @@ public class ArchitectDelegate {
             if (bundle != null) {
                 architect.history.init(bundle);
             } else {
-                architect.history.init(defaultPaths);
+//                architect.history.init(defaultPaths);
             }
         }
 
-        architect.presenter.attach(containerView);
+//        architect.presenter.attach(containerView);
         architect.dispatcher.activate();
     }
 

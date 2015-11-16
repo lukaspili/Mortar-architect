@@ -2,19 +2,21 @@ package architect;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import mortar.MortarScope;
-import mortar.Scoped;
+import architect.mortar.Registration;
 
 /**
- * A
+ * Architect.register("popup", rootView, new BasicRegistration())
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class Architect implements Scoped {
+public class Architect {
 
     public static final String SERVICE_NAME = Architect.class.getName();
 
@@ -28,39 +30,94 @@ public class Architect implements Scoped {
     }
 
     final History history;
-    //    final Transitions transitions;
-//    final NavigationPresenter presenter;
     final ArchitectDelegate delegate;
-    final ServiceDelegate serviceDelegate;
+    final Controller controller;
     final Dispatcher dispatcher;
+
+    final Map<String, Service> services = new HashMap<>();
+    final Map<String, Presenter> presenters = new HashMap<>();
+
+
     final List<Extension> extensions;
-    private MortarScope scope;
+//    private MortarScope scope;
+
+    Presenter activePresenter;
 
     public Architect(ScreenParceler parceler) {
         history = new History(parceler);
-//        transitions = new Transitions();
         delegate = new ArchitectDelegate(this);
-        serviceDelegate = new ServiceDelegate(this);
+        controller = new Controller(this);
         dispatcher = new Dispatcher(this);
         extensions = new ArrayList<>();
     }
 
 
-    public void registerService(String name, Service service, Controller controller) {
+    public void register(String name, ViewGroup target, Registration registration) {
+        Service service = registration.createService(name, controller);
+        Presenter presenter = registration.createPresenter(target);
 
+        services.put(name, service);
+        presenters.put(name, presenter);
     }
 
-    public Service getService(String name) {
-        return null;
+    public <T extends Service> T getService(String name) {
+        return (T) services.get(name);
     }
 
-    public Controller getController(String name) {
-        return null;
+    Presenter getPresenter(String name) {
+        return presenters.get(name);
     }
+
+    Presenter getTopPresenter() {
+        return presenters.get(history.getTopDispatched().service);
+    }
+
+
+    void detach() {
+        services.clear();
+        presenters.clear();
+
+        for (Map.Entry<String, Service> entry : services.entrySet()) {
+
+        }
+    }
+
 
     public void registerAdapter(Extension adapter) {
 
     }
+
+
+    public ArchitectDelegate delegate() {
+        return delegate;
+    }
+
+
+    // Parcelable
+
+//    public Architect(Parcel in) {
+//
+//    }
+//
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel parcel, int i) {
+//        parcel.writeSerializable();
+//    }
+//
+//    public static final Parcelable.Creator<Architect> CREATOR = new Parcelable.Creator<Architect>() {
+//        public Architect createFromParcel(Parcel in) {
+//            return new Architect(in);
+//        }
+//
+//        public Architect[] newArray(int size) {
+//            return new Architect[size];
+//        }
+//    };
 
 
     // PUSH
@@ -329,21 +386,14 @@ public class Architect implements Scoped {
 //    }
 
 
-    /**
-     * Scope can be null if the method is called after the navigator scope was destroyed
-     * //TODO: is it really possible to be null?
-     */
-    MortarScope getScope() {
-        return scope;
-    }
+//    /**
+//     * Scope can be null if the method is called after the navigator scope was destroyed
+//     * //TODO: is it really possible to be null?
+//     */
+//    MortarScope getScope() {
+//        return scope;
+//    }
 
-    public ArchitectDelegate delegate() {
-        return delegate;
-    }
-
-    public ServiceDelegate serviceDelegate() {
-        return serviceDelegate;
-    }
 
 //    public Transitions transitions() {
 //        return transitions;
@@ -352,23 +402,23 @@ public class Architect implements Scoped {
 
     // Scoped
 
-    @Override
-    public void onEnterScope(MortarScope scope) {
-        Preconditions.checkNull(this.scope, "Cannot register navigator multiple times in a scope");
-        this.scope = scope;
-    }
-
-    /**
-     * Scope associated to navigator is destroyed
-     * Everything will be destroyed
-     */
-    @Override
-    public void onExitScope() {
-        Logger.d("Navigation scope exit");
-
-        // stop and kill the dispatcher
-        dispatcher.kill();
-
-        scope = null;
-    }
+//    @Override
+//    public void onEnterScope(MortarScope scope) {
+//        Preconditions.checkNull(this.scope, "Cannot register navigator multiple times in a scope");
+//        this.scope = scope;
+//    }
+//
+//    /**
+//     * Scope associated to navigator is destroyed
+//     * Everything will be destroyed
+//     */
+//    @Override
+//    public void onExitScope() {
+//        Logger.d("Navigation scope exit");
+//
+//        // stop and kill the dispatcher
+//        dispatcher.kill();
+//
+//        scope = null;
+//    }
 }

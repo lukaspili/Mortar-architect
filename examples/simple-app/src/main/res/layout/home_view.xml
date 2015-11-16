@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#2196F3"/>
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_orange_dark"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/home_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:id="@+id/home_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+            <Button
+                android:id="@+id/next_home_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Go to next home view"/>
+
+            <Button
+                android:id="@+id/show_popup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show popup"/>
+
+            <Button
+                android:id="@+id/replace_new_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Replace with new home"/>
+
+            <Button
+                android:id="@+id/show_returns_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Go to Returns Result"/>
+
+            <Button
+                android:id="@+id/back_root"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back to root"/>
+
+            <Button
+                android:id="@+id/home_set_new_stack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set new stack"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

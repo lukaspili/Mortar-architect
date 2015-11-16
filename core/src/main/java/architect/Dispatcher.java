@@ -4,8 +4,6 @@ package architect;
 import java.util.ArrayList;
 import java.util.List;
 
-import mortar.MortarScope;
-
 /**
  * Dispatch consequences of history manipulation
  *
@@ -37,6 +35,12 @@ class Dispatcher {
      * Attach the dispatcher on new context
      */
     void activate() {
+        Preconditions.checkArgument(!active, "Dispatcher already active");
+        Preconditions.checkArgument(entries.isEmpty(), "Dispatcher stack must be empty");
+
+        active = true;
+
+
 //        Preconditions.checkArgument(!active, "Dispatcher already active");
 //        Preconditions.checkArgument(entries.isEmpty(), "Dispatcher stack must be empty");
 //        Preconditions.checkNotNull(architect.getScope(), "Navigator scope cannot be null");
@@ -168,7 +172,7 @@ class Dispatcher {
         if (killed || dispatching || /* !architect.presenter.isActive() || */ entries.isEmpty())
             return;
         dispatching = true;
-        Preconditions.checkNotNull(architect.getScope(), "Dispatcher navigator scope cannot be null");
+//        Preconditions.checkNotNull(architect.getScope(), "Dispatcher navigator scope cannot be null");
         Preconditions.checkArgument(!architect.history.isEmpty(), "Cannot dispatch on empty history");
         Preconditions.checkArgument(!entries.isEmpty(), "Cannot dispatch on empty stack");
 
@@ -198,17 +202,17 @@ class Dispatcher {
 
         final DispatchEnv env = new DispatchEnv();
 
-        for (int i = 0; i < architect.extensions.size(); i++) {
-            architect.extensions.get(i).setUp(enterEntry, env);
-        }
+//        for (int i = 0; i < architect.extensions.size(); i++) {
+//            architect.extensions.get(i).setUp(enterEntry, env);
+//        }
 
-        Controller controller = architect.getController(enterEntry.service);
-        controller.show(enterEntry, env, new Controller.Callback() {
+        Presenter presenter = architect.getPresenter(enterEntry.service);
+        presenter.present(enterEntry, exitEntry, forward, env, new Callback() {
             @Override
             public void onComplete() {
-                for (int i = 0; i < architect.extensions.size(); i++) {
-                    architect.extensions.get(i).tearDown(enterEntry, env);
-                }
+//                for (int i = 0; i < architect.extensions.size(); i++) {
+//                    architect.extensions.get(i).tearDown(enterEntry, env);
+//                }
 
                 endDispatch();
                 startDispatch(); // maybe something else to dispatch
@@ -417,13 +421,13 @@ class Dispatcher {
 //    }
 
 
-    private MortarScope buildScope(History.Entry entry, String scopeName) {
-        return MortarFactory.createScope(architect.getScope(), entry.screen, scopeName);
-    }
+//    private MortarScope buildScope(History.Entry entry, String scopeName) {
+//        return MortarFactory.createScope(architect.getScope(), entry.screen, scopeName);
+//    }
 
-    private String buildScopeName(History.Entry entry) {
-        return String.format("ARCHITECT_SCOPE_%s_%d", entry.screen.getClass().getName(), architect.history.getEntryScopeId(entry));
-    }
+//    private String buildScopeName(History.Entry entry) {
+//        return String.format("ARCHITECT_SCOPE_%s_%d", entry.screen.getClass().getName(), architect.history.getEntryScopeId(entry));
+//    }
 
 //    private ScopedEntry buildScopedEntry(History.Entry entry, MortarScope parent, boolean findFirst, boolean findOnly) {
 //        String scopeName = buildScopeName(entry);
@@ -447,9 +451,9 @@ class Dispatcher {
         dispatching = false;
     }
 
-    interface Callback {
-        void onComplete();
-    }
+//    interface Callback {
+//        void onComplete();
+//    }
 
 //    static class Dispatch {
 //        final History.Entry entry;
@@ -471,5 +475,9 @@ class Dispatcher {
 //            this.entry = entry;
 //            this.scope = scope;
 //        }
+//    }
+
+//    public interface Callback {
+//        void onComplete();
 //    }
 }

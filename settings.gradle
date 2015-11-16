@@ -1,4 +1,9 @@
-include ':core', ':navigation',
-        ':robot', 'robot-compiler',
-        ':commons',
-        ':app', ':kotlin_app'
+include ':core',
+        ':services:presentation',
+//        ':navigation'
+//        ':robot'
+//        ':robot-compiler'
+//        ':commons'
+        ':examples:simple-app'
+//        ':app'
+// ':kotlin_app'

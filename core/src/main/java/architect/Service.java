@@ -5,10 +5,17 @@ package architect;
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public interface Service {
+public abstract class Service {
 
+    protected final String name;
+    protected final Controller controller;
 
-//    protected String where;
+    public Service(String name, Controller controller) {
+        this.name = name;
+        this.controller = controller;
+    }
+
+    //    protected String where;
 //    protected Architect architect;
 
 
