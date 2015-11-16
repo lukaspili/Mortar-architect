@@ -144,7 +144,7 @@ class Dispatcher {
         Preconditions.checkNull(nextEntry.receivedResult, "Next entry cannot have already a result");
 
         if (!entries.isEmpty()) {
-            boolean fastForwarded = fastForward(entry, previousEntry);
+            boolean fastForwarded = fastForward(entry, nextEntry, previousEntry);
             if (fastForwarded) {
                 return;
             }
@@ -176,8 +176,9 @@ class Dispatcher {
         });
     }
 
-    private boolean fastForward(History.Entry entry, History.Entry previousEntry) {
+    private boolean fastForward(History.Entry entry, History.Entry nextEntry, History.Entry previousEntry) {
         boolean fastForwarded = false;
+        boolean nextEntryDestroyed = false;
         List<Dispatch> modals = null;
         History.Entry nextDispatch = null;
         while (!entries.isEmpty() && (nextDispatch = entries.get(0)) != null) {
@@ -216,6 +217,11 @@ class Dispatcher {
                 History.Entry toDestroy = nextDispatch;
                 nextDispatch = navigator.history.getLeftOf(nextDispatch);
                 destroyDead(toDestroy);
+            } else if(nextEntry.dead && !nextEntryDestroyed) {
+                // in case of fastforward change between destroying upon root and then adding new alive entries
+                // be sure to destroy previous root, which is the next entry when the direction change happens
+                destroyDead(nextEntry);
+                nextEntryDestroyed = true;
             }
 
             Logger.d("Fast forward to next entry: %s", nextDispatch.scopeName);

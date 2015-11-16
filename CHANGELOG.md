@@ -1,5 +1,10 @@
 # Changelog
 
+## Mortar Architect 0.18 *11/16/15*
+
+ * Dispatching bug fix
+ 
+
 ## Mortar Architect 0.17 *10/01/15*
 
  * History bug fix
