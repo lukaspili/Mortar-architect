@@ -54,6 +54,7 @@ public class HomeView extends LinearLayout {
 
     @OnClick(R.id.show_popup)
     void showPopupClick() {
+        getArchitectPresentation().show(new HomeScreen("Next home " + ++count), "top");
     }
 
     @OnClick(R.id.replace_new_home)

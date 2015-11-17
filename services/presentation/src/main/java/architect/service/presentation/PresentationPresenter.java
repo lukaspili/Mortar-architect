@@ -4,10 +4,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import java.util.List;
+
 import architect.Callback;
 import architect.DispatchEnv;
 import architect.History;
 import architect.Presenter;
+import architect.service.commons.Container;
+import architect.service.commons.HandlesBack;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -20,17 +24,38 @@ public class PresentationPresenter extends Presenter {
         super(containerView);
     }
 
+    public void restore(List<History.Entry> entries) {
+//        for (int i = 0; i < ; i++) {
+//
+//        }
+    }
+
     @Override
-    public void present(History.Entry enterEntry, History.Entry exitEntry, boolean forward, DispatchEnv env, Callback callback) {
+    public void present(History.Entry enterEntry, History.Entry exitEntry, boolean forward, DispatchEnv env, final Callback callback) {
+        final Container container = getAsContainer();
+        container.willBeginTransition();
+
+        final Callback presentationCallback = new Callback() {
+            @Override
+            public void onComplete() {
+                container.didEndTransition();
+                callback.onComplete();
+            }
+        };
+
         if (forward) {
-            show(enterEntry, callback);
+            show(enterEntry, presentationCallback);
         } else {
-            hide(exitEntry, callback);
+            hide(exitEntry, presentationCallback);
         }
     }
 
     @Override
     public boolean onBackPressed() {
+        if (getAsContainer().onBackPressed()) {
+            return true;
+        }
+
         View view = containerView.getChildAt(containerView.getChildCount() - 1);
         return view instanceof HandlesBack && ((HandlesBack) view).onBackPressed();
     }
@@ -41,7 +66,7 @@ public class PresentationPresenter extends Presenter {
         measureAndShow(newView, getTransition(entry), callback);
     }
 
-    private void hide(History.Entry exitEntry, Callback callback) {
+    private void hide(History.Entry exitEntry, final Callback callback) {
         Transition transition = getTransition(exitEntry);
         if (transition == null) {
             containerView.removeViewAt(containerView.getChildCount() - 1);
@@ -49,7 +74,13 @@ public class PresentationPresenter extends Presenter {
             return;
         }
 
-        transition.hide(containerView, callback);
+        transition.hide(containerView.getChildAt(containerView.getChildCount() - 1), new Callback() {
+            @Override
+            public void onComplete() {
+                containerView.removeViewAt(containerView.getChildCount() - 1);
+                callback.onComplete();
+            }
+        });
     }
 
     private Transition getTransition(History.Entry entry) {
@@ -91,5 +122,13 @@ public class PresentationPresenter extends Presenter {
 
     public Transitions transitions() {
         return transitions;
+    }
+
+    private Container getAsContainer() {
+        try {
+            return (Container) containerView;
+        } catch (ClassCastException e) {
+            throw new IllegalStateException("Presentation container view must implement PresentationContainer");
+        }
     }
 }

@@ -14,10 +14,3 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
     }
 }
-
-dependencies {
-    compile project(':core')
-    compile project(':services:commons')
-}
-
-apply from: '../../mvn-publish-android.gradle'

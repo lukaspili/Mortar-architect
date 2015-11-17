@@ -1,4 +1,4 @@
-package architect.service.presentation;
+package architect.service.commons;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

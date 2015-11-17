@@ -19,6 +19,8 @@ public abstract class Presentation implements Registration<PresentationService, 
 
     @Override
     public PresentationPresenter createPresenter(ViewGroup view) {
-        return new PresentationPresenter(view);
+        PresentationPresenter p = new PresentationPresenter(view);
+        configurePresenter(p);
+        return p;
     }
 }
