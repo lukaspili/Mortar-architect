@@ -1,9 +1,15 @@
 # Changelog
 
+
+## Mortar Architect 0.19.1 *11/18/15*
+
+ * Chaining navigation bug fix x2
+
+
 ## Mortar Architect 0.19 *11/18/15*
 
  * Chaining navigation bug fix
- 
+
 
 ## Mortar Architect 0.18 *11/16/15*
 

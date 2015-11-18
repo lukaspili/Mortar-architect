@@ -229,12 +229,13 @@ class Dispatcher {
             return false;
         }
 
+        // BAD DESIGN =>
         // special case when fastforward remove all stack until root,
         // then add new entries
         // because root entry is never included in the entries to dispatch,
         // we need to make sure to remove it
         // conditions are: at least one entry destroyed (= the one before root), and the last one is not dead
-        if (fastForwardCanAffectsRoot && !nextDispatch.dead) {
+        if ((fastForwardCanAffectsRoot && !nextDispatch.dead) || (entry.dead && navigator.history.indexOf(entry) == 1)) {
             History.Entry deadRoot = navigator.history.getRoot();
             // if the fast forward removes some entries and add some new entries without affecting root
             // ignore it
