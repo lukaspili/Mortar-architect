@@ -220,6 +220,15 @@ public class History {
         return entries.get(index - 1);
     }
 
+    Entry getRoot() {
+        Preconditions.checkArgument(entries.size() > 0, "Cannot get root on empty history");
+        return entries.get(0);
+    }
+
+    int indexOf(Entry entry) {
+        return entries.indexOf(entry);
+    }
+
     boolean existInHistory(Entry entry) {
         return entries.contains(entry);
     }

@@ -178,7 +178,7 @@ class Dispatcher {
 
     private boolean fastForward(History.Entry entry, History.Entry nextEntry, History.Entry previousEntry) {
         boolean fastForwarded = false;
-        boolean nextEntryDestroyed = false;
+        boolean fastForwardCanAffectsRoot = false;
         List<Dispatch> modals = null;
         History.Entry nextDispatch = null;
         while (!entries.isEmpty() && (nextDispatch = entries.get(0)) != null) {
@@ -214,14 +214,12 @@ class Dispatcher {
             entries.remove(0);
 
             if (nextDispatch.dead) {
-                History.Entry toDestroy = nextDispatch;
-                nextDispatch = navigator.history.getLeftOf(nextDispatch);
-                destroyDead(toDestroy);
-            } else if(nextEntry.dead && !nextEntryDestroyed) {
-                // in case of fastforward change between destroying upon root and then adding new alive entries
-                // be sure to destroy previous root, which is the next entry when the direction change happens
-                destroyDead(nextEntry);
-                nextEntryDestroyed = true;
+                // the entry just before root is dead
+                if (navigator.history.indexOf(nextDispatch) == 1) {
+                    fastForwardCanAffectsRoot = true;
+                }
+
+                destroyDead(nextDispatch);
             }
 
             Logger.d("Fast forward to next entry: %s", nextDispatch.scopeName);
@@ -229,6 +227,20 @@ class Dispatcher {
 
         if (!fastForwarded) {
             return false;
+        }
+
+        // special case when fastforward remove all stack until root,
+        // then add new entries
+        // because root entry is never included in the entries to dispatch,
+        // we need to make sure to remove it
+        // conditions are: at least one entry destroyed (= the one before root), and the last one is not dead
+        if (fastForwardCanAffectsRoot && !nextDispatch.dead) {
+            History.Entry deadRoot = navigator.history.getRoot();
+            // if the fast forward removes some entries and add some new entries without affecting root
+            // ignore it
+            if (deadRoot.dead) {
+                destroyDead(deadRoot);
+            }
         }
 
         if (entry.dead && previousEntry.returnsResult != null) {

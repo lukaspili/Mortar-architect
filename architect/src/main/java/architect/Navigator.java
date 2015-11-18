@@ -173,7 +173,10 @@ public class Navigator implements Scoped {
             } else {
                 defaultDirection = ViewTransitionDirection.FORWARD;
                 if (c.type == NavigationChain.Chain.TYPE_REPLACE) {
-                    history.kill();
+                    History.Entry e = history.kill();
+                    if (history.indexOf(e) != 0) {
+                        entries.add(e);
+                    }
                 }
 
                 // push type for push and replace, modal for show
