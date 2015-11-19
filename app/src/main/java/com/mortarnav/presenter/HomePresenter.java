@@ -12,6 +12,7 @@ import com.mortarnav.view.HomeView;
 
 import java.util.Random;
 
+import architect.NavigationChain;
 import architect.NavigationStack;
 import architect.Navigator;
 import architect.ReceivesResult;
@@ -59,6 +60,7 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
 
 
     public void subnavClick() {
+//        Navigator.get(getView()).chain(new NavigationChain().back().back());
         Navigator.get(getView()).push(new SubnavStackable());
     }
 
@@ -85,8 +87,8 @@ public class HomePresenter extends ViewPresenter<HomeView> implements ReceivesRe
     public void backToRootClick() {
         Navigator.get(getView()).backToRoot("Result test back to root");
 //        Navigator.get(getView()).chain(new NavigationChain()
-//                .back()
-//                .back("Test from nav chain"));
+//                .backToRoot()
+//                .replace(new HomeStackable("REPLACED STACKABLE " + new Random().nextInt(10000))));
     }
 
     public void showTwoPopupsClick() {

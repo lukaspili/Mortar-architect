@@ -236,12 +236,17 @@ class Dispatcher {
         // we need to make sure to remove it
         // conditions are: at least one entry destroyed (= the one before root), and the last one is not dead
         if ((fastForwardCanAffectsRoot && !nextDispatch.dead) || (entry.dead && navigator.history.indexOf(entry) == 1)) {
-            History.Entry deadRoot = navigator.history.getRoot();
+            History.Entry root = navigator.history.getRoot();
             // if the fast forward removes some entries and add some new entries without affecting root
             // ignore it
-            if (deadRoot.dead) {
-                destroyDead(deadRoot);
+            if (root.dead) {
+                destroyDead(root);
             }
+        }
+
+        if (nextDispatch.dead) {
+            nextDispatch = navigator.history.getLastAlive();
+            Preconditions.checkNotNull(nextDispatch, "Fast forward end of the chain entry must be alive");
         }
 
         if (entry.dead && previousEntry.returnsResult != null) {
