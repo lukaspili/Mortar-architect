@@ -5,16 +5,20 @@ import android.os.Bundle;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class Controller {
+public class Executor implements Controls {
 
-    private final Architect architect;
+    private final String service;
+    private final History history;
+    private final Dispatcher dispatcher;
 
-    public Controller(Architect architect) {
-        this.architect = architect;
+    public Executor(String service, History history, Dispatcher dispatcher) {
+        this.service = service;
+        this.history = history;
+        this.dispatcher = dispatcher;
     }
 
-    public void push(Screen screen, String service, String tag, Bundle extras) {
-        architect.dispatcher.dispatch(architect.history.add(screen, service, tag, extras));
+    public void push(Screen screen, String tag, Bundle extras) {
+        dispatcher.dispatch(history.add(screen, service, tag, extras));
     }
 
 //    public void replace(Screen screen, String service, String transition, String tag) {
@@ -26,16 +30,18 @@ public class Controller {
 //        dispatcher.dispatch(entries);
 //    }
 
+    @Override
     public boolean pop() {
         return pop(null);
     }
 
+    @Override
     public boolean pop(Object result) {
-        if (!architect.history.canKill()) {
+        if (!history.canKill()) {
             return false;
         }
 
-        architect.dispatcher.dispatch(architect.history.kill(result, false));
+        dispatcher.dispatch(history.kill(result, false));
         return true;
     }
 

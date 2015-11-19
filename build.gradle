@@ -1,5 +1,5 @@
 ext.deps = [
-        android_gradle_plugin        : 'com.android.tools.build:gradle:1.2.3',
+        android_gradle_plugin        : 'com.android.tools.build:gradle:1.5.0',
         apt_gradle_plugin            : 'com.neenbedankt.gradle.plugins:android-apt:1.8',
 
         appcompat_v7                 : 'com.android.support:appcompat-v7:22.2.1',
@@ -22,7 +22,10 @@ ext.deps = [
         autodagger2_compiler_utils   : 'com.github.lukaspili.autodagger2:autodagger2-compiler-utils:1.1',
         processor_workflow           : 'com.github.lukaspili.processor-workflow:processor-workflow:1.0.1',
         parceler                     : 'org.parceler:parceler:1.0.3',
-        parceler_api                 : 'org.parceler:parceler-api:1.0.3'
+        parceler_api                 : 'org.parceler:parceler-api:1.0.3',
+
+        junit                        : 'junit:junit:4.12',
+        mockito                      : 'org.mockito:mockito-core:2.+'
 ]
 ext.minSdkVersion = 14
 ext.targetSdkVersion = 22

@@ -11,15 +11,23 @@ import java.util.List;
  */
 class Dispatcher {
 
-    private final Architect architect;
-    private final List<History.Entry> entries = new ArrayList<>();
+    private final Services services;
+    private final History history;
+    private final List<History.Entry> entries;
 
     private boolean dispatching;
     private boolean killed;
     private boolean active;
 
-    Dispatcher(Architect architect) {
-        this.architect = architect;
+    Dispatcher(Services services, History history) {
+        this(services, history, new ArrayList<History.Entry>());
+    }
+
+    Dispatcher(Services services, History history, List<History.Entry> entries) {
+        Preconditions.checkArgument(entries.isEmpty(), "Dispatcher must be constructed with empty list");
+        this.services = services;
+        this.history = history;
+        this.entries = entries;
     }
 
     /**
@@ -156,6 +164,10 @@ class Dispatcher {
 //        dispatch(entry, 0);
 //    }
 
+//    boolean isActive() {
+//        return active;
+//    }
+
     void dispatch(History.Entry entry) {
         if (!active) return;
 
@@ -173,18 +185,17 @@ class Dispatcher {
             return;
         dispatching = true;
 //        Preconditions.checkNotNull(architect.getScope(), "Dispatcher navigator scope cannot be null");
-        Preconditions.checkArgument(!architect.history.isEmpty(), "Cannot dispatch on empty history");
+        Preconditions.checkArgument(!history.isEmpty(), "Cannot dispatch on empty history");
         Preconditions.checkArgument(!entries.isEmpty(), "Cannot dispatch on empty stack");
 
         // it's imperative to get the current top dispatched before dequeuing, because
-        // the latter operation mark new to-be disaptched entries as dispatched
-        final History.Entry currentTop = architect.history.getTopDispatched();
+        // the latter operation mark new to-be dispatched entries as dispatched
+        final History.Entry currentTop = history.getTopDispatched();
         final History.Entry dispatch = dequeue();
-        Logger.d("Entry to dispatch: %s", dispatch);
 
         // in case of forward, the entry to dispatch is already added to history
         // in opposite in case of backward, the entry to dispatch is not in history anymore
-        final boolean forward = architect.history.existInHistory(dispatch);
+        final boolean forward = history.existInHistory(dispatch);
         final History.Entry enterEntry;
         final History.Entry exitEntry;
         if (forward) {
@@ -197,17 +208,18 @@ class Dispatcher {
 
         // exit entry can be null but enter entry never can
         Preconditions.checkNotNull(enterEntry, "Enter entry cannot be null");
-        Logger.d("Enter entry: %s", enterEntry);
-        Logger.d("Exit entry: %s", exitEntry);
 
-        final DispatchEnv env = new DispatchEnv();
+//        final DispatchEnv env = new DispatchEnv();
+
 
 //        for (int i = 0; i < architect.extensions.size(); i++) {
 //            architect.extensions.get(i).setUp(enterEntry, env);
 //        }
 
-        Presenter presenter = architect.getPresenter(enterEntry.service);
-        presenter.present(enterEntry, exitEntry, forward, env, new Callback() {
+        Services.Service service = services.get(enterEntry.service);
+        Preconditions.checkNotNull(service, "Service %s not found", enterEntry.service);
+
+        service.getDispatcher().dispatch(enterEntry, exitEntry, forward, null, new Callback() {
             @Override
             public void onComplete() {
 //                for (int i = 0; i < architect.extensions.size(); i++) {
@@ -218,6 +230,19 @@ class Dispatcher {
                 startDispatch(); // maybe something else to dispatch
             }
         });
+
+//        Presenter presenter = architect.getPresenter(enterEntry.service);
+//        presenter.present(enterEntry, exitEntry, forward, env, new Callback() {
+//            @Override
+//            public void onComplete() {
+////                for (int i = 0; i < architect.extensions.size(); i++) {
+////                    architect.extensions.get(i).tearDown(enterEntry, env);
+////                }
+//
+//                endDispatch();
+//                startDispatch(); // maybe something else to dispatch
+//            }
+//        });
 
 
 //        Logger.d("Exit entry: %s - in history: %b", exitEntry, forward);

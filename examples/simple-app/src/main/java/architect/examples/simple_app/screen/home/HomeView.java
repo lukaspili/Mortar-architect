@@ -9,7 +9,7 @@ import android.widget.TextView;
 import architect.Architect;
 import architect.examples.simple_app.MainActivity;
 import architect.examples.simple_app.R;
-import architect.service.presentation.PresentationService;
+import architect.service.presentation.PresentationController;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -43,8 +43,9 @@ public class HomeView extends LinearLayout {
         return ((MainActivity) getContext()).getArchitect();
     }
 
-    private PresentationService getArchitectPresentation() {
-        return getArchitect().<PresentationService>getService("presentation");
+    private PresentationController getArchitectPresentation() {
+        return null;
+//        return getArchitect().<PresentationController>getService("presentation");
     }
 
     @OnClick(R.id.next_home_button)

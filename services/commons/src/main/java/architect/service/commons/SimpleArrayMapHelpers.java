@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package architect.service.presentation;
+package architect.service.commons;
 
-class SimpleArrayMapHelpers {
+public class SimpleArrayMapHelpers {
     static final int[] EMPTY_INTS = new int[0];
     static final long[] EMPTY_LONGS = new long[0];
     static final Object[] EMPTY_OBJECTS = new Object[0];

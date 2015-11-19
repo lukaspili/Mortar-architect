@@ -2,18 +2,13 @@ package architect;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import architect.mortar.Registration;
+import architect.service.Registration;
 
 /**
- * Architect.register("popup", rootView, new BasicRegistration())
- *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class Architect {
@@ -29,63 +24,58 @@ public class Architect {
         return get(view.getContext());
     }
 
-    final History history;
     final ArchitectDelegate delegate;
-    final Controller controller;
+    final History history;
     final Dispatcher dispatcher;
-
-    final Map<String, Service> services = new HashMap<>();
-    final Map<String, Presenter> presenters = new HashMap<>();
+    final Services services;
 
 
     final List<Extension> extensions;
 //    private MortarScope scope;
 
-    Presenter activePresenter;
-
-    public Architect(ScreenParceler parceler) {
-        history = new History(parceler);
-        delegate = new ArchitectDelegate(this);
-        controller = new Controller(this);
-        dispatcher = new Dispatcher(this);
-        extensions = new ArrayList<>();
+    public static Architect create(ScreenParceler parceler) {
+        Services services = new Services();
+        History history = new History(parceler);
+        return new Architect(new ArchitectDelegate(), history, new Dispatcher(services, history), services, new ArrayList<Extension>());
     }
 
+    Architect(ArchitectDelegate delegate, History history, Dispatcher dispatcher, Services services, List<Extension> extensions) {
+        this.delegate = delegate;
+        this.history = history;
+        this.dispatcher = dispatcher;
+        this.services = services;
+        this.extensions = extensions;
 
-    public void register(String name, ViewGroup target, Registration registration) {
-        Service service = registration.createService(name, controller);
-        Presenter presenter = registration.createPresenter(target);
-
-        services.put(name, service);
-        presenters.put(name, presenter);
+        delegate.attach(this);
     }
 
-    public <T extends Service> T getService(String name) {
-        return (T) services.get(name);
+    public void register(String name, Registration registration) {
+        Executor executor = new Executor(name, history, dispatcher);
+        services.register(name, registration.createController(executor), registration.createDispatcher());
     }
 
-    Presenter getPresenter(String name) {
-        return presenters.get(name);
+    public Services.Service getService(String name) {
+        return services.get(name);
     }
 
-    Presenter getTopPresenter() {
-        return presenters.get(history.getTopDispatched().service);
-    }
-
-
-    void detach() {
-        services.clear();
-        presenters.clear();
-
-        for (Map.Entry<String, Service> entry : services.entrySet()) {
-
+    public Services.Service getTopService() {
+        History.Entry entry = history.getTopDispatched();
+        if (entry == null) {
+            return null;
         }
+
+        return services.get(entry.service);
     }
 
 
-    public void registerAdapter(Extension adapter) {
-
-    }
+//    void detach() {
+//        services.clear();
+//        presenters.clear();
+//
+//        for (Map.Entry<String, Controller> entry : services.entrySet()) {
+//
+//        }
+//    }
 
 
     public ArchitectDelegate delegate() {

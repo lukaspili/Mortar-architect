@@ -2,17 +2,17 @@ package architect.service.presentation;
 
 import android.os.Bundle;
 
-import architect.Controller;
+import architect.Executor;
 import architect.Screen;
-import architect.Service;
+import architect.service.Controller;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class PresentationService extends Service {
+public class PresentationController extends Controller {
 
-    public PresentationService(String name, Controller controller) {
-        super(name, controller);
+    public PresentationController(Executor executor) {
+        super(executor);
     }
 
     public void show(Screen screen) {
@@ -29,6 +29,6 @@ public class PresentationService extends Service {
             bundle = new Bundle();
             bundle.putString(EntryExtras.TRANSITION, transition);
         }
-        controller.push(screen, name, tag, bundle);
+        executor.push(screen, tag, bundle);
     }
 }

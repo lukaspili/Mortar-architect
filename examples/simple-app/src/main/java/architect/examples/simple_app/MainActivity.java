@@ -6,13 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 
 import architect.Architect;
-import architect.examples.simple_app.screen.home.HomeScreen;
-import architect.examples.simple_app.transition.BottomSlideTransition;
-import architect.examples.simple_app.transition.TopSlideTransition;
-import architect.service.presentation.Presentation;
-import architect.service.presentation.PresentationPresenter;
-import architect.service.presentation.PresentationService;
-import architect.service.presentation.Transitions;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -35,17 +28,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        architect = new Architect(new Parceler());
-        architect.register("presentation", containerView, new Presentation() {
-            @Override
-            public void configurePresenter(PresentationPresenter presenter) {
-                presenter.transitions().setDefault(new BottomSlideTransition());
-                presenter.transitions().add("top", new TopSlideTransition());
-            }
-        });
+//        architect = new Architect(new Parceler());
+//        architect.register("presentation", containerView, new Presentation() {
+//            @Override
+//            public void configurePresenter(PresentationPresenter presenter) {
+//                presenter.transitions().setDefault(new BottomSlideTransition());
+//                presenter.transitions().add("top", new TopSlideTransition());
+//            }
+//        });
 
         architect.delegate().onCreate(getIntent(), savedInstanceState);
-        architect.<PresentationService>getService("presentation").show(new HomeScreen("Initial"), Transitions.NO_TRANSITION);
+//        architect.<PresentationController>getService("presentation").show(new HomeScreen("Initial"), Transitions.NO_TRANSITION);
     }
 
     @Override

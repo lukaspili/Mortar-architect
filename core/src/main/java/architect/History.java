@@ -285,7 +285,9 @@ public class History {
         public final Screen screen;
         public final Bundle extras;
         public SparseArray<Parcelable> viewState;
-        boolean dispatched;
+
+        //todo: Publoic ?
+        public boolean dispatched;
 
         public Entry(Screen screen, String service, String tag, Bundle extras) {
             Preconditions.checkNotNull(screen, "Screen cannot be null");

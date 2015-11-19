@@ -1,5 +1,7 @@
 package architect.service.presentation;
 
+import architect.service.commons.SimpleArrayMap;
+
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */

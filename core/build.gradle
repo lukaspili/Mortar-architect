@@ -16,8 +16,8 @@ android {
 }
 
 dependencies {
-//    provided deps.javax_inject
-//    compile deps.mortar
+    testCompile deps.junit
+    testCompile deps.mockito
 }
 
 apply from: '../mvn-publish-android.gradle'

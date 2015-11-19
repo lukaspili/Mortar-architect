@@ -12,13 +12,16 @@ public class ArchitectDelegate {
 
     private static final String HISTORY_KEY = Architect.class.getSimpleName() + "_history";
 
-    private final Architect architect;
+    private Architect architect;
 
-    public ArchitectDelegate(Architect architect) {
+    void attach(Architect architect) {
+        Preconditions.checkNull(this.architect, "Architect already attached to delegate");
         this.architect = architect;
     }
 
     public void onCreate(Intent intent, Bundle savedInstanceState) {
+        Preconditions.checkNotNull(architect, "Architect not attached to delegate");
+
         Bundle bundle = null;
         if (intent != null && intent.hasExtra(HISTORY_KEY)) {
             bundle = intent.getBundleExtra(HISTORY_KEY);
@@ -62,17 +65,22 @@ public class ArchitectDelegate {
     }
 
     public void onDestroy() {
-        architect.detach();
+//        architect.detach();
         architect.dispatcher.desactivate();
 
 //        architect.presenter.detach();
     }
 
     public boolean onBackPressed() {
-        if (architect.getTopPresenter().onBackPressed()) {
-            return true;
+        Services.Service service = architect.getTopService();
+        if (service == null) {
+            return false;
         }
 
-        return architect.controller.pop();
+//        if (service.get.onBackPressed()) {
+//            return true;
+//        }
+
+        return service.getController().pop();
     }
 }
