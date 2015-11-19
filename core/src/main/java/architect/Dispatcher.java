@@ -11,6 +11,9 @@ import java.util.List;
  */
 class Dispatcher {
 
+    static final String EXCEPTION_ENTER_ENTRY_NULL = "Enter entry may not be null";
+    static final String EXCEPTION_ENTRY_SERVICE_NULL = "Service %s not found";
+
     private final Services services;
     private final History history;
     private final List<History.Entry> entries;
@@ -146,26 +149,24 @@ class Dispatcher {
         entries.clear();
     }
 
-//    void dispatch(List<History.Entry> e) {
+    //    void dispatch(List<History.Entry> e) {
 //        dispatch(e, 0);
 //    }
 //
-//    void dispatch(List<History.Entry> e, int direction) {
-//        if (!active) return;
-//
+    void dispatch(List<History.Entry> e) {
+        if (!active) return;
+
 //        for (int i = 0; i < e.size(); i++) {
 //            // add the result to the last entry only
 //            entries.add(new Dispatch(e.get(i), direction));
 //        }
-//        startDispatch();
-//    }
+
+        entries.addAll(e);
+        startDispatch();
+    }
 
 //    void dispatch(History.Entry entry) {
 //        dispatch(entry, 0);
-//    }
-
-//    boolean isActive() {
-//        return active;
 //    }
 
     void dispatch(History.Entry entry) {
@@ -207,7 +208,7 @@ class Dispatcher {
         }
 
         // exit entry can be null but enter entry never can
-        Preconditions.checkNotNull(enterEntry, "Enter entry cannot be null");
+        Preconditions.checkNotNull(enterEntry, EXCEPTION_ENTER_ENTRY_NULL);
 
 //        final DispatchEnv env = new DispatchEnv();
 
@@ -217,7 +218,7 @@ class Dispatcher {
 //        }
 
         Services.Service service = services.get(enterEntry.service);
-        Preconditions.checkNotNull(service, "Service %s not found", enterEntry.service);
+        Preconditions.checkNotNull(service, EXCEPTION_ENTRY_SERVICE_NULL, enterEntry.service);
 
         service.getDispatcher().dispatch(enterEntry, exitEntry, forward, null, new Callback() {
             @Override
