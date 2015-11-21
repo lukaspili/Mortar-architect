@@ -18,6 +18,7 @@ android {
 dependencies {
     testCompile deps.junit
     testCompile deps.mockito
+    testCompile deps.assertj
 }
 
 apply from: '../mvn-publish-android.gradle'

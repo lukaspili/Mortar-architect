@@ -33,6 +33,7 @@ class Dispatcher {
         this.entries = entries;
     }
 
+
     /**
      * Stop the dispatcher forever
      * Its only salvation lies in garbage collection now
@@ -219,6 +220,8 @@ class Dispatcher {
 
         Services.Service service = services.get(enterEntry.service);
         Preconditions.checkNotNull(service, EXCEPTION_ENTRY_SERVICE_NULL, enterEntry.service);
+
+//        service.getDispatcher().dispatch(enterEntry, exitEntry, forward, null,
 
         service.getDispatcher().dispatch(enterEntry, exitEntry, forward, null, new Callback() {
             @Override
@@ -505,5 +508,13 @@ class Dispatcher {
 
 //    public interface Callback {
 //        void onComplete();
+//    }
+
+//    class DispatchCallback implements Callback {
+//        @Override
+//        public void onComplete() {
+//            endDispatch();
+//            startDispatch(); // something else to dispatch
+//        }
 //    }
 }

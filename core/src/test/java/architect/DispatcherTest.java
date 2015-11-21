@@ -9,6 +9,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -17,11 +19,14 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -60,11 +65,13 @@ public class DispatcherTest {
     @Mock
     private architect.service.Dispatcher serviceDispatcher;
 
+//    @Mock
+//    private Callback callback;
+
     @Spy
-    private ArrayList<History.Entry> historyEntries;
+    private ArrayList<History.Entry> toDispatchEntries;
 
     private Dispatcher dispatcher;
-    private History.Entry entry;
     private History.Entry entry1;
     private History.Entry entry2;
     private List<History.Entry> entries;
@@ -73,11 +80,10 @@ public class DispatcherTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        dispatcher = new Dispatcher(services, history, historyEntries);
-        entry = new History.Entry(DUMB_SCREEN, FAKESERVICE_1, null, null);
+        dispatcher = new Dispatcher(services, history, toDispatchEntries);
 
-        entry1 = entry;
-        entry2 = new History.Entry(DUMB_SCREEN, FAKESERVICE_2, null, null);
+        entry1 = new History.Entry(DUMB_SCREEN, "s1", null, null);
+        entry2 = new History.Entry(DUMB_SCREEN, "s2", null, null);
         entries = new ArrayList<>();
         entries.add(entry1);
         entries.add(entry2);
@@ -89,8 +95,8 @@ public class DispatcherTest {
      */
     @Test
     public void shouldNotDispatchOneEntryWhenNotActive() {
-        dispatcher.dispatch(entry);
-        verify(historyEntries, never()).add(entry);
+        dispatcher.dispatch(entry1);
+        verify(toDispatchEntries, never()).add(entry1);
     }
 
     /**
@@ -99,8 +105,8 @@ public class DispatcherTest {
      */
     @Test
     public void shouldNotDispatchManyEntriesWhenNotActive() {
-        dispatcher.dispatch(entry);
-        verify(historyEntries, never()).add(entry);
+        dispatcher.dispatch(entries);
+        verify(toDispatchEntries, never()).addAll(entries);
     }
 
     /**
@@ -112,11 +118,11 @@ public class DispatcherTest {
         expectedException.expect(NullPointerException.class);
         expectedException.expectMessage(Dispatcher.EXCEPTION_ENTER_ENTRY_NULL);
 
-        when(history.existInHistory(entry)).thenReturn(false);
+        when(history.existInHistory(entry1)).thenReturn(false);
         when(history.getTopDispatched()).thenReturn(null);
 
         dispatcher.activate();
-        dispatcher.dispatch(entry);
+        dispatcher.dispatch(entry1);
 
         verify(services, never()).get(anyString());
     }
@@ -137,7 +143,6 @@ public class DispatcherTest {
         dispatcher.dispatch(entries);
 
         verify(services, never()).get(anyString());
-        verify(history, never()).existInHistory(entry1);
     }
 
     /**
@@ -148,16 +153,16 @@ public class DispatcherTest {
     @Test
     public void shouldFailToDispatchOneEntryWhenServiceNotFound() {
         expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage(String.format(Dispatcher.EXCEPTION_ENTRY_SERVICE_NULL, entry.service));
+        expectedException.expectMessage(String.format(Dispatcher.EXCEPTION_ENTRY_SERVICE_NULL, entry1.service));
 
-        when(history.existInHistory(entry)).thenReturn(true);
+        when(history.existInHistory(entry1)).thenReturn(true);
         when(history.getTopDispatched()).thenReturn(null);
-        when(services.get(entry.service)).thenReturn(null);
+        when(services.get(entry1.service)).thenReturn(null);
 
         dispatcher.activate();
-        dispatcher.dispatch(entry);
+        dispatcher.dispatch(entry1);
 
-        verify(services, times(1)).get(entry.service);
+        verify(services, times(1)).get(entry1.service);
     }
 
     /**
@@ -177,62 +182,154 @@ public class DispatcherTest {
         dispatcher.activate();
         dispatcher.dispatch(entries);
 
-        verify(history, never()).existInHistory(entry1);
-        verify(services, never()).get(entry1.service);
         verify(services, times(1)).get(entry2.service);
     }
 
     /**
+     * Dispatch one
      * Empty history, forward = ok
      */
     @Test
     public void shouldDispatchEntryForwardOnEmptyHistory() {
-        when(history.existInHistory(entry)).thenReturn(true);
-        when(history.getTopDispatched()).thenReturn(null);
-        when(services.get(entry.service)).thenReturn(service);
-        when(service.getDispatcher()).thenReturn(serviceDispatcher);
-
         dispatcher.activate();
-        dispatcher.dispatch(entry);
-
-        verify(serviceDispatcher, times(1)).dispatch(eq(entry), isNull(History.Entry.class), eq(true), isNull(DispatchEnv.class), any(Callback.class));
+        dispatchOne(entry1, null, true);
     }
 
     /**
+     * Dispatch many
+     * Empty history, forward = ok
+     */
+    @Test
+    public void shouldDispatchManyEntriesForwardOnEmptyHistory() {
+        dispatcher.activate();
+        dispatchMany(entries, null, true);
+    }
+
+    /**
+     * Dispatch one
      * Not empty history, forward = ok
      */
     @Test
-    public void shouldDispatchEntryForwardOnNotEmptyHistory() {
-        History.Entry exitEntry = mock(History.Entry.class);
-
-        when(history.existInHistory(entry)).thenReturn(true);
-        when(history.getTopDispatched()).thenReturn(exitEntry);
-        when(services.get(entry.service)).thenReturn(service);
-        when(service.getDispatcher()).thenReturn(serviceDispatcher);
-
+    public void shouldDispatchOneEntryForwardOnNotEmptyHistory() {
         dispatcher.activate();
-        dispatcher.dispatch(entry);
-
-        verify(serviceDispatcher, times(1)).dispatch(eq(entry), eq(exitEntry), eq(true), isNull(DispatchEnv.class), any(Callback.class));
+        dispatchOne(entry1, mock(History.Entry.class), true);
     }
 
     /**
+     * Dispatch many
+     * Not empty history, forward = ok
+     */
+    @Test
+    public void shouldDispatchManyEntriesForwardOnNotEmptyHistory() {
+        dispatcher.activate();
+        dispatchMany(entries, mock(History.Entry.class), true);
+    }
+
+    /**
+     * Dispatch one
      * Not empty history, backward = ok
      */
     @Test
-    public void shouldDispatchEntryBackwardOnNotEmptyHistory() {
-        History.Entry exitEntry = mock(History.Entry.class);
+    public void shouldDispatchOneEntryBackwardOnNotEmptyHistory() {
+        dispatcher.activate();
+        dispatchOne(entry1, new History.Entry(DUMB_SCREEN, "s99", null, null), false);
+    }
 
-        when(history.existInHistory(exitEntry)).thenReturn(false);
-        when(history.getTopDispatched()).thenReturn(entry);
-        when(services.get(entry.service)).thenReturn(service);
-        when(service.getDispatcher()).thenReturn(serviceDispatcher);
+    /**
+     * Dispatch many
+     * Not empty history, backward = ok
+     */
+    @Test
+    public void shouldDispatchManyEntriesBackwardOnNotEmptyHistory() {
+        dispatcher.activate();
+        dispatchMany(entries, new History.Entry(DUMB_SCREEN, "s99", null, null), false);
+    }
+
+    /**
+     * Dispatch one
+     * Empty history (for the 1st dispatch), forward = ok
+     * Multiple dispatchs
+     */
+    @Test
+    public void shouldDispatchMultipleOneEntryForwardDispatchsOnEmptyHistory() {
+        History.Entry entry3 = new History.Entry(DUMB_SCREEN, "s99-1", null, null);
+        History.Entry entry4 = new History.Entry(DUMB_SCREEN, "s99-2", null, null);
+
+        InOrder inOrder = inOrder(toDispatchEntries, history, services, serviceDispatcher);
 
         dispatcher.activate();
-        dispatcher.dispatch(exitEntry);
 
-        verify(serviceDispatcher, times(1)).dispatch(eq(entry), eq(exitEntry), eq(false), isNull(DispatchEnv.class), any(Callback.class));
+        dispatchOne(entry1, null, true, inOrder);
+        dispatchOne(entry2, entry1, true, inOrder);
+        dispatchOne(entry3, entry2, true, inOrder);
+        dispatchOne(entry4, entry3, true, inOrder);
     }
 
 
+    /**
+     * Dispatch many
+     * Empty history (for the 1st dispatch), forward = ok
+     * Multiple dispatchs
+     */
+    @Test
+    public void shouldDispatchMultipleManyEntriesDispatchsOnEmptyHistory() {
+        List<History.Entry> entries2 = new ArrayList<>();
+        entries2.add(new History.Entry(DUMB_SCREEN, "s99-1", null, null));
+        entries2.add(new History.Entry(DUMB_SCREEN, "s99-2", null, null));
+
+        InOrder inOrder = inOrder(toDispatchEntries, history, services, serviceDispatcher);
+
+        dispatcher.activate();
+        dispatchMany(entries, null, true, inOrder);
+        dispatchMany(entries2, entries.get(entries.size() - 1), true, inOrder);
+    }
+
+    private void dispatchOne(History.Entry entry, History.Entry top, boolean forward) {
+        dispatchOne(entry, top, forward, inOrder(toDispatchEntries, history, services, serviceDispatcher));
+    }
+
+    private void dispatchOne(History.Entry entry, History.Entry top, boolean forward, InOrder inOrder) {
+        ArgumentCaptor<Callback> callbackArgumentCaptor = ArgumentCaptor.forClass(Callback.class);
+
+        when(history.existInHistory(entry)).thenReturn(forward);
+        when(history.getTopDispatched()).thenReturn(top);
+        when(services.get(forward ? entry.service : top.service)).thenReturn(service);
+        when(service.getDispatcher()).thenReturn(serviceDispatcher);
+
+        dispatcher.dispatch(entry);
+        assertTrue(entry.dispatched);
+        assertThat(toDispatchEntries).isEmpty();
+        inOrder.verify(toDispatchEntries, times(1)).get(0);
+        inOrder.verify(services, times(1)).get(forward ? entry.service : top.service);
+        inOrder.verify(serviceDispatcher, times(1)).dispatch(eq(forward ? entry : top), eq(forward ? top : entry), eq(forward), isNull(DispatchEnv.class), callbackArgumentCaptor.capture());
+
+        callbackArgumentCaptor.getValue().onComplete();
+    }
+
+    private void dispatchMany(List<History.Entry> entries, History.Entry top, boolean forward) {
+        dispatchMany(entries, top, forward, inOrder(toDispatchEntries, history, services, serviceDispatcher));
+    }
+
+    private void dispatchMany(List<History.Entry> entries, History.Entry top, boolean forward, InOrder inOrder) {
+        ArgumentCaptor<Callback> callbackArgumentCaptor = ArgumentCaptor.forClass(Callback.class);
+        History.Entry entry = entries.get(entries.size() - 1);
+
+        when(history.existInHistory(entry)).thenReturn(forward);
+        when(history.getTopDispatched()).thenReturn(top);
+        when(services.get(forward ? entry.service : top.service)).thenReturn(service);
+        when(service.getDispatcher()).thenReturn(serviceDispatcher);
+
+        dispatcher.dispatch(entries);
+
+        for (History.Entry e : entries) {
+            assertTrue(e.dispatched);
+        }
+        assertThat(toDispatchEntries).isEmpty();
+
+        inOrder.verify(toDispatchEntries, times(1)).get(0);
+        inOrder.verify(services, times(1)).get(forward ? entry.service : top.service);
+        inOrder.verify(serviceDispatcher, times(1)).dispatch(eq(forward ? entry : top), eq(forward ? top : entry), eq(forward), isNull(DispatchEnv.class), callbackArgumentCaptor.capture());
+
+        callbackArgumentCaptor.getValue().onComplete();
+    }
 }
