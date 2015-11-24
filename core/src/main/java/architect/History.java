@@ -31,7 +31,7 @@ public class History {
         this.parceler = parceler;
     }
 
-    void fromBundle(Bundle bundle) {
+    void populateFromBundle(Bundle bundle) {
         ArrayList<Bundle> entryBundles = bundle.getParcelableArrayList(ENTRIES_KEY);
         if (entryBundles != null) {
             entries = new ArrayList<>(entryBundles.size());
@@ -45,6 +45,17 @@ public class History {
                     entries.add(entry);
                 }
             }
+        }
+    }
+
+    void populateFromStack(Stack stack) {
+        Entry entry;
+        for (int i = 0; i < stack.getEntries().size(); i++) {
+            entry = stack.getEntries().get(i);
+            entry.dispatched = true;
+            tracker.increment(entry);
+
+            entries.add(entry);
         }
     }
 
@@ -237,6 +248,10 @@ public class History {
         }
 
         return null;
+    }
+
+    List<Entry> getEntries() {
+        return entries;
     }
 
 //    Entry getTop() {

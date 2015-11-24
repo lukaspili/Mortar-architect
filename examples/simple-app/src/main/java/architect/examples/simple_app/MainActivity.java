@@ -3,15 +3,14 @@ package architect.examples.simple_app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ViewGroup;
 
 import architect.Architect;
 import architect.Attachments;
+import architect.Stack;
 import architect.examples.simple_app.screen.home.HomeScreen;
 import architect.examples.simple_app.transition.BottomSlideTransition;
 import architect.service.commons.FrameContainerView;
 import architect.service.commons.Transitions;
-import architect.service.presentation.ShowController;
 import architect.service.presentation.ShowService;
 import architect.service.presentation.Transition;
 import butterknife.Bind;
@@ -46,9 +45,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        architect.delegate().onCreate(getIntent(), savedInstanceState, new Attachments()
-                .attach(SHOW_SERVICE, containerView));
-        architect.getService(SHOW_SERVICE).<ShowController>getController().show(new HomeScreen("Initial"), Transitions.NO_TRANSITION);
+        architect.delegate().onCreate(getIntent(), savedInstanceState,
+                new Attachments()
+                        .attach(SHOW_SERVICE, containerView),
+                new Stack()
+                        .put(SHOW_SERVICE, new HomeScreen("Initial")));
     }
 
     @Override

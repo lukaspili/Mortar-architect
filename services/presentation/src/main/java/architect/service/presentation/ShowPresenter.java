@@ -26,14 +26,17 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
         this.transitions = transitions;
     }
 
+    @Override
     public void restore(List<History.Entry> entries) {
-//        for (int i = 0; i < ; i++) {
-//
-//        }
+        History.Entry entry;
+        for (int i = 0; i < entries.size(); ++i) {
+            entry = entries.get(i);
+            container.addView(entry.screen.createView(container.getContext(), container));
+        }
     }
 
     @Override
-    public void present(History.Entry enterEntry, History.Entry exitEntry, boolean forward, DispatchEnv env, final Callback callback) {
+    public void present(History.Entry enterEntry, History.Entry exitEntry, final boolean forward, DispatchEnv env, final Callback callback) {
         container.willBeginTransition();
 
         final Callback presentationCallback = new PresentationCallback(sessionId) {
@@ -41,6 +44,10 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
             public void onComplete() {
                 if (!isSessionValid(presentationSessionId)) {
                     return;
+                }
+
+                if (!forward) {
+                    container.removeViewAt(container.getChildCount() - 1);
                 }
 
                 container.didEndTransition();
@@ -74,18 +81,11 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
     private void hide(History.Entry exitEntry, final Callback callback) {
         Transition transition = getTransition(exitEntry);
         if (transition == null) {
-            container.removeViewAt(container.getChildCount() - 1);
             callback.onComplete();
             return;
         }
 
-        transition.hide(container.getChildAt(container.getChildCount() - 1), new Callback() {
-            @Override
-            public void onComplete() {
-                container.removeViewAt(container.getChildCount() - 1);
-                callback.onComplete();
-            }
-        });
+        transition.hide(container.getChildAt(container.getChildCount() - 1), callback);
     }
 
     private Transition getTransition(History.Entry entry) {

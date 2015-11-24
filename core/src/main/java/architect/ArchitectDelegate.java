@@ -21,7 +21,7 @@ public class ArchitectDelegate {
         this.architect = architect;
     }
 
-    public void onCreate(Intent intent, Bundle savedInstanceState, Attachments attachments) {
+    public void onCreate(Intent intent, Bundle savedInstanceState, Attachments attachments, Stack initialStack) {
         Preconditions.checkNotNull(architect, "Architect not set");
 
         Bundle bundle = null;
@@ -32,7 +32,9 @@ public class ArchitectDelegate {
         }
 
         if (bundle != null) {
-            architect.history.fromBundle(bundle);
+            architect.history.populateFromBundle(bundle);
+        } else {
+            architect.history.populateFromStack(initialStack);
         }
 
         architect.attachments.take(attachments);
@@ -43,7 +45,7 @@ public class ArchitectDelegate {
     public void onNewIntent(Intent intent) {
         Preconditions.checkNotNull(intent, "Intent may not be null");
         if (intent.hasExtra(HISTORY_KEY)) {
-            architect.history.fromBundle(intent.getBundleExtra(HISTORY_KEY));
+            architect.history.populateFromBundle(intent.getBundleExtra(HISTORY_KEY));
         }
     }
 
