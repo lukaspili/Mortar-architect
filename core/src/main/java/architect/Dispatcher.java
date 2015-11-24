@@ -4,6 +4,8 @@ package architect;
 import java.util.ArrayList;
 import java.util.List;
 
+import architect.service.Service;
+
 /**
  * Dispatch consequences of history manipulation
  *
@@ -218,12 +220,12 @@ class Dispatcher {
 //            architect.extensions.get(i).setUp(enterEntry, env);
 //        }
 
-        Services.Service service = services.get(enterEntry.service);
+        Service service = services.get(enterEntry.service);
         Preconditions.checkNotNull(service, EXCEPTION_ENTRY_SERVICE_NULL, enterEntry.service);
 
 //        service.getDispatcher().dispatch(enterEntry, exitEntry, forward, null,
 
-        service.getDispatcher().dispatch(enterEntry, exitEntry, forward, null, new Callback() {
+        service.getPresenter().present(enterEntry, exitEntry, forward, null, new Callback() {
             @Override
             public void onComplete() {
 //                for (int i = 0; i < architect.extensions.size(); i++) {

@@ -7,39 +7,21 @@ import architect.service.*;
  */
 class Services {
 
-    private final SimpleArrayMap<String, Service> registrations;
+    private final SimpleArrayMap<String, Service> services;
 
-    public Services() {
+    Services() {
         this(new SimpleArrayMap<String, Service>());
     }
 
-    public Services(SimpleArrayMap<String, Service> registrations) {
-        this.registrations = registrations;
+    Services(SimpleArrayMap<String, Service> services) {
+        this.services = services;
     }
 
-    void register(String name, Controller controller, architect.service.Dispatcher dispatcher) {
-        registrations.put(name, new Service(controller, dispatcher));
+    void register(String name, Controller controller, Presenter presenter, Delegate delegate) {
+        services.put(name, new Service(controller, presenter, delegate));
     }
 
     Service get(String name) {
-        return registrations.get(name);
-    }
-
-    public static class Service {
-        private final Controller controller;
-        private final architect.service.Dispatcher dispatcher;
-
-        public Service(Controller controller, architect.service.Dispatcher dispatcher) {
-            this.controller = controller;
-            this.dispatcher = dispatcher;
-        }
-
-        <T extends Controller> T getController() {
-            return (T) controller;
-        }
-
-        <T extends architect.service.Dispatcher> T getDispatcher() {
-            return (T) dispatcher;
-        }
+        return services.get(name);
     }
 }

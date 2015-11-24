@@ -5,7 +5,7 @@ import android.os.Bundle;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class Executor implements Controls {
+public class Executor {
 
     private final String service;
     private final History history;
@@ -30,12 +30,10 @@ public class Executor implements Controls {
 //        dispatcher.dispatch(entries);
 //    }
 
-    @Override
     public boolean pop() {
         return pop(null);
     }
 
-    @Override
     public boolean pop(Object result) {
         if (!history.canKill()) {
             return false;

@@ -7,6 +7,8 @@ package architect;
  */
 class HistoryTracker {
 
+    final static String EXCEPTION_ID_BELOW_0 = "History tracker id cannot be < 0";
+
     private final SimpleArrayMap<Class, Integer> ids = new SimpleArrayMap<>();
 
     int get(History.Entry entry) {
@@ -25,8 +27,9 @@ class HistoryTracker {
     private void update(History.Entry entry, boolean increment) {
         Class cls = entry.screen.getClass();
         int id = ids.containsKey(cls) ? ids.get(cls) : 0;
-        ids.put(cls, id + (increment ? 1 : -1));
+        int newId = id + (increment ? 1 : -1);
 
-        Logger.d("Scoper update count for %s = %d", cls.getName(), ids.get(cls));
+        Preconditions.checkArgument(newId >= 0, EXCEPTION_ID_BELOW_0);
+        ids.put(cls, newId);
     }
 }

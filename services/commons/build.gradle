@@ -14,3 +14,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
     }
 }
+
+dependencies {
+    compile project(':core')
+}

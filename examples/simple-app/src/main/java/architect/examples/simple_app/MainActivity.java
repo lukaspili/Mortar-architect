@@ -6,6 +6,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 
 import architect.Architect;
+import architect.Attachments;
+import architect.examples.simple_app.screen.home.HomeScreen;
+import architect.examples.simple_app.transition.BottomSlideTransition;
+import architect.service.commons.FrameContainerView;
+import architect.service.commons.Transitions;
+import architect.service.presentation.ShowController;
+import architect.service.presentation.ShowService;
+import architect.service.presentation.Transition;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -16,10 +24,12 @@ import butterknife.ButterKnife;
  */
 public class MainActivity extends AppCompatActivity {
 
+    public static final String SHOW_SERVICE = "show";
+
     private Architect architect;
 
     @Bind(R.id.container_view)
-    protected ViewGroup containerView;
+    protected FrameContainerView containerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +38,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-//        architect = new Architect(new Parceler());
-//        architect.register("presentation", containerView, new Presentation() {
-//            @Override
-//            public void configurePresenter(PresentationPresenter presenter) {
-//                presenter.transitions().setDefault(new BottomSlideTransition());
-//                presenter.transitions().add("top", new TopSlideTransition());
-//            }
-//        });
+        architect = Architect.create(new Parceler());
+        architect.register(SHOW_SERVICE, new ShowService() {
+            @Override
+            public void configureTransitions(Transitions<Transition> transitions) {
+                transitions.setDefault(new BottomSlideTransition());
+            }
+        });
 
-        architect.delegate().onCreate(getIntent(), savedInstanceState);
-//        architect.<PresentationController>getService("presentation").show(new HomeScreen("Initial"), Transitions.NO_TRANSITION);
+        architect.delegate().onCreate(getIntent(), savedInstanceState, new Attachments()
+                .attach(SHOW_SERVICE, containerView));
+        architect.getService(SHOW_SERVICE).<ShowController>getController().show(new HomeScreen("Initial"), Transitions.NO_TRANSITION);
     }
 
     @Override

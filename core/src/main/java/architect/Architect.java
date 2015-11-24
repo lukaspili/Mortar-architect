@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import architect.service.Registration;
+import architect.service.Service;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -28,7 +29,7 @@ public class Architect {
     final History history;
     final Dispatcher dispatcher;
     final Services services;
-
+    final Attachments attachments;
 
     final List<Extension> extensions;
 //    private MortarScope scope;
@@ -36,29 +37,30 @@ public class Architect {
     public static Architect create(ScreenParceler parceler) {
         Services services = new Services();
         History history = new History(parceler);
-        return new Architect(new ArchitectDelegate(), history, new Dispatcher(services, history), services, new ArrayList<Extension>());
+        return new Architect(new ArchitectDelegate(), history, new Dispatcher(services, history), services, new Attachments(services), new ArrayList<Extension>());
     }
 
-    Architect(ArchitectDelegate delegate, History history, Dispatcher dispatcher, Services services, List<Extension> extensions) {
+    Architect(ArchitectDelegate delegate, History history, Dispatcher dispatcher, Services services, Attachments attachments, List<Extension> extensions) {
         this.delegate = delegate;
         this.history = history;
         this.dispatcher = dispatcher;
         this.services = services;
+        this.attachments = attachments;
         this.extensions = extensions;
 
-        delegate.attach(this);
+        delegate.set(this);
     }
 
     public void register(String name, Registration registration) {
         Executor executor = new Executor(name, history, dispatcher);
-        services.register(name, registration.createController(executor), registration.createDispatcher());
+        services.register(name, registration.createController(executor), registration.createPresenter(), registration.createDelegate());
     }
 
-    public Services.Service getService(String name) {
+    public Service getService(String name) {
         return services.get(name);
     }
 
-    public Services.Service getTopService() {
+    public Service getTopService() {
         History.Entry entry = history.getTopDispatched();
         if (entry == null) {
             return null;
@@ -66,17 +68,6 @@ public class Architect {
 
         return services.get(entry.service);
     }
-
-
-//    void detach() {
-//        services.clear();
-//        presenters.clear();
-//
-//        for (Map.Entry<String, Controller> entry : services.entrySet()) {
-//
-//        }
-//    }
-
 
     public ArchitectDelegate delegate() {
         return delegate;

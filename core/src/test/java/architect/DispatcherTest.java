@@ -19,10 +19,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import architect.service.Presenter;
+import architect.service.Service;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
@@ -31,7 +33,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -39,9 +40,6 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DispatcherTest {
-
-    private static final String FAKESERVICE_1 = "fakeservice";
-    private static final String FAKESERVICE_2 = "fakeservice2";
 
     private static final Screen DUMB_SCREEN = new Screen() {
         @Override
@@ -60,13 +58,10 @@ public class DispatcherTest {
     private History history;
 
     @Mock
-    private Services.Service service;
+    private Service service;
 
     @Mock
-    private architect.service.Dispatcher serviceDispatcher;
-
-//    @Mock
-//    private Callback callback;
+    private Presenter servicePresenter;
 
     @Spy
     private ArrayList<History.Entry> toDispatchEntries;
@@ -255,7 +250,7 @@ public class DispatcherTest {
         History.Entry entry3 = new History.Entry(DUMB_SCREEN, "s99-1", null, null);
         History.Entry entry4 = new History.Entry(DUMB_SCREEN, "s99-2", null, null);
 
-        InOrder inOrder = inOrder(toDispatchEntries, history, services, serviceDispatcher);
+        InOrder inOrder = inOrder(toDispatchEntries, history, services, servicePresenter);
 
         dispatcher.activate();
 
@@ -277,7 +272,7 @@ public class DispatcherTest {
         entries2.add(new History.Entry(DUMB_SCREEN, "s99-1", null, null));
         entries2.add(new History.Entry(DUMB_SCREEN, "s99-2", null, null));
 
-        InOrder inOrder = inOrder(toDispatchEntries, history, services, serviceDispatcher);
+        InOrder inOrder = inOrder(toDispatchEntries, history, services, servicePresenter);
 
         dispatcher.activate();
         dispatchMany(entries, null, true, inOrder);
@@ -285,7 +280,7 @@ public class DispatcherTest {
     }
 
     private void dispatchOne(History.Entry entry, History.Entry top, boolean forward) {
-        dispatchOne(entry, top, forward, inOrder(toDispatchEntries, history, services, serviceDispatcher));
+        dispatchOne(entry, top, forward, inOrder(toDispatchEntries, history, services, servicePresenter));
     }
 
     private void dispatchOne(History.Entry entry, History.Entry top, boolean forward, InOrder inOrder) {
@@ -294,20 +289,20 @@ public class DispatcherTest {
         when(history.existInHistory(entry)).thenReturn(forward);
         when(history.getTopDispatched()).thenReturn(top);
         when(services.get(forward ? entry.service : top.service)).thenReturn(service);
-        when(service.getDispatcher()).thenReturn(serviceDispatcher);
+        when(service.getPresenter()).thenReturn(servicePresenter);
 
         dispatcher.dispatch(entry);
         assertTrue(entry.dispatched);
         assertThat(toDispatchEntries).isEmpty();
         inOrder.verify(toDispatchEntries, times(1)).get(0);
         inOrder.verify(services, times(1)).get(forward ? entry.service : top.service);
-        inOrder.verify(serviceDispatcher, times(1)).dispatch(eq(forward ? entry : top), eq(forward ? top : entry), eq(forward), isNull(DispatchEnv.class), callbackArgumentCaptor.capture());
+        inOrder.verify(servicePresenter, times(1)).present(eq(forward ? entry : top), eq(forward ? top : entry), eq(forward), isNull(DispatchEnv.class), callbackArgumentCaptor.capture());
 
         callbackArgumentCaptor.getValue().onComplete();
     }
 
     private void dispatchMany(List<History.Entry> entries, History.Entry top, boolean forward) {
-        dispatchMany(entries, top, forward, inOrder(toDispatchEntries, history, services, serviceDispatcher));
+        dispatchMany(entries, top, forward, inOrder(toDispatchEntries, history, services, servicePresenter));
     }
 
     private void dispatchMany(List<History.Entry> entries, History.Entry top, boolean forward, InOrder inOrder) {
@@ -317,7 +312,7 @@ public class DispatcherTest {
         when(history.existInHistory(entry)).thenReturn(forward);
         when(history.getTopDispatched()).thenReturn(top);
         when(services.get(forward ? entry.service : top.service)).thenReturn(service);
-        when(service.getDispatcher()).thenReturn(serviceDispatcher);
+        when(service.getPresenter()).thenReturn(servicePresenter);
 
         dispatcher.dispatch(entries);
 
@@ -328,7 +323,7 @@ public class DispatcherTest {
 
         inOrder.verify(toDispatchEntries, times(1)).get(0);
         inOrder.verify(services, times(1)).get(forward ? entry.service : top.service);
-        inOrder.verify(serviceDispatcher, times(1)).dispatch(eq(forward ? entry : top), eq(forward ? top : entry), eq(forward), isNull(DispatchEnv.class), callbackArgumentCaptor.capture());
+        inOrder.verify(servicePresenter, times(1)).present(eq(forward ? entry : top), eq(forward ? top : entry), eq(forward), isNull(DispatchEnv.class), callbackArgumentCaptor.capture());
 
         callbackArgumentCaptor.getValue().onComplete();
     }

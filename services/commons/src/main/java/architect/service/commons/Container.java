@@ -1,9 +1,13 @@
 package architect.service.commons;
 
+import android.view.View;
+
 /**
- * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
+ * Created by lukasz on 23/11/15.
  */
-public interface Container extends HandlesBack {
+public interface Container<T extends View> extends HandlesBack {
+
+    T getView();
 
     void willBeginTransition();
 

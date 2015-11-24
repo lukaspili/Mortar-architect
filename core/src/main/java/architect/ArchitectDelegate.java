@@ -3,6 +3,8 @@ package architect;
 import android.content.Intent;
 import android.os.Bundle;
 
+import architect.service.Service;
+
 /**
  * Hook up Architect to the Android lifecyle
  *
@@ -14,13 +16,13 @@ public class ArchitectDelegate {
 
     private Architect architect;
 
-    void attach(Architect architect) {
-        Preconditions.checkNull(this.architect, "Architect already attached to delegate");
+    void set(Architect architect) {
+        Preconditions.checkNull(this.architect, "Architect already set");
         this.architect = architect;
     }
 
-    public void onCreate(Intent intent, Bundle savedInstanceState) {
-        Preconditions.checkNotNull(architect, "Architect not attached to delegate");
+    public void onCreate(Intent intent, Bundle savedInstanceState, Attachments attachments) {
+        Preconditions.checkNotNull(architect, "Architect not set");
 
         Bundle bundle = null;
         if (intent != null && intent.hasExtra(HISTORY_KEY)) {
@@ -33,7 +35,7 @@ public class ArchitectDelegate {
             architect.history.fromBundle(bundle);
         }
 
-//        architect.presenter.attach(containerView);
+        architect.attachments.take(attachments);
         architect.dispatcher.activate();
     }
 
@@ -65,22 +67,18 @@ public class ArchitectDelegate {
     }
 
     public void onDestroy() {
-//        architect.detach();
+        architect.attachments.drop();
         architect.dispatcher.desactivate();
 
 //        architect.presenter.detach();
     }
 
     public boolean onBackPressed() {
-        Services.Service service = architect.getTopService();
+        Service service = architect.getTopService();
         if (service == null) {
             return false;
         }
 
-//        if (service.get.onBackPressed()) {
-//            return true;
-//        }
-
-        return service.getController().pop();
+        return service.getDelegate().onBackPressed();
     }
 }

@@ -1,29 +1,27 @@
-package architect.service.presentation;
-
-import architect.service.commons.SimpleArrayMap;
+package architect.service.commons;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class Transitions {
+public class Transitions<T> {
 
     public static final String NO_TRANSITION = "";
 
-    private SimpleArrayMap<String, Transition> transitions = new SimpleArrayMap<>();
-    private Transition defaultTransition;
+    private SimpleArrayMap<String, T> transitions = new SimpleArrayMap<>();
+    private T defaultTransition;
 
-    public Transitions setDefault(Transition transition) {
+    public Transitions setDefault(T transition) {
         defaultTransition = transition;
         return this;
     }
 
-    public Transitions add(String name, Transition transition) {
+    public Transitions add(String name, T transition) {
         Preconditions.checkArgument(name != null && name.length() > 0, "Transition name may not be blank");
         transitions.put(name, transition);
         return this;
     }
 
-    Transition find(String name) {
+    public T find(String name) {
         if (name == null) {
             return defaultTransition;
         }
