@@ -6,6 +6,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import architect.adapter.DispatcherAdapter;
 import architect.service.Registration;
 import architect.service.Service;
 
@@ -31,22 +32,23 @@ public class Architect {
     final Services services;
     final Attachments attachments;
 
-    final List<Extension> extensions;
+    final List<DispatcherAdapter> dispatcherAdapters;
 //    private MortarScope scope;
 
     public static Architect create(ScreenParceler parceler) {
         Services services = new Services();
         History history = new History(parceler);
-        return new Architect(new ArchitectDelegate(), history, new Dispatcher(services, history), services, new Attachments(services), new ArrayList<Extension>());
+        List<DispatcherAdapter> dispatcherAdapters = new ArrayList<>();
+        return new Architect(new ArchitectDelegate(), history, new Dispatcher(services, history, dispatcherAdapters), services, new Attachments(services), dispatcherAdapters);
     }
 
-    Architect(ArchitectDelegate delegate, History history, Dispatcher dispatcher, Services services, Attachments attachments, List<Extension> extensions) {
+    Architect(ArchitectDelegate delegate, History history, Dispatcher dispatcher, Services services, Attachments attachments, List<DispatcherAdapter> dispatcherAdapters) {
         this.delegate = delegate;
         this.history = history;
         this.dispatcher = dispatcher;
         this.services = services;
         this.attachments = attachments;
-        this.extensions = extensions;
+        this.dispatcherAdapters = dispatcherAdapters;
 
         delegate.set(this);
     }
@@ -54,6 +56,10 @@ public class Architect {
     public void register(String name, Registration registration) {
         Executor executor = new Executor(name, history, dispatcher);
         services.register(name, registration.createController(executor), registration.createPresenter(), registration.createDelegate());
+    }
+
+    public void addDispatcherAdapter(DispatcherAdapter adapter) {
+        dispatcherAdapters.add(adapter);
     }
 
     public Service getService(String name) {

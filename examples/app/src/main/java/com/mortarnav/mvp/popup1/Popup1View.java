@@ -1,10 +1,10 @@
-package architect.examples.simple_app.mvp.popup1;
+package architect.examples.mortar_app.mvp.popup1;
 
 import android.content.Context;
 import android.view.View;
 
 import com.mortarnav.R;
-import architect.examples.simple_app.mvp.popup1.screen.Popup1ScreenComponent;
+import architect.examples.mortar_app.mvp.popup1.screen.Popup1ScreenComponent;
 
 import architect.commons.view.PresentedFrameLayout;
 import architect.robot.dagger.DaggerService;

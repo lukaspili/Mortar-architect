@@ -3,8 +3,8 @@ package architect;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import architect.adapter.DispatcherAdapter;
 import architect.service.Service;
 
 /**
@@ -19,20 +19,22 @@ class Dispatcher {
 
     private final Services services;
     private final History history;
+    private final List<DispatcherAdapter> dispatcherAdapters;
     private final List<History.Entry> entries;
 
     private boolean dispatching;
     private boolean killed;
     private boolean active;
 
-    Dispatcher(Services services, History history) {
-        this(services, history, new ArrayList<History.Entry>());
+    Dispatcher(Services services, History history, List<DispatcherAdapter> dispatcherAdapters) {
+        this(services, history, dispatcherAdapters, new ArrayList<History.Entry>());
     }
 
-    Dispatcher(Services services, History history, List<History.Entry> entries) {
+    Dispatcher(Services services, History history, List<DispatcherAdapter> dispatcherAdapters, List<History.Entry> entries) {
         Preconditions.checkArgument(entries.isEmpty(), "Dispatcher must be constructed with empty list");
         this.services = services;
         this.history = history;
+        this.dispatcherAdapters = dispatcherAdapters;
         this.entries = entries;
     }
 
@@ -173,10 +175,6 @@ class Dispatcher {
         entries.clear();
     }
 
-    //    void dispatch(List<History.Entry> e) {
-//        dispatch(e, 0);
-//    }
-//
     void dispatch(List<History.Entry> e) {
         if (!active) return;
 
@@ -188,10 +186,6 @@ class Dispatcher {
         entries.addAll(e);
         startDispatch();
     }
-
-//    void dispatch(History.Entry entry) {
-//        dispatch(entry, 0);
-//    }
 
     void dispatch(History.Entry entry) {
         if (!active) return;
@@ -234,24 +228,20 @@ class Dispatcher {
         // exit entry can be null but enter entry never can
         Preconditions.checkNotNull(enterEntry, EXCEPTION_ENTER_ENTRY_NULL);
 
-//        final DispatchEnv env = new DispatchEnv();
-
-
-//        for (int i = 0; i < architect.extensions.size(); i++) {
-//            architect.extensions.get(i).setUp(enterEntry, env);
-//        }
+        final Processing processing = new Processing();
+        for (int i = 0; i < dispatcherAdapters.size(); i++) {
+            dispatcherAdapters.get(i).setUpDispatch(enterEntry, exitEntry, processing);
+        }
 
         Service service = services.get(enterEntry.service);
         Preconditions.checkNotNull(service, EXCEPTION_ENTRY_SERVICE_NULL, enterEntry.service);
 
-//        service.getDispatcher().dispatch(enterEntry, exitEntry, forward, null,
-
         service.getPresenter().present(enterEntry, exitEntry, forward, null, new Callback() {
             @Override
             public void onComplete() {
-//                for (int i = 0; i < architect.extensions.size(); i++) {
-//                    architect.extensions.get(i).tearDown(enterEntry, env);
-//                }
+                for (int i = 0; i < dispatcherAdapters.size(); i++) {
+                    dispatcherAdapters.get(i).tearDownDispatch(enterEntry, exitEntry, processing);
+                }
 
                 endDispatch();
                 startDispatch(); // maybe something else to dispatch

@@ -6,23 +6,23 @@ import java.util.Map;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class DispatchEnv {
+public class Processing {
 
-    private Map<String, Object> map;
+    private Map<String, Object> data;
 
     public void put(String name, Object object) {
-        if (map == null) {
-            map = new HashMap<>();
+        if (data == null) {
+            data = new HashMap<>();
         }
 
-        map.put(name, object);
+        data.put(name, object);
     }
 
     public <T> T get(String name) {
-        if (map == null) {
+        if (data == null) {
             return null;
         }
 
-        return (T) map.get(name);
+        return (T) data.get(name);
     }
 }

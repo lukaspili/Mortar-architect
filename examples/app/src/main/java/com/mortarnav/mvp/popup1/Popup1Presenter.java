@@ -1,4 +1,4 @@
-package architect.examples.simple_app.mvp.popup1;
+package architect.examples.mortar_app.mvp.popup1;
 
 import com.mortarnav.StandardAutoComponent;
 

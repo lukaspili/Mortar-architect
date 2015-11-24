@@ -1,4 +1,4 @@
-package architect.examples.simple_app.mvp.home;
+package architect.examples.mortar_app.mvp.home;
 
 import android.content.Context;
 import android.view.View;
@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 
 import com.mortarnav.MainActivity;
 import com.mortarnav.MainActivityComponent;
-import architect.examples.simple_app.deps.WithActivityDependencies;
-import architect.examples.simple_app.mvp.banner.screen.BannerScreen;
+import architect.examples.mortar_app.deps.WithActivityDependencies;
+import architect.examples.mortar_app.mvp.banner.screen.BannerScreen;
 
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;

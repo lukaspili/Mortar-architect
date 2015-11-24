@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import architect.examples.simple_app.deps.WithActivityDependencies;
+import architect.examples.mortar_app.deps.WithActivityDependencies;
 
 import architect.Architect;
 import architect.robot.dagger.DaggerScope;

@@ -1,4 +1,4 @@
-package architect.examples.simple_app.deps;
+package architect.examples.mortar_app.deps;
 
 import com.mortarnav.App;
 

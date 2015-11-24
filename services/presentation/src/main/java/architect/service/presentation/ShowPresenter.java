@@ -6,7 +6,7 @@ import android.view.ViewTreeObserver;
 import java.util.List;
 
 import architect.Callback;
-import architect.DispatchEnv;
+import architect.Processing;
 import architect.History;
 import architect.service.commons.AbstractPresenter;
 import architect.service.commons.EntryExtras;
@@ -36,7 +36,7 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
     }
 
     @Override
-    public void present(History.Entry enterEntry, History.Entry exitEntry, final boolean forward, DispatchEnv env, final Callback callback) {
+    public void present(History.Entry enterEntry, History.Entry exitEntry, final boolean forward, Processing env, final Callback callback) {
         container.willBeginTransition();
 
         final Callback presentationCallback = new PresentationCallback(sessionId) {

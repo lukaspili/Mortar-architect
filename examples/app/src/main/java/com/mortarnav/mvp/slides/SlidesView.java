@@ -1,4 +1,4 @@
-package architect.examples.simple_app.mvp.slides;
+package architect.examples.mortar_app.mvp.slides;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
@@ -6,7 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.mortarnav.R;
-import architect.examples.simple_app.mvp.slides.screen.SlidesScreenComponent;
+import architect.examples.mortar_app.mvp.slides.screen.SlidesScreenComponent;
 
 import architect.Screen;
 import architect.commons.adapter.ScreenAdapter;

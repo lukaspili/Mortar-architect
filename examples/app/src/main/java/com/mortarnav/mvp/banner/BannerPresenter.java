@@ -1,4 +1,4 @@
-package architect.examples.simple_app.mvp.banner;
+package architect.examples.mortar_app.mvp.banner;
 
 import android.os.Bundle;
 

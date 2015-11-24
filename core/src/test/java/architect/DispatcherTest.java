@@ -19,6 +19,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import architect.adapter.DispatcherAdapter;
 import architect.service.Presenter;
 import architect.service.Service;
 
@@ -66,6 +67,9 @@ public class DispatcherTest {
     @Spy
     private ArrayList<History.Entry> toDispatchEntries;
 
+    @Spy
+    private ArrayList<DispatcherAdapter> dispatcherAdapters;
+
     private Dispatcher dispatcher;
     private History.Entry entry1;
     private History.Entry entry2;
@@ -75,7 +79,7 @@ public class DispatcherTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        dispatcher = new Dispatcher(services, history, toDispatchEntries);
+        dispatcher = new Dispatcher(services, history, dispatcherAdapters, toDispatchEntries);
 
         entry1 = new History.Entry(DUMB_SCREEN, "s1", null, null);
         entry2 = new History.Entry(DUMB_SCREEN, "s2", null, null);
@@ -296,7 +300,7 @@ public class DispatcherTest {
         assertThat(toDispatchEntries).isEmpty();
         inOrder.verify(toDispatchEntries, times(1)).get(0);
         inOrder.verify(services, times(1)).get(forward ? entry.service : top.service);
-        inOrder.verify(servicePresenter, times(1)).present(eq(forward ? entry : top), eq(forward ? top : entry), eq(forward), isNull(DispatchEnv.class), callbackArgumentCaptor.capture());
+        inOrder.verify(servicePresenter, times(1)).present(eq(forward ? entry : top), eq(forward ? top : entry), eq(forward), isNull(Processing.class), callbackArgumentCaptor.capture());
 
         callbackArgumentCaptor.getValue().onComplete();
     }
@@ -323,7 +327,7 @@ public class DispatcherTest {
 
         inOrder.verify(toDispatchEntries, times(1)).get(0);
         inOrder.verify(services, times(1)).get(forward ? entry.service : top.service);
-        inOrder.verify(servicePresenter, times(1)).present(eq(forward ? entry : top), eq(forward ? top : entry), eq(forward), isNull(DispatchEnv.class), callbackArgumentCaptor.capture());
+        inOrder.verify(servicePresenter, times(1)).present(eq(forward ? entry : top), eq(forward ? top : entry), eq(forward), isNull(Processing.class), callbackArgumentCaptor.capture());
 
         callbackArgumentCaptor.getValue().onComplete();
     }

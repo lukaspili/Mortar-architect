@@ -1,10 +1,12 @@
 include ':core',
         ':services:commons',
         ':services:presentation',
+        ':adapter:mortar',
 //        ':navigation'
 //        ':robot'
 //        ':robot-compiler'
 //        ':commons'
-        ':examples:simple-app'
+//        ':examples:simple-app'
+        ':examples:mortar-app'
 //        ':app'
 // ':kotlin_app'

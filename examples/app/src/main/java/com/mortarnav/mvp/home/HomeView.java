@@ -1,4 +1,4 @@
-package architect.examples.simple_app.mvp.home;
+package architect.examples.mortar_app.mvp.home;
 
 import android.content.Context;
 import android.support.v7.widget.Toolbar;

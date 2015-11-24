@@ -1,11 +1,11 @@
-package architect.examples.simple_app.mvp.slides.page;
+package architect.examples.mortar_app.mvp.slides.page;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
 import com.mortarnav.R;
-import architect.examples.simple_app.mvp.slides.page.screen.SlidePageScreenComponent;
+import architect.examples.mortar_app.mvp.slides.page.screen.SlidePageScreenComponent;
 
 import architect.commons.view.PresentedFrameLayout;
 import architect.robot.dagger.DaggerService;

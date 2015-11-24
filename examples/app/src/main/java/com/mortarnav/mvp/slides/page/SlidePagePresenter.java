@@ -1,10 +1,10 @@
-package architect.examples.simple_app.mvp.slides.page;
+package architect.examples.mortar_app.mvp.slides.page;
 
 import android.os.Bundle;
 
-import architect.examples.simple_app.deps.WithActivityDependencies;
-import architect.examples.simple_app.mvp.home.HomeScreen;
-import architect.examples.simple_app.mvp.slides.SlidesPresenter;
+import architect.examples.mortar_app.deps.WithActivityDependencies;
+import architect.examples.mortar_app.mvp.home.HomeScreen;
+import architect.examples.mortar_app.mvp.slides.SlidesPresenter;
 
 import architect.Architect;
 import architect.robot.AutoScreen;

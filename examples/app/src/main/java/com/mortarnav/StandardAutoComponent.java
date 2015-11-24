@@ -1,7 +1,7 @@
 package com.mortarnav;
 
-import architect.examples.simple_app.deps.WithActivityDependencies;
-import architect.examples.simple_app.deps.WithAppDependencies;
+import architect.examples.mortar_app.deps.WithActivityDependencies;
+import architect.examples.mortar_app.deps.WithAppDependencies;
 
 import autodagger.AutoComponent;
 

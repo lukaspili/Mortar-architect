@@ -1,4 +1,4 @@
-package architect.examples.simple_app.mvp.banner;
+package architect.examples.mortar_app.mvp.banner;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.mortarnav.R;
-import architect.examples.simple_app.mvp.banner.screen.BannerScreenComponent;
+import architect.examples.mortar_app.mvp.banner.screen.BannerScreenComponent;
 
 import architect.MortarFactory;
 import architect.SubScreenService;

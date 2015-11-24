@@ -1,9 +1,9 @@
-package architect.examples.simple_app.mvp.home;
+package architect.examples.mortar_app.mvp.home;
 
 import android.os.Bundle;
 
-import architect.examples.simple_app.mvp.popup1.screen.Popup1Screen;
-import architect.examples.simple_app.mvp.slides.screen.SlidesScreen;
+import architect.examples.mortar_app.mvp.popup1.screen.Popup1Screen;
+import architect.examples.mortar_app.mvp.slides.screen.SlidesScreen;
 
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;

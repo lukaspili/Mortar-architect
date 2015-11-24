@@ -1,11 +1,11 @@
-package architect.examples.simple_app.mvp.slides;
+package architect.examples.mortar_app.mvp.slides;
 
 import android.os.Bundle;
 
 import com.mortarnav.StandardAutoComponent;
-import architect.examples.simple_app.deps.RestClient;
-import architect.examples.simple_app.mvp.banner.BannerPresenter;
-import architect.examples.simple_app.mvp.slides.page.screen.SlidePageScreen;
+import architect.examples.mortar_app.deps.RestClient;
+import architect.examples.mortar_app.mvp.banner.BannerPresenter;
+import architect.examples.mortar_app.mvp.slides.page.screen.SlidePageScreen;
 
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;

@@ -2,7 +2,7 @@ package com.mortarnav;
 
 import android.app.Application;
 
-import architect.examples.simple_app.deps.WithAppDependencies;
+import architect.examples.mortar_app.deps.WithAppDependencies;
 
 import architect.robot.dagger.DaggerScope;
 import architect.robot.dagger.DaggerService;
