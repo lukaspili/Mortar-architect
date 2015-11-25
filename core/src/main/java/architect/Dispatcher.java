@@ -4,7 +4,7 @@ package architect;
 import java.util.ArrayList;
 import java.util.List;
 
-import architect.adapter.DispatcherAdapter;
+import architect.adapter.Hook;
 import architect.service.Service;
 
 /**
@@ -19,22 +19,22 @@ class Dispatcher {
 
     private final Services services;
     private final History history;
-    private final List<DispatcherAdapter> dispatcherAdapters;
+    private final Hooks hooks;
     private final List<History.Entry> entries;
 
     private boolean dispatching;
     private boolean killed;
     private boolean active;
 
-    Dispatcher(Services services, History history, List<DispatcherAdapter> dispatcherAdapters) {
-        this(services, history, dispatcherAdapters, new ArrayList<History.Entry>());
+    Dispatcher(Services services, History history, Hooks hooks) {
+        this(services, history, hooks, new ArrayList<History.Entry>());
     }
 
-    Dispatcher(Services services, History history, List<DispatcherAdapter> dispatcherAdapters, List<History.Entry> entries) {
+    Dispatcher(Services services, History history, Hooks hooks, List<History.Entry> entries) {
         Preconditions.checkArgument(entries.isEmpty(), "Dispatcher must be constructed with empty list");
         this.services = services;
         this.history = history;
-        this.dispatcherAdapters = dispatcherAdapters;
+        this.hooks = hooks;
         this.entries = entries;
     }
 
@@ -229,9 +229,13 @@ class Dispatcher {
         Preconditions.checkNotNull(enterEntry, EXCEPTION_ENTER_ENTRY_NULL);
 
         final Processing processing = new Processing();
-        for (int i = 0; i < dispatcherAdapters.size(); i++) {
-            dispatcherAdapters.get(i).setUpDispatch(enterEntry, exitEntry, processing);
-        }
+
+        hooks.hookDispather(new Hooks.HookOn<Hook.DispatcherHook>() {
+            @Override
+            public void hook(Hook.DispatcherHook on) {
+                on.onStartDispatch(enterEntry, exitEntry, processing);
+            }
+        });
 
         Service service = services.get(enterEntry.service);
         Preconditions.checkNotNull(service, EXCEPTION_ENTRY_SERVICE_NULL, enterEntry.service);
@@ -239,9 +243,12 @@ class Dispatcher {
         service.getPresenter().present(enterEntry, exitEntry, forward, null, new Callback() {
             @Override
             public void onComplete() {
-                for (int i = 0; i < dispatcherAdapters.size(); i++) {
-                    dispatcherAdapters.get(i).tearDownDispatch(enterEntry, exitEntry, processing);
-                }
+                hooks.hookDispather(new Hooks.HookOn<Hook.DispatcherHook>() {
+                    @Override
+                    public void hook(Hook.DispatcherHook on) {
+                        on.onEndDispatch(enterEntry, exitEntry, processing);
+                    }
+                });
 
                 endDispatch();
                 startDispatch(); // maybe something else to dispatch

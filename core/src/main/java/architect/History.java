@@ -7,6 +7,7 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import architect.adapter.Hook;
 import architect.behavior.ReceivesResult;
 
 /**
@@ -24,11 +25,12 @@ public class History {
     private static final String EXTRAS_KEY = "EXTRAS";
 
     private final ScreenParceler parceler;
-    private final HistoryTracker tracker = new HistoryTracker();
+    private final Hooks hooks;
     private List<Entry> entries = new ArrayList<>();
 
-    History(ScreenParceler parceler) {
+    History(ScreenParceler parceler, Hooks hooks) {
         this.parceler = parceler;
+        this.hooks = hooks;
     }
 
     void populateFromBundle(Bundle bundle) {
@@ -39,10 +41,7 @@ public class History {
                 Entry entry;
                 for (int i = 0; i < entryBundles.size(); i++) {
                     entry = Entry.fromBundle(entryBundles.get(i), parceler);
-                    entry.dispatched = true;
-                    tracker.increment(entry);
-
-                    entries.add(entry);
+                    populate(entry);
                 }
             }
         }
@@ -52,22 +51,9 @@ public class History {
         Entry entry;
         for (int i = 0; i < stack.getEntries().size(); i++) {
             entry = stack.getEntries().get(i);
-            entry.dispatched = true;
-            tracker.increment(entry);
-
-            entries.add(entry);
+            populate(entry);
         }
     }
-
-//    void init(Screen... paths) {
-//        entries = new ArrayList<>();
-//
-//        Entry entry;
-//        for (int i = 0; i < paths.length; i++) {
-//            entry = add(paths[i], NAV_TYPE_PUSH, null, null);
-//            entry.dispatched = true;
-//        }
-//    }
 
     Bundle toBundle() {
         Bundle historyBundle = new Bundle();
@@ -102,32 +88,42 @@ public class History {
      * Create new entry in history
      */
     Entry add(Screen screen, String service, String tag, Bundle extras) {
-        Entry entry = new Entry(screen, service, tag, extras);
+        final Entry entry = new Entry(screen, service, tag, extras);
         entries.add(entry);
-        tracker.increment(entry);
 
-        Logger.d("Add entry: %s", entry.screen);
+        hooks.hookHistory(new Hooks.HookOn<Hook.HistoryHook>() {
+            @Override
+            public void hook(Hook.HistoryHook on) {
+                on.onAddEntry(entry);
+            }
+        });
 
         return entry;
     }
 
     /**
-     * Kill the latest alive entry
+     * Kill the top entry
      *
-     * @return the killed entry
+     * @param forReplace if the entry is killed during a replace
+     * @return the top killed entry
      */
-    Entry kill(Object result, boolean forReplace) {
-        Entry killed = entries.remove(entries.size() - 1);
-
-        // when replacing, we won't decrement the scope of the exit entry because
-        // it can create conflict between enter and exit scope names during dispatch
-        if (!forReplace) {
-            tracker.decrement(killed);
-        }
+    Entry kill(Object result, final boolean forReplace) {
+        final Entry killed = entries.remove(entries.size() - 1);
 
         if (!entries.isEmpty()) {
             setResult(result);
         }
+
+        hooks.hookHistory(new Hooks.HookOn<Hook.HistoryHook>() {
+            @Override
+            public void hook(Hook.HistoryHook on) {
+                if (forReplace) {
+                    on.onReplaceEntry(killed);
+                } else {
+                    on.onKillEntry(killed);
+                }
+            }
+        });
 
         return killed;
     }
@@ -143,15 +139,20 @@ public class History {
             return new ArrayList<>(0);
         }
 
-        List<Entry> killed = new ArrayList<>(entries.size() - 1);
-        Entry entry;
+        // all entries but root, in reverse order
+        final List<Entry> killed = new ArrayList<>(entries.size() - 1);
         for (int i = entries.size() - 1; i >= 1; i--) {
-            entry = entries.remove(i);
-            tracker.decrement(entry);
-            killed.add(entry);
+            killed.add(entries.remove(i));
         }
 
         setResult(result);
+
+        hooks.hookHistory(new Hooks.HookOn<Hook.HistoryHook>() {
+            @Override
+            public void hook(Hook.HistoryHook on) {
+                on.onKillEntries(killed);
+            }
+        });
 
         return killed;
     }
@@ -162,13 +163,18 @@ public class History {
      * @return the killed entries, in the historical order
      */
     List<Entry> killAll() {
-        List<Entry> killed = new ArrayList<>(entries.size());
-        Entry entry;
+        // all entries, in reverse order
+        final List<Entry> killed = new ArrayList<>(entries.size());
         for (int i = entries.size() - 1; i >= 0; i--) {
-            entry = entries.remove(i);
-            tracker.decrement(entry);
-            killed.add(entry);
+            killed.add(entries.remove(i));
         }
+
+        hooks.hookHistory(new Hooks.HookOn<Hook.HistoryHook>() {
+            @Override
+            public void hook(Hook.HistoryHook on) {
+                on.onKillEntries(killed);
+            }
+        });
 
         return killed;
     }
@@ -272,9 +278,9 @@ public class History {
         return entries.contains(entry);
     }
 
-    int getEntryScopeId(Entry entry) {
-        return tracker.get(entry);
-    }
+//    int getEntryScopeId(Entry entry) {
+//        return tracker.get(entry);
+//    }
 
 //    List<Entry> getLastWithModals() {
 //        Preconditions.checkArgument(entries.size() > 1, "At least 2 entries (non-modal + n modals)");
@@ -293,6 +299,18 @@ public class History {
 //
 //        throw new IllegalStateException("Invalid reach");
 //    }
+
+    private void populate(final Entry entry) {
+        entry.dispatched = true;
+        entries.add(entry);
+
+        hooks.hookHistory(new Hooks.HookOn<Hook.HistoryHook>() {
+            @Override
+            public void hook(Hook.HistoryHook on) {
+                on.onAddEntry(entry);
+            }
+        });
+    }
 
     public static class Entry {
         final String service;

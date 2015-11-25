@@ -3,10 +3,7 @@ package architect;
 import android.content.Context;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import architect.adapter.DispatcherAdapter;
+import architect.adapter.Hook;
 import architect.service.Registration;
 import architect.service.Service;
 
@@ -31,24 +28,24 @@ public class Architect {
     final Dispatcher dispatcher;
     final Services services;
     final Attachments attachments;
+    final Hooks hooks;
 
-    final List<DispatcherAdapter> dispatcherAdapters;
 //    private MortarScope scope;
 
     public static Architect create(ScreenParceler parceler) {
         Services services = new Services();
-        History history = new History(parceler);
-        List<DispatcherAdapter> dispatcherAdapters = new ArrayList<>();
-        return new Architect(new ArchitectDelegate(), history, new Dispatcher(services, history, dispatcherAdapters), services, new Attachments(services), dispatcherAdapters);
+        Hooks hooks = new Hooks();
+        History history = new History(parceler, hooks);
+        return new Architect(new ArchitectDelegate(), history, new Dispatcher(services, history, hooks), services, new Attachments(services), hooks);
     }
 
-    Architect(ArchitectDelegate delegate, History history, Dispatcher dispatcher, Services services, Attachments attachments, List<DispatcherAdapter> dispatcherAdapters) {
+    Architect(ArchitectDelegate delegate, History history, Dispatcher dispatcher, Services services, Attachments attachments, Hooks hooks) {
         this.delegate = delegate;
         this.history = history;
         this.dispatcher = dispatcher;
         this.services = services;
         this.attachments = attachments;
-        this.dispatcherAdapters = dispatcherAdapters;
+        this.hooks = hooks;
 
         delegate.set(this);
     }
@@ -58,8 +55,8 @@ public class Architect {
         services.register(name, registration.createController(executor), registration.createPresenter(), registration.createDelegate());
     }
 
-    public void addDispatcherAdapter(DispatcherAdapter adapter) {
-        dispatcherAdapters.add(adapter);
+    public void addHook(Hook hook) {
+        hooks.add(hook);
     }
 
     public Service getService(String name) {

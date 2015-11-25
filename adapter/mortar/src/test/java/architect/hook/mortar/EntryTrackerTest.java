@@ -1,4 +1,4 @@
-package architect;
+package architect.hook.mortar;
 
 import android.content.Context;
 import android.view.View;
@@ -11,13 +11,16 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import architect.History;
+import architect.Screen;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by lukasz on 23/11/15.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class HistoryTrackerTest {
+public class EntryTrackerTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -39,11 +42,11 @@ public class HistoryTrackerTest {
     private History.Entry entry1;
     private History.Entry entry2;
 
-    private HistoryTracker historyTracker;
+    private EntryTracker historyTracker;
 
     @Before
     public void setUp() {
-        historyTracker = new HistoryTracker();
+        historyTracker = new EntryTracker();
         entry1 = new History.Entry(DUMB_SCREEN, "service", null, null);
         entry2 = new History.Entry(DUMB_SCREEN_2, "service2", null, null);
     }
@@ -88,7 +91,7 @@ public class HistoryTrackerTest {
     @Test
     public void shouldFailToDecrementNegative() {
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage(HistoryTracker.EXCEPTION_ID_BELOW_0);
+        expectedException.expectMessage(EntryTracker.EXCEPTION_ID_BELOW_0);
 
         assertThat(historyTracker.get(entry1)).isEqualTo(0);
         historyTracker.decrement(entry1);

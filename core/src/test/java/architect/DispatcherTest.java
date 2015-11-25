@@ -19,7 +19,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import architect.adapter.DispatcherAdapter;
 import architect.service.Presenter;
 import architect.service.Service;
 
@@ -62,13 +61,13 @@ public class DispatcherTest {
     private Service service;
 
     @Mock
+    private Hooks hooks;
+
+    @Mock
     private Presenter servicePresenter;
 
     @Spy
     private ArrayList<History.Entry> toDispatchEntries;
-
-    @Spy
-    private ArrayList<DispatcherAdapter> dispatcherAdapters;
 
     private Dispatcher dispatcher;
     private History.Entry entry1;
@@ -79,7 +78,7 @@ public class DispatcherTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        dispatcher = new Dispatcher(services, history, dispatcherAdapters, toDispatchEntries);
+        dispatcher = new Dispatcher(services, history, hooks, toDispatchEntries);
 
         entry1 = new History.Entry(DUMB_SCREEN, "s1", null, null);
         entry2 = new History.Entry(DUMB_SCREEN, "s2", null, null);
