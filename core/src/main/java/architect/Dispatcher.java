@@ -1,6 +1,8 @@
 package architect;
 
 
+import android.support.v4.util.SimpleArrayMap;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -233,7 +235,7 @@ class Dispatcher {
         hooks.hookDispather(new Hooks.HookOn<Hook.DispatcherHook>() {
             @Override
             public void hook(Hook.DispatcherHook on) {
-                on.onStartDispatch(enterEntry, exitEntry, processing);
+                on.onStartDispatch(enterEntry, exitEntry, forward, processing);
             }
         });
 
@@ -246,7 +248,7 @@ class Dispatcher {
                 hooks.hookDispather(new Hooks.HookOn<Hook.DispatcherHook>() {
                     @Override
                     public void hook(Hook.DispatcherHook on) {
-                        on.onEndDispatch(enterEntry, exitEntry, processing);
+                        on.onEndDispatch(enterEntry, exitEntry, forward, processing);
                     }
                 });
 

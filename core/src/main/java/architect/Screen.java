@@ -14,7 +14,5 @@ import android.view.ViewGroup;
  */
 public interface Screen {
 
-//    void configureScope(MortarScope.Builder builder, MortarScope parentScope);
-
     View createView(Context context, ViewGroup parent);
 }

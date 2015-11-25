@@ -35,13 +35,15 @@ android {
 
 dependencies {
     compile project(':core')
-    compile project(':services:presentation')
-    compile project(':adapter:mortar')
+    compile project(':hook:mortar')
+    compile project(':services:show')
+    compile project(':services:show:show-mortar')
 
     compile deps.parceler_api
     apt deps.parceler
 
     compile deps.appcompat_v7
+    compile deps.support_v4
     compile deps.design
 
     compile 'com.jakewharton:butterknife:7.0.1'

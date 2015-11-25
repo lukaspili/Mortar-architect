@@ -1,5 +1,7 @@
 package architect.service.commons;
 
+import android.support.v4.util.SimpleArrayMap;
+
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */

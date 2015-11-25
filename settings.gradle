@@ -1,7 +1,8 @@
 include ':core',
         ':services:commons',
-        ':services:presentation',
-        ':adapter:mortar',
+        ':services:show',
+        ':services:show:show-mortar',
+        ':hook:mortar',
 //        ':navigation'
 //        ':robot'
 //        ':robot-compiler'

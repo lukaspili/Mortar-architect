@@ -9,10 +9,12 @@ import architect.Attachments;
 import architect.Stack;
 import architect.examples.mortar_app.screen.home.HomeScreen;
 import architect.examples.mortar_app.transition.BottomSlideTransition;
+import architect.hook.mortar.MortarHook;
 import architect.service.commons.FrameContainerView;
 import architect.service.commons.Transitions;
-import architect.service.presentation.ShowService;
-import architect.service.presentation.Transition;
+import architect.service.show.ShowService;
+import architect.service.show.Transition;
+import architect.service.show.mortar.ShowScopingStrategy;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 transitions.setDefault(new BottomSlideTransition());
             }
         });
+//        architect.addHook(new MortarHook());
 
         architect.delegate().onCreate(getIntent(), savedInstanceState,
                 new Attachments()

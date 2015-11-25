@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import architect.Callback;
-import architect.service.presentation.Transition;
+import architect.service.show.Transition;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com

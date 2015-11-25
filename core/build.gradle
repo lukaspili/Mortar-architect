@@ -16,6 +16,8 @@ android {
 }
 
 dependencies {
+    provided deps.support_v4
+
     testCompile deps.junit
     testCompile deps.mockito
     testCompile deps.assertj

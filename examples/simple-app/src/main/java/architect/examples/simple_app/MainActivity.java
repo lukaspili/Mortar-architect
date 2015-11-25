@@ -11,8 +11,8 @@ import architect.examples.mortar_app.screen.home.HomeScreen;
 import architect.examples.mortar_app.transition.BottomSlideTransition;
 import architect.service.commons.FrameContainerView;
 import architect.service.commons.Transitions;
-import architect.service.presentation.ShowService;
-import architect.service.presentation.Transition;
+import architect.service.show.ShowService;
+import architect.service.show.Transition;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 

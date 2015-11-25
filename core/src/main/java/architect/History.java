@@ -313,8 +313,8 @@ public class History {
     }
 
     public static class Entry {
-        final String service;
-        final String tag;
+        public final String service;
+        public final String tag;
         public final Screen screen;
         public final Bundle extras;
         public SparseArray<Parcelable> viewState;

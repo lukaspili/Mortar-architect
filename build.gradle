@@ -2,9 +2,9 @@ ext.deps = [
         android_gradle_plugin        : 'com.android.tools.build:gradle:1.5.0',
         apt_gradle_plugin            : 'com.neenbedankt.gradle.plugins:android-apt:1.8',
 
-        appcompat_v7                 : 'com.android.support:appcompat-v7:22.2.1',
-        support_v4                   : 'com.android.support:support-v4:22.2.1',
-        design                       : 'com.android.support:design:22.2.1',
+        appcompat_v7                 : 'com.android.support:appcompat-v7:23.0.0',
+        support_v4                   : 'com.android.support:support-v4:23.0.0',
+        design                       : 'com.android.support:design:23.0.0',
 
         flow                         : 'com.squareup.flow:flow:0.9',
         flow_path                    : 'com.squareup.flow:flow-path:0.9',
@@ -29,9 +29,9 @@ ext.deps = [
         assertj                      : 'org.assertj:assertj-core:1.7.1'
 ]
 ext.minSdkVersion = 14
-ext.targetSdkVersion = 22
-ext.compileSdkVersion = 22
-ext.buildToolsVersion = '22.0.1'
+ext.targetSdkVersion = 23
+ext.compileSdkVersion = 23
+ext.buildToolsVersion = '23.0.2'
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'

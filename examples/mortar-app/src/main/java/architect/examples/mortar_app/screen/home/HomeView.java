@@ -9,7 +9,7 @@ import android.widget.TextView;
 import architect.Architect;
 import architect.examples.mortar_app.MainActivity;
 import architect.examples.mortar_app.R;
-import architect.service.presentation.ShowController;
+import architect.service.show.ShowController;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

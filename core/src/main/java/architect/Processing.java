@@ -1,18 +1,17 @@
 package architect;
 
-import java.util.HashMap;
-import java.util.Map;
+import android.support.v4.util.SimpleArrayMap;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class Processing {
 
-    private Map<String, Object> data;
+    private SimpleArrayMap<String, Object> data;
 
     public void put(String name, Object object) {
         if (data == null) {
-            data = new HashMap<>();
+            data = new SimpleArrayMap<>();
         }
 
         data.put(name, object);
@@ -24,5 +23,9 @@ public class Processing {
         }
 
         return (T) data.get(name);
+    }
+
+    public void remove(String name) {
+        data.remove(name);
     }
 }

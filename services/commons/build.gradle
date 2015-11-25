@@ -17,4 +17,6 @@ android {
 
 dependencies {
     compile project(':core')
+
+    provided deps.support_v4
 }

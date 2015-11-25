@@ -1,5 +1,7 @@
 package architect.adapter;
 
+import android.support.v4.util.SimpleArrayMap;
+
 import java.util.List;
 
 import architect.History;
@@ -25,8 +27,10 @@ public abstract class Hook {
     }
 
     public interface DispatcherHook {
-        void onStartDispatch(History.Entry enterEntry, History.Entry exitEntry, Processing processing);
+        void onStartDispatch(History.Entry enterEntry, History.Entry exitEntry, boolean forward, Processing processing);
 
-        void onEndDispatch(History.Entry enterEntry, History.Entry exitEntry, Processing processing);
+        void onEndDispatch(History.Entry enterEntry, History.Entry exitEntry, boolean forward, Processing processing);
+
+        void onRestore(SimpleArrayMap<String, List<History.Entry>> entries);
     }
 }

@@ -1,0 +1,29 @@
+buildscript {
+    dependencies {
+        classpath deps.android_gradle_plugin
+    }
+}
+
+apply plugin: 'com.android.library'
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+    }
+}
+
+dependencies {
+    compile project(':core')
+
+    provided deps.mortar
+    provided deps.support_v4
+
+    testCompile deps.junit
+    testCompile deps.mockito
+    testCompile deps.assertj
+}
+
+apply from: '../../mvn-publish-android.gradle'
