@@ -9,11 +9,11 @@ import architect.hook.mortar.ScopingStrategy;
 /**
  * Created by lukasz on 25/11/15.
  */
-public class ShowScopingStrategy implements ScopingStrategy {
+public class ShowServiceScopingStrategy implements ScopingStrategy {
 
     private final List<String> serviceNames;
 
-    public ShowScopingStrategy(String... serviceNames) {
+    public ShowServiceScopingStrategy(String... serviceNames) {
         this.serviceNames = Arrays.asList(serviceNames);
     }
 

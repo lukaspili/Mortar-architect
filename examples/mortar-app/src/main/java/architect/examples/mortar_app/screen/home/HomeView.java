@@ -9,6 +9,7 @@ import android.widget.TextView;
 import architect.Architect;
 import architect.examples.mortar_app.MainActivity;
 import architect.examples.mortar_app.R;
+import architect.hook.mortar.MortarAchitect;
 import architect.service.show.ShowController;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -39,12 +40,9 @@ public class HomeView extends LinearLayout {
         toolbar.setTitle("Home: " + name);
     }
 
-    private Architect getArchitect() {
-        return ((MainActivity) getContext()).getArchitect();
-    }
 
     private ShowController getShowController() {
-        return getArchitect().getService(MainActivity.SHOW_SERVICE).getController();
+        return MortarAchitect.get(this).getService(MainActivity.SHOW_SERVICE).getController();
     }
 
     @OnClick(R.id.next_home_button)

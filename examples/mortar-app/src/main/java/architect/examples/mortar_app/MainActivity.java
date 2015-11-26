@@ -9,14 +9,16 @@ import architect.Attachments;
 import architect.Stack;
 import architect.examples.mortar_app.screen.home.HomeScreen;
 import architect.examples.mortar_app.transition.BottomSlideTransition;
+import architect.hook.mortar.MortarAchitect;
 import architect.hook.mortar.MortarHook;
 import architect.service.commons.FrameContainerView;
 import architect.service.commons.Transitions;
 import architect.service.show.ShowService;
 import architect.service.show.Transition;
-import architect.service.show.mortar.ShowScopingStrategy;
+import architect.service.show.mortar.ShowServiceScopingStrategy;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import mortar.MortarScope;
 
 /**
  * Root activity
@@ -39,15 +41,31 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        architect = Architect.create(new Parceler());
-        architect.register(SHOW_SERVICE, new ShowService() {
+        MortarAchitect.onCreateScope(this, savedInstanceState, new MortarAchitect.Factory() {
             @Override
-            public void configureTransitions(Transitions<Transition> transitions) {
-                transitions.setDefault(new BottomSlideTransition());
+            public Architect createArchitect() {
+                Architect architect = Architect.create(new Parceler());
+                architect.register(SHOW_SERVICE, new ShowService() {
+                    @Override
+                    public void configureTransitions(Transitions<Transition> transitions) {
+                        transitions.setDefault(new BottomSlideTransition());
+                    }
+                });
+                return architect;
+            }
+
+            @Override
+            public void configureArchitectWithMortar(Architect architect, MortarScope scope) {
+                architect.addHook(new MortarHook(scope, new ShowServiceScopingStrategy(SHOW_SERVICE)));
+            }
+
+            @Override
+            public void configureScope(MortarScope.Builder builder, MortarScope parentScope) {
+
             }
         });
-//        architect.addHook(new MortarHook());
 
+        architect = MortarAchitect.get(this);
         architect.delegate().onCreate(getIntent(), savedInstanceState,
                 new Attachments()
                         .attach(SHOW_SERVICE, containerView),
@@ -94,9 +112,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         super.onBackPressed();
-    }
-
-    public Architect getArchitect() {
-        return architect;
     }
 }

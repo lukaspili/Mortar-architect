@@ -40,6 +40,7 @@ dependencies {
     compile deps.parceler_api
     apt deps.parceler
 
+    compile deps.support_v4
     compile deps.appcompat_v7
     compile deps.design
 

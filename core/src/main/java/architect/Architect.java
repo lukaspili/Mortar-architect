@@ -12,17 +12,6 @@ import architect.service.Service;
  */
 public class Architect {
 
-    public static final String SERVICE_NAME = Architect.class.getName();
-
-    public static Architect get(Context context) {
-        //noinspection ResourceType
-        return (Architect) context.getSystemService(SERVICE_NAME);
-    }
-
-    public static Architect get(View view) {
-        return get(view.getContext());
-    }
-
     final ArchitectDelegate delegate;
     final History history;
     final Dispatcher dispatcher;

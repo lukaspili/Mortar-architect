@@ -45,7 +45,9 @@ dependencies {
     compile deps.appcompat_v7
     compile deps.support_v4
     compile deps.design
+    compile deps.timber
+    compile deps.butterknife
 
-    compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.jakewharton.timber:timber:2.7.1'
+    compile deps.mortar
+
 }
