@@ -16,8 +16,8 @@ import architect.service.Service;
  */
 class Dispatcher {
 
-    static final String EXCEPTION_ENTER_ENTRY_NULL = "Enter entry may not be null";
-    static final String EXCEPTION_ENTRY_SERVICE_NULL = "Service %s not found";
+    static final String EXCEPTION_DISPATCH_ENTRY_NULL = "Dispatch entry may not be null";
+    static final String EXCEPTION_SERVICE_NULL = "Service %s not found";
 
     private final Services services;
     private final History history;
@@ -206,8 +206,8 @@ class Dispatcher {
             return;
         dispatching = true;
 //        Preconditions.checkNotNull(architect.getScope(), "Dispatcher navigator scope cannot be null");
-        Preconditions.checkArgument(!history.isEmpty(), "Cannot dispatch on empty history");
-        Preconditions.checkArgument(!entries.isEmpty(), "Cannot dispatch on empty stack");
+//        Preconditions.checkArgument(!history.isEmpty(), "Cannot dispatch on empty history");
+//        Preconditions.checkArgument(!entries.isEmpty(), "Nothing to dispatch");
 
         // it's imperative to get the current top dispatched before dequeuing, because
         // the latter operation mark new to-be dispatched entries as dispatched
@@ -228,7 +228,7 @@ class Dispatcher {
         }
 
         // exit entry can be null but enter entry never can
-        Preconditions.checkNotNull(enterEntry, EXCEPTION_ENTER_ENTRY_NULL);
+        Preconditions.checkNotNull(dispatch, EXCEPTION_DISPATCH_ENTRY_NULL);
 
         final Processing processing = new Processing();
 
@@ -239,8 +239,8 @@ class Dispatcher {
             }
         });
 
-        Service service = services.get(enterEntry.service);
-        Preconditions.checkNotNull(service, EXCEPTION_ENTRY_SERVICE_NULL, enterEntry.service);
+        Service service = services.get(dispatch.service);
+        Preconditions.checkNotNull(service, EXCEPTION_SERVICE_NULL, dispatch.service);
 
         service.getPresenter().present(enterEntry, exitEntry, forward, null, new Callback() {
             @Override

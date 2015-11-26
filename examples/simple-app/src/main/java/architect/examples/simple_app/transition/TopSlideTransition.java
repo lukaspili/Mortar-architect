@@ -1,4 +1,4 @@
-package architect.examples.mortar_app.transition;
+package architect.examples.simple_app.transition;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -27,7 +27,7 @@ public class TopSlideTransition implements Transition {
 
     private void perform(View view, boolean forward, final Callback callback) {
         AnimatorSet set = new AnimatorSet();
-        set.setDuration(300);
+        set.setDuration(1000);
         set.setInterpolator(new AccelerateDecelerateInterpolator());
         set.addListener(new AnimatorListenerAdapter() {
             @Override

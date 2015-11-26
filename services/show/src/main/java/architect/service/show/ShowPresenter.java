@@ -1,13 +1,14 @@
 package architect.service.show;
 
+import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import java.util.List;
 
 import architect.Callback;
-import architect.Processing;
 import architect.History;
+import architect.Processing;
 import architect.service.commons.AbstractPresenter;
 import architect.service.commons.EntryExtras;
 import architect.service.commons.FrameContainerView;
@@ -21,22 +22,38 @@ import architect.service.commons.Transitions;
 public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
 
     private final Transitions<Transition> transitions;
+    private final SimpleArrayMap<History.Entry, Integer> entriesToViewIndexes;
 
     public ShowPresenter(Transitions<Transition> transitions) {
+        this(transitions, new SimpleArrayMap<History.Entry, Integer>());
+    }
+
+    ShowPresenter(Transitions<Transition> transitions, SimpleArrayMap<History.Entry, Integer> entriesToViewIndexes) {
         this.transitions = transitions;
+        this.entriesToViewIndexes = entriesToViewIndexes;
+    }
+
+    @Override
+    public void dropContainer(FrameContainerView container) {
+        super.dropContainer(container);
+        entriesToViewIndexes.clear();
     }
 
     @Override
     public void restore(List<History.Entry> entries) {
+        Preconditions.checkArgument(container.getChildCount() == 0, "Already some children while restoring");
+        Preconditions.checkArgument(entriesToViewIndexes.isEmpty(), "Entries to view indexes must be empty on restore");
+
         History.Entry entry;
         for (int i = 0; i < entries.size(); ++i) {
             entry = entries.get(i);
             container.addView(entry.screen.createView(container.getContext(), container));
+            entriesToViewIndexes.put(entry, i);
         }
     }
 
     @Override
-    public void present(History.Entry enterEntry, History.Entry exitEntry, final boolean forward, Processing env, final Callback callback) {
+    public void present(final History.Entry enterEntry, History.Entry exitEntry, final boolean forward, Processing env, final Callback callback) {
         container.willBeginTransition();
 
         final Callback presentationCallback = new PresentationCallback(sessionId) {
@@ -47,7 +64,11 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
                 }
 
                 if (!forward) {
-                    container.removeViewAt(container.getChildCount() - 1);
+                    if (enterEntry != null) {
+                        container.removeViewAt(container.getChildCount() - 1);
+                    } else {
+                        container.removeAllViews();
+                    }
                 }
 
                 container.didEndTransition();
@@ -58,7 +79,7 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
         if (forward) {
             show(enterEntry, presentationCallback);
         } else {
-            hide(exitEntry, presentationCallback);
+            hide(exitEntry, enterEntry == null, presentationCallback);
         }
     }
 
@@ -75,10 +96,19 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
     private void show(History.Entry entry, Callback callback) {
         View newView = entry.screen.createView(container.getContext(), container);
         container.addView(newView);
+        entriesToViewIndexes.put(entry, container.getChildCount() - 1);
+
         measureAndShow(newView, getTransition(entry), callback);
     }
 
-    private void hide(History.Entry exitEntry, final Callback callback) {
+    private void hide(History.Entry exitEntry, boolean hideAllViews, final Callback callback) {
+        if (hideAllViews && entriesToViewIndexes.size() > 1) {
+            hideAll(callback);
+            return;
+        }
+
+        entriesToViewIndexes.clear();
+
         Transition transition = getTransition(exitEntry);
         if (transition == null) {
             callback.onComplete();
@@ -86,6 +116,40 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
         }
 
         transition.hide(container.getChildAt(container.getChildCount() - 1), callback);
+    }
+
+    private void hideAll(final Callback callback) {
+        SimpleArrayMap<View, Transition> viewsTransitions = new SimpleArrayMap<>(entriesToViewIndexes.size());
+        Transition transition;
+        for (int i = entriesToViewIndexes.size() - 1; i >= 0; i--) {
+            transition = getTransition(entriesToViewIndexes.keyAt(i));
+            if (transition != null) {
+                viewsTransitions.put(container.getChildAt(entriesToViewIndexes.valueAt(i)), transition);
+            }
+
+            entriesToViewIndexes.removeAt(i);
+        }
+
+        if (viewsTransitions.isEmpty()) {
+            callback.onComplete();
+            return;
+        }
+
+        final int total = viewsTransitions.size();
+        final Callback singleCallback = new Callback() {
+            private int count = 0;
+
+            @Override
+            public void onComplete() {
+                if (++count == total) {
+                    callback.onComplete();
+                }
+            }
+        };
+
+        for (int i = 0; i < viewsTransitions.size(); i++) {
+            viewsTransitions.valueAt(i).hide(viewsTransitions.keyAt(i), singleCallback);
+        }
     }
 
     private Transition getTransition(History.Entry entry) {

@@ -30,12 +30,20 @@ public class Executor {
 //        dispatcher.dispatch(entries);
 //    }
 
+    public boolean popAnyService() {
+        return pop(null, null);
+    }
+
     public boolean pop() {
         return pop(null);
     }
 
     public boolean pop(Object result) {
-        if (!history.canKill()) {
+        return pop(service, result);
+    }
+
+    private boolean pop(String service, Object result) {
+        if (!history.canKill(service)) {
             return false;
         }
 
@@ -43,16 +51,20 @@ public class Executor {
         return true;
     }
 
-//    public boolean popToRoot() {
+    public void clear() {
+        dispatcher.dispatch(history.killAll(service));
+    }
+
+//    public boolean popTo() {
 //        return popToRoot(null);
 //    }
 //
 //    public boolean popToRoot(Object result) {
-//        if (!architect.history.canKill()) {
+//        if (!history.canKill()) {
 //            return false;
 //        }
 //
-//        architect.dispatcher.dispatch(architect.history.killAllButRoot(result));
+//        dispatcher.dispatch(history.killAllButRoot(result));
 //        return true;
 //    }
 }

@@ -25,4 +25,16 @@ public class ShowController extends Controller {
     public void show(Screen screen, String tag, String transition) {
         executor.push(screen, tag, EntryExtras.builder().transition(transition).toBundle());
     }
+
+    public boolean hide() {
+        return executor.pop();
+    }
+
+    public boolean hide(Object result) {
+        return executor.pop(result);
+    }
+
+    public void hideAll() {
+        executor.clear();
+    }
 }

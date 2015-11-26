@@ -35,7 +35,7 @@ android {
 
 dependencies {
     compile project(':core')
-    compile project(':services:presentation')
+    compile project(':services:show')
 
     compile deps.parceler_api
     apt deps.parceler
@@ -44,6 +44,6 @@ dependencies {
     compile deps.appcompat_v7
     compile deps.design
 
-    compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.jakewharton.timber:timber:2.7.1'
+    compile deps.butterknife
+    compile deps.timber
 }

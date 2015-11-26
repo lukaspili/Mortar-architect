@@ -1,4 +1,4 @@
-package architect.examples.mortar_app;
+package architect.examples.simple_app;
 
 import android.app.Application;
 

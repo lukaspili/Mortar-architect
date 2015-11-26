@@ -1,4 +1,4 @@
-package architect.examples.simple_app.screen.home;
+package architect.examples.simple_app.screen.home2;
 
 import android.content.Context;
 import android.view.View;
@@ -13,17 +13,13 @@ import architect.Screen;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 @Parcel(parcelsIndex = false)
-public class HomeScreen implements Screen {
+public class HomeScreen2 implements Screen {
 
-    final String name;
-
-    @ParcelConstructor
-    public HomeScreen(String name) {
-        this.name = name;
+    public HomeScreen2() {
     }
 
     @Override
     public View createView(Context context, ViewGroup parent) {
-        return new HomeView(context, name);
+        return new HomeView2(context);
     }
 }

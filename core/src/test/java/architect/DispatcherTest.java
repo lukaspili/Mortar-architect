@@ -114,7 +114,7 @@ public class DispatcherTest {
     @Test
     public void shouldFailToDispatchOneEntryBackwardOnEmptyHistory() {
         expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage(Dispatcher.EXCEPTION_ENTER_ENTRY_NULL);
+        expectedException.expectMessage(Dispatcher.EXCEPTION_DISPATCH_ENTRY_NULL);
 
         when(history.existInHistory(entry1)).thenReturn(false);
         when(history.getTopDispatched()).thenReturn(null);
@@ -132,7 +132,7 @@ public class DispatcherTest {
     @Test
     public void shouldFailToDispatchManyEntriesBackwardOnEmptyHistory() {
         expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage(Dispatcher.EXCEPTION_ENTER_ENTRY_NULL);
+        expectedException.expectMessage(Dispatcher.EXCEPTION_DISPATCH_ENTRY_NULL);
 
         when(history.existInHistory(entry2)).thenReturn(false);
         when(history.getTopDispatched()).thenReturn(null);
@@ -151,7 +151,7 @@ public class DispatcherTest {
     @Test
     public void shouldFailToDispatchOneEntryWhenServiceNotFound() {
         expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage(String.format(Dispatcher.EXCEPTION_ENTRY_SERVICE_NULL, entry1.service));
+        expectedException.expectMessage(String.format(Dispatcher.EXCEPTION_SERVICE_NULL, entry1.service));
 
         when(history.existInHistory(entry1)).thenReturn(true);
         when(history.getTopDispatched()).thenReturn(null);
@@ -171,7 +171,7 @@ public class DispatcherTest {
     @Test
     public void shouldFailToDispatchManyEntriesWhenServiceNotFound() {
         expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage(String.format(Dispatcher.EXCEPTION_ENTRY_SERVICE_NULL, entry2.service));
+        expectedException.expectMessage(String.format(Dispatcher.EXCEPTION_SERVICE_NULL, entry2.service));
 
         when(history.existInHistory(entry2)).thenReturn(true);
         when(history.getTopDispatched()).thenReturn(null);

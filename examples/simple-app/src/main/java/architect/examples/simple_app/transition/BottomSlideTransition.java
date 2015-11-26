@@ -1,4 +1,4 @@
-package architect.examples.mortar_app.transition;
+package architect.examples.simple_app.transition;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

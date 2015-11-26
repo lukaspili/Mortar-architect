@@ -1,4 +1,4 @@
-package architect.examples.mortar_app;
+package architect.examples.simple_app;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,8 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import architect.Architect;
 import architect.Attachments;
 import architect.Stack;
-import architect.examples.mortar_app.screen.home.HomeScreen;
-import architect.examples.mortar_app.transition.BottomSlideTransition;
+import architect.examples.simple_app.screen.home.HomeScreen;
+import architect.examples.simple_app.transition.BottomSlideTransition;
+import architect.examples.simple_app.transition.TopSlideTransition;
 import architect.service.commons.FrameContainerView;
 import architect.service.commons.Transitions;
 import architect.service.show.ShowService;
@@ -23,8 +24,6 @@ import butterknife.ButterKnife;
  */
 public class MainActivity extends AppCompatActivity {
 
-    public static final String SHOW_SERVICE = "show";
-
     private Architect architect;
 
     @Bind(R.id.container_view)
@@ -38,18 +37,19 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         architect = Architect.create(new Parceler());
-        architect.register(SHOW_SERVICE, new ShowService() {
+        architect.register(Architecture.SHOW_SERVICE, new ShowService() {
             @Override
             public void configureTransitions(Transitions<Transition> transitions) {
                 transitions.setDefault(new BottomSlideTransition());
+                transitions.add(Architecture.SHOW_SERVICE_TOP_TRANSITION, new TopSlideTransition());
             }
         });
 
         architect.delegate().onCreate(getIntent(), savedInstanceState,
                 new Attachments()
-                        .attach(SHOW_SERVICE, containerView),
+                        .attach(Architecture.SHOW_SERVICE, containerView),
                 new Stack()
-                        .put(SHOW_SERVICE, new HomeScreen("Initial")));
+                        .put(Architecture.SHOW_SERVICE, new HomeScreen("Initial")));
     }
 
     @Override

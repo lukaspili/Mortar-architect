@@ -80,7 +80,11 @@ public class History {
     /**
      * At least 2 alive entries
      */
-    boolean canKill() {
+    boolean canKill(String service) {
+        if (service != null) {
+            return filterByDescending(service, false).size() > 1;
+        }
+
         return entries.size() > 1;
     }
 
@@ -162,12 +166,14 @@ public class History {
      *
      * @return the killed entries, in the historical order
      */
-    List<Entry> killAll() {
+    List<Entry> killAll(String service) {
         // all entries, in reverse order
-        final List<Entry> killed = new ArrayList<>(entries.size());
-        for (int i = entries.size() - 1; i >= 0; i--) {
-            killed.add(entries.remove(i));
-        }
+//        final List<Entry> killed = new ArrayList<>(entries.size());
+//        for (int i = entries.size() - 1; i >= 0; i--) {
+//            killed.add(entries.remove(i));
+//        }
+
+        final List<Entry> killed = filterByDescending(service, true);
 
         hooks.hookHistory(new Hooks.HookOn<Hook.HistoryHook>() {
             @Override
@@ -188,6 +194,22 @@ public class History {
             //noinspection unchecked
             ((ReceivesResult) entry.screen).setResult(result);
         }
+    }
+
+    private List<Entry> filterByDescending(String service, boolean kill) {
+        List<Entry> filtered = new ArrayList<>();
+        Entry entry;
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            entry = entries.get(i);
+            if (entry.service.equals(service)) {
+                if (kill) {
+                    entries.remove(i);
+                }
+                filtered.add(entry);
+            }
+        }
+
+        return filtered;
     }
 
 //    Entry getLastAlive() {
@@ -352,4 +374,8 @@ public class History {
             return screen.toString();
         }
     }
+
+//    private interface Filter {
+//        boolean filter(Entry entry);
+//    }
 }

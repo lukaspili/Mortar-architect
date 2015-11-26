@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar2"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="#2196F3"/>
@@ -24,38 +24,18 @@
             android:background="@android:color/holo_orange_dark"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/home_go_home_button"
+            <TextView
+                android:id="@+id/home2_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Home view"/>
-
-            <Button
-                android:id="@+id/home_go_home_custom_transition_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home view with custom transition"/>
-
-            <Button
-                android:id="@+id/home_go_home2_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home 2 View"/>
-
-            <Button
-                android:id="@+id/home_hide_result_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hide with result to previous"/>
-
-            <Button
-                android:id="@+id/home_hideall_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hide All"/>
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:textSize="20sp"
+                android:text="HOME 2"/>
 
             <EditText
-                android:id="@+id/home_edit_text"
+                android:id="@+id/home2_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
