@@ -14,7 +14,6 @@ import architect.service.commons.AbstractPresenter;
 import architect.service.commons.EntryExtras;
 import architect.service.commons.FrameContainerView;
 import architect.service.commons.HandlesBack;
-import architect.service.commons.PresentationCallback;
 import architect.service.commons.Transitions;
 
 /**
@@ -56,13 +55,9 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
     public void present(final History.Entry enterEntry, History.Entry exitEntry, final boolean forward, Processing processing, final Callback callback) {
         container.willBeginTransition();
 
-        final Callback presentationCallback = new PresentationCallback(sessionId) {
+        initPresentationCallback(new Callback() {
             @Override
             public void onComplete() {
-                if (!isSessionValid(presentationSessionId)) {
-                    return;
-                }
-
                 if (!forward) {
                     if (enterEntry != null) {
                         container.removeViewAt(container.getChildCount() - 1);
@@ -74,12 +69,12 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
                 container.didEndTransition();
                 callback.onComplete();
             }
-        };
+        });
 
         if (forward) {
-            show(enterEntry, processing, presentationCallback);
+            show(enterEntry, processing);
         } else {
-            hide(exitEntry, enterEntry == null, presentationCallback);
+            hide(exitEntry, enterEntry == null);
         }
     }
 
@@ -93,17 +88,17 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
         return view instanceof HandlesBack && ((HandlesBack) view).onBackPressed();
     }
 
-    private void show(History.Entry entry, Processing processing, Callback callback) {
+    private void show(History.Entry entry, Processing processing) {
         View newView = entry.screen.createView(getContext(container, entry, processing), container);
         container.addView(newView);
         entriesToViewIndexes.put(entry, container.getChildCount() - 1);
 
-        measureAndShow(newView, getTransition(entry), callback);
+        measureAndShow(newView, getTransition(entry));
     }
 
-    private void hide(History.Entry exitEntry, boolean hideAllViews, final Callback callback) {
+    private void hide(History.Entry exitEntry, boolean hideAllViews) {
         if (hideAllViews && entriesToViewIndexes.size() > 1) {
-            hideAll(callback);
+            hideAll();
             return;
         }
 
@@ -111,14 +106,19 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
 
         Transition transition = getTransition(exitEntry);
         if (transition == null) {
-            callback.onComplete();
+            completePresentationCallback();
             return;
         }
 
-        transition.hide(container.getChildAt(container.getChildCount() - 1), callback);
+        transition.hide(container.getChildAt(container.getChildCount() - 1), new Callback() {
+            @Override
+            public void onComplete() {
+                completePresentationCallback();
+            }
+        });
     }
 
-    private void hideAll(final Callback callback) {
+    private void hideAll() {
         SimpleArrayMap<View, Transition> viewsTransitions = new SimpleArrayMap<>(entriesToViewIndexes.size());
         Transition transition;
         for (int i = entriesToViewIndexes.size() - 1; i >= 0; i--) {
@@ -131,7 +131,7 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
         }
 
         if (viewsTransitions.isEmpty()) {
-            callback.onComplete();
+            completePresentationCallback();
             return;
         }
 
@@ -142,7 +142,7 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
             @Override
             public void onComplete() {
                 if (++count == total) {
-                    callback.onComplete();
+                    completePresentationCallback();
                 }
             }
         };
@@ -156,12 +156,12 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
         return transitions.find(EntryExtras.from(entry).transition);
     }
 
-    private void measureAndShow(final View view, final Transition transition, final Callback callback) {
+    private void measureAndShow(final View view, final Transition transition) {
         int width = view.getWidth();
         int height = view.getHeight();
 
         if (width > 0 && height > 0) {
-            onShowReady(view, transition, callback);
+            onShowReady(view, transition);
             return;
         }
 
@@ -173,18 +173,23 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
                     observer.removeOnPreDrawListener(this);
                 }
 
-                onShowReady(view, transition, callback);
+                onShowReady(view, transition);
                 return true;
             }
         });
     }
 
-    private void onShowReady(View view, Transition transition, Callback callback) {
+    private void onShowReady(View view, Transition transition) {
         if (transition == null) {
-            callback.onComplete();
+            completePresentationCallback();
             return;
         }
 
-        transition.show(view, callback);
+        transition.show(view, new Callback() {
+            @Override
+            public void onComplete() {
+                completePresentationCallback();
+            }
+        });
     }
 }

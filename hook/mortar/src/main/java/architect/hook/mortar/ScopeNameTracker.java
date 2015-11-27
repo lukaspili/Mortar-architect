@@ -30,6 +30,8 @@ class ScopeNameTracker {
         update(entry, false);
     }
 
+//    void remo
+
     private void update(History.Entry entry, boolean increment) {
         Class cls = entry.screen.getClass();
         int id = lastIds.containsKey(cls) ? lastIds.get(cls) : 0;
@@ -43,6 +45,7 @@ class ScopeNameTracker {
             ids.remove(entry.screen);
         }
 
+        // should be useless now
         //todo: decrement lastId but dont remove entry from ids
         //todo: remove it only in the endDispatch, like in a clear() method
 

@@ -11,6 +11,7 @@ import architect.service.Service;
 
 /**
  * Dispatch consequences of history manipulation
+ * Dispatcher does not modify the history
  *
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
@@ -51,10 +52,11 @@ class Dispatcher {
     }
 
     /**
-     * Attach the dispatcher on new context
+     * Activate the dispatcher
      */
     void activate() {
         Preconditions.checkArgument(!active, "Dispatcher already active");
+        Preconditions.checkArgument(!dispatching, "Activate dispatcher while dispatching");
         Preconditions.checkArgument(entries.isEmpty(), "Dispatcher stack must be empty");
 
         final SimpleArrayMap<String, List<History.Entry>> servicesEntries = history.getEntriesByServices();
@@ -176,6 +178,8 @@ class Dispatcher {
 
     void desactivate() {
         Preconditions.checkArgument(active, "Dispatcher already desactivated");
+        Preconditions.checkArgument(!dispatching, "Desactivate dispatcher while dispatching");
+
         active = false;
         entries.clear();
     }

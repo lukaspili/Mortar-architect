@@ -9,10 +9,10 @@ import architect.Callback;
  */
 public abstract class PresentationCallback implements Callback {
 
-    protected final int presentationSessionId;
+    protected final int callbackSessionId;
 
-    public PresentationCallback(int presentationSessionId) {
-        this.presentationSessionId = presentationSessionId;
+    public PresentationCallback(int callbackSessionId) {
+        this.callbackSessionId = callbackSessionId;
     }
 
     public abstract void onComplete();

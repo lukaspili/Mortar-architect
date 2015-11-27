@@ -3,6 +3,7 @@ package architect.service.commons;
 import android.content.Context;
 import android.view.View;
 
+import architect.Callback;
 import architect.History;
 import architect.Hooks;
 import architect.Processing;
@@ -29,7 +30,8 @@ public abstract class AbstractPresenter<T extends Container, E> extends Presente
      * id starts at 1
      * negative value means there is no session (like during config changes)
      */
-    protected int sessionId;
+    private int sessionId;
+    private PresentationCallback currentPresentationCallback;
 
     @Override
     public void takeContainer(T container) {
@@ -40,6 +42,8 @@ public abstract class AbstractPresenter<T extends Container, E> extends Presente
     @Override
     public void dropContainer(T container) {
         super.dropContainer(container);
+
+        completePresentationCallback();
         invalidateSession();
     }
 
@@ -52,6 +56,26 @@ public abstract class AbstractPresenter<T extends Container, E> extends Presente
     private void invalidateSession() {
         Preconditions.checkArgument(sessionId > 0, "Invalidate session while session id is invalid");
         sessionId *= -1;
+    }
+
+    protected void initPresentationCallback(final Callback callback) {
+        currentPresentationCallback = new PresentationCallback(sessionId) {
+            @Override
+            public void onComplete() {
+                if (!isSessionValid(callbackSessionId)) {
+                    return;
+                }
+
+                currentPresentationCallback = null;
+                callback.onComplete();
+            }
+        };
+    }
+
+    protected void completePresentationCallback() {
+        if (currentPresentationCallback != null) {
+            currentPresentationCallback.onComplete();
+        }
     }
 
     protected boolean isSessionValid(int sessionId) {
