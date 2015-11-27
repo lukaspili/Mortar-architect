@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import architect.Architect;
+import architect.examples.mortar_app.Architecture;
 import architect.examples.mortar_app.MainActivity;
 import architect.examples.mortar_app.R;
 import architect.hook.mortar.MortarAchitect;
@@ -14,6 +15,7 @@ import architect.service.show.ShowController;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import mortar.MortarScope;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -21,6 +23,8 @@ import butterknife.OnClick;
 public class HomeView extends LinearLayout {
 
     private static int count = 0;
+
+    private final HomePresenter presenter;
 
     @Bind(R.id.home_title)
     public TextView titleTextView;
@@ -34,15 +38,28 @@ public class HomeView extends LinearLayout {
     public HomeView(Context context, String name) {
         super(context);
 
+        presenter = MortarScope.getScope(context).getService("presenter");
+
         View view = View.inflate(context, R.layout.home_view, this);
         ButterKnife.bind(view);
 
         toolbar.setTitle("Home: " + name);
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        presenter.takeView(this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        presenter.dropView(this);
+        super.onDetachedFromWindow();
+    }
 
     private ShowController getShowController() {
-        return MortarAchitect.get(this).getService(MainActivity.SHOW_SERVICE).getController();
+        return MortarAchitect.get(this).getService(Architecture.SHOW_SERVICE).getController();
     }
 
     @OnClick(R.id.next_home_button)

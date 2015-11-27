@@ -2,12 +2,13 @@ package architect;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.util.SimpleArrayMap;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import architect.adapter.Hook;
+import architect.hook.Hook;
 import architect.behavior.ReceivesResult;
 
 /**
@@ -278,8 +279,22 @@ public class History {
         return null;
     }
 
-    List<Entry> getEntries() {
-        return entries;
+    SimpleArrayMap<String, List<Entry>> getEntriesByServices() {
+        final SimpleArrayMap<String, List<Entry>> servicesEntries = new SimpleArrayMap<>();
+        History.Entry entry;
+        List<History.Entry> list;
+        for (int i = 0; i < entries.size(); i++) {
+            entry = entries.get(i);
+            if (servicesEntries.containsKey(entry.service)) {
+                list = servicesEntries.get(entry.service);
+            } else {
+                list = new ArrayList<>();
+                servicesEntries.put(entry.service, list);
+            }
+            list.add(entry);
+        }
+
+        return servicesEntries;
     }
 
 //    Entry getTop() {

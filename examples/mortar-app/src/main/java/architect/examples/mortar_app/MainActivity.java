@@ -11,11 +11,11 @@ import architect.examples.mortar_app.screen.home.HomeScreen;
 import architect.examples.mortar_app.transition.BottomSlideTransition;
 import architect.hook.mortar.MortarAchitect;
 import architect.hook.mortar.MortarHook;
+import architect.hook.mortar.ScopingStrategies;
 import architect.service.commons.FrameContainerView;
 import architect.service.commons.Transitions;
 import architect.service.show.ShowService;
 import architect.service.show.Transition;
-import architect.service.show.mortar.ShowServiceScopingStrategy;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import mortar.MortarScope;
@@ -27,12 +27,16 @@ import mortar.MortarScope;
  */
 public class MainActivity extends AppCompatActivity {
 
-    public static final String SHOW_SERVICE = "show";
-
     private Architect architect;
+    private MortarScope scope;
 
     @Bind(R.id.container_view)
     protected FrameContainerView containerView;
+
+    @Override
+    public Object getSystemService(String name) {
+        return (scope != null && scope.hasService(name)) ? scope.getService(name) : super.getSystemService(name);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +45,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        MortarAchitect.onCreateScope(this, savedInstanceState, new MortarAchitect.Factory() {
+        scope = MortarAchitect.onCreateScope(this, savedInstanceState, new MortarAchitect.Factory() {
             @Override
             public Architect createArchitect() {
                 Architect architect = Architect.create(new Parceler());
-                architect.register(SHOW_SERVICE, new ShowService() {
+                architect.register(Architecture.SHOW_SERVICE, new ShowService() {
                     @Override
-                    public void configureTransitions(Transitions<Transition> transitions) {
+                    public void withTransitions(Transitions<Transition> transitions) {
                         transitions.setDefault(new BottomSlideTransition());
                     }
                 });
@@ -56,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void configureArchitectWithMortar(Architect architect, MortarScope scope) {
-                architect.addHook(new MortarHook(scope, new ShowServiceScopingStrategy(SHOW_SERVICE)));
+                architect.addHook(new MortarHook(scope, new ScopingStrategies()
+                        .setPreserveInHistoryStrategyFor(Architecture.SHOW_SERVICE)));
             }
 
             @Override
@@ -68,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
         architect = MortarAchitect.get(this);
         architect.delegate().onCreate(getIntent(), savedInstanceState,
                 new Attachments()
-                        .attach(SHOW_SERVICE, containerView),
+                        .attach(Architecture.SHOW_SERVICE, containerView),
                 new Stack()
-                        .put(SHOW_SERVICE, new HomeScreen("Initial")));
+                        .put(Architecture.SHOW_SERVICE, new HomeScreen("Initial")));
     }
 
     @Override

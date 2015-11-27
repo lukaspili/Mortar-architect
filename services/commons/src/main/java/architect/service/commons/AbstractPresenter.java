@@ -1,11 +1,25 @@
 package architect.service.commons;
 
+import android.content.Context;
+import android.view.View;
+
+import architect.History;
+import architect.Hooks;
+import architect.Processing;
 import architect.service.Presenter;
 
 /**
  * Created by lukasz on 23/11/15.
  */
-public abstract class AbstractPresenter<T extends Container> extends Presenter<T> implements HandlesBack {
+public abstract class AbstractPresenter<T extends Container, E> extends Presenter<T> implements HandlesBack {
+
+    protected final Hooks hooks;
+    protected final Transitions<E> transitions;
+
+    public AbstractPresenter(Hooks hooks, Transitions<E> transitions) {
+        this.hooks = hooks;
+        this.transitions = transitions;
+    }
 
     /**
      * Track the session
@@ -42,5 +56,14 @@ public abstract class AbstractPresenter<T extends Container> extends Presenter<T
 
     protected boolean isSessionValid(int sessionId) {
         return this.sessionId == sessionId;
+    }
+
+    protected Context getContext(View containerView, History.Entry entry, Processing processing) {
+        Context context = hooks.getPresenterHooks().getOverridedContext(containerView, entry, processing);
+        if (context != null) {
+            return context;
+        }
+
+        return containerView.getContext();
     }
 }

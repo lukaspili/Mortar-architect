@@ -1,9 +1,6 @@
 package architect;
 
-import android.content.Context;
-import android.view.View;
-
-import architect.adapter.Hook;
+import architect.hook.Hook;
 import architect.service.Registration;
 import architect.service.Service;
 
@@ -41,7 +38,7 @@ public class Architect {
 
     public void register(String name, Registration registration) {
         Executor executor = new Executor(name, history, dispatcher);
-        services.register(name, registration.createController(executor), registration.createPresenter(), registration.createDelegate());
+        services.register(name, registration.createController(executor), registration.createPresenter(hooks), registration.createDelegate());
     }
 
     public void addHook(Hook hook) {

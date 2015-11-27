@@ -3,7 +3,7 @@ package architect.hook.mortar;
 import java.util.List;
 
 import architect.History;
-import architect.adapter.Hook;
+import architect.hook.Hook;
 
 /**
  * Created by lukasz on 25/11/15.

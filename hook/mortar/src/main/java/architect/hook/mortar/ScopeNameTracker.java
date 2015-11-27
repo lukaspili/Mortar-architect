@@ -36,12 +36,15 @@ class ScopeNameTracker {
         int newId = id + (increment ? 1 : -1);
 
         if (increment) {
-            Preconditions.checkArgument(!ids.containsKey(entry), "Screen cannot be already tracked");
+            Preconditions.checkArgument(!ids.containsKey(entry.screen), "Screen cannot be already tracked");
             ids.put(entry.screen, id);
         } else {
-            Preconditions.checkArgument(ids.containsKey(entry), "Screen must be tracked");
+            Preconditions.checkArgument(ids.containsKey(entry.screen), "Screen must be tracked");
             ids.remove(entry.screen);
         }
+
+        //todo: decrement lastId but dont remove entry from ids
+        //todo: remove it only in the endDispatch, like in a clear() method
 
         Preconditions.checkArgument(newId >= 0, EXCEPTION_ID_BELOW_0);
         lastIds.put(cls, newId);

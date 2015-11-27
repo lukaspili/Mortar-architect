@@ -1,5 +1,6 @@
 include ':core',
         ':services:commons',
+//        ':services:commons-mortar',
         ':services:show',
         ':services:show:show-mortar',
         ':hook:mortar',
@@ -7,7 +8,7 @@ include ':core',
 //        ':robot'
 //        ':robot-compiler'
 //        ':commons'
-        ':examples:simple-app'
-//        ':examples:mortar-app'
+//        ':examples:simple-app'
+        ':examples:mortar-app'
 //        ':app'
 // ':kotlin_app'

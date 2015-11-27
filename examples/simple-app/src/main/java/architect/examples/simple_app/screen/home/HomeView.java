@@ -26,13 +26,17 @@ public class HomeView extends LinearLayout {
     @Bind(R.id.toolbar)
     public Toolbar toolbar;
 
-    public HomeView(Context context, String name) {
+    public HomeView(Context context, String name, String result) {
         super(context);
 
         View view = View.inflate(context, R.layout.home_view, this);
         ButterKnife.bind(view);
 
-        toolbar.setTitle("Home: " + name);
+        String title = "Home: " + name;
+        if (result != null) {
+            title = title + " + res= " + result;
+        }
+        toolbar.setTitle(title);
     }
 
     private Architect getArchitect() {
@@ -56,6 +60,11 @@ public class HomeView extends LinearLayout {
     @OnClick(R.id.home_go_home2_button)
     void goHome2Click() {
         getShowController().show(new HomeScreen2());
+    }
+
+    @OnClick(R.id.home_hide_result_button)
+    void hideWithResultClick() {
+        getShowController().hide("This is a result");
     }
 
     @OnClick(R.id.home_hideall_button)

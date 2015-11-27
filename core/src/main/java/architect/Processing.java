@@ -25,6 +25,10 @@ public class Processing {
         return (T) data.get(name);
     }
 
+    public boolean contains(Object name) {
+        return data.containsKey(name);
+    }
+
     public void remove(String name) {
         data.remove(name);
     }

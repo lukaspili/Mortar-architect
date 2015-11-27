@@ -6,7 +6,7 @@ import android.support.v4.util.SimpleArrayMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import architect.adapter.Hook;
+import architect.hook.Hook;
 import architect.service.Service;
 
 /**
@@ -57,25 +57,28 @@ class Dispatcher {
         Preconditions.checkArgument(!active, "Dispatcher already active");
         Preconditions.checkArgument(entries.isEmpty(), "Dispatcher stack must be empty");
 
-        SimpleArrayMap<String, List<History.Entry>> map = new SimpleArrayMap<>();
-        History.Entry entry;
-        List<History.Entry> list;
-        for (int i = 0; i < history.getEntries().size(); i++) {
-            entry = history.getEntries().get(i);
-            if (map.containsKey(entry.service)) {
-                list = map.get(entry.service);
-            } else {
-                list = new ArrayList<>();
-                map.put(entry.service, list);
+        final SimpleArrayMap<String, List<History.Entry>> servicesEntries = history.getEntriesByServices();
+
+        final Processing processing = new Processing();
+        hooks.hookDispather(new Hooks.HookOn<Hook.DispatcherHook>() {
+            @Override
+            public void hook(Hook.DispatcherHook on) {
+                on.onStartRestore(servicesEntries, processing);
             }
-            list.add(entry);
-        }
+        });
 
         String key;
-        for (int i = 0; i < map.size(); i++) {
-            key = map.keyAt(i);
-            services.get(key).getPresenter().restore(map.get(key));
+        for (int i = 0; i < servicesEntries.size(); i++) {
+            key = servicesEntries.keyAt(i);
+            services.get(key).getPresenter().restore(servicesEntries.get(key), processing);
         }
+
+        hooks.hookDispather(new Hooks.HookOn<Hook.DispatcherHook>() {
+            @Override
+            public void hook(Hook.DispatcherHook on) {
+                on.onEndRestore(processing);
+            }
+        });
 
         active = true;
 
@@ -242,7 +245,7 @@ class Dispatcher {
         Service service = services.get(dispatch.service);
         Preconditions.checkNotNull(service, EXCEPTION_SERVICE_NULL, dispatch.service);
 
-        service.getPresenter().present(enterEntry, exitEntry, forward, null, new Callback() {
+        service.getPresenter().present(enterEntry, exitEntry, forward, processing, new Callback() {
             @Override
             public void onComplete() {
                 hooks.hookDispather(new Hooks.HookOn<Hook.DispatcherHook>() {

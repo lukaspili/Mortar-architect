@@ -6,7 +6,7 @@ import java.util.List;
 
 import architect.History;
 import architect.Processing;
-import architect.adapter.Hook;
+import architect.hook.Hook;
 import mortar.MortarScope;
 
 /**
@@ -16,9 +16,9 @@ class MortarDispatcherHook implements Hook.DispatcherHook {
 
     private final ScopeNameTracker scopeNameTracker;
     private final MortarScope rootScope;
-    private final List<ScopingStrategy> scopingStrategies;
+    private final ScopingStrategies scopingStrategies;
 
-    public MortarDispatcherHook(ScopeNameTracker scopeNameTracker, MortarScope rootScope, List<ScopingStrategy> scopingStrategies) {
+    public MortarDispatcherHook(ScopeNameTracker scopeNameTracker, MortarScope rootScope, ScopingStrategies scopingStrategies) {
         this.scopeNameTracker = scopeNameTracker;
         this.rootScope = rootScope;
         this.scopingStrategies = scopingStrategies;
@@ -26,42 +26,45 @@ class MortarDispatcherHook implements Hook.DispatcherHook {
 
     @Override
     public void onStartDispatch(History.Entry enterEntry, History.Entry exitEntry, boolean forward, Processing processing) {
-        boolean build = getScopingStrategy(exitEntry).shouldBuildEnterScopeOnStartDispatch(enterEntry, exitEntry, forward);
-        processing.put("scope", build ? buildScope(enterEntry) : findScope(enterEntry));
+        boolean build = scopingStrategies.get(enterEntry.service).buildEnterScope(forward);
+        MortarProcessing.putSingleScope(processing, build ? buildScope(enterEntry) : findScope(enterEntry));
     }
 
     @Override
     public void onEndDispatch(History.Entry enterEntry, History.Entry exitEntry, boolean forward, Processing processing) {
-        if (getScopingStrategy(exitEntry).shouldDestroyExitScopeOnEndDispatch(enterEntry, exitEntry, forward)) {
-            destroyScope(exitEntry);
+        if (scopingStrategies.get(exitEntry.service).destroyExitScope(forward)) {
+//            MortarProcessing.getScope(processing, exitEntry)
         }
-        processing.remove("scope");
+        MortarProcessing.clear(processing);
     }
 
     @Override
-    public void onRestore(SimpleArrayMap<String, List<History.Entry>> entries) {
-
-    }
-
-    private ScopingStrategy getScopingStrategy(History.Entry entry) {
-        ScopingStrategy strategy;
-        for (int i = 0; i < scopingStrategies.size(); i++) {
-            strategy = scopingStrategies.get(i);
-            if (strategy.isValidStrategy(entry)) {
-                return strategy;
+    public void onStartRestore(SimpleArrayMap<String, List<History.Entry>> servicesEntries, Processing processing) {
+        ScopingStrategies.Strategy strategy;
+        List<History.Entry> entries;
+        History.Entry entry;
+        for (int i = 0; i < servicesEntries.size(); i++) {
+            strategy = scopingStrategies.get(servicesEntries.keyAt(i));
+            entries = servicesEntries.valueAt(i);
+            if (strategy.buildAllScopesOnRestore() && entries.size() > 1) {
+                for (int j = 0; j < entries.size(); j++) {
+                    entry = entries.get(j);
+                    MortarProcessing.putScope(processing, entry, buildScope(entry));
+                }
+            } else {
+                MortarProcessing.putSingleScope(processing, buildScope(entries.get(entries.size() - 1)));
             }
         }
+    }
 
-        return new DefaultScopingStrategy();
+    @Override
+    public void onEndRestore(Processing processing) {
+        MortarProcessing.clear(processing);
     }
 
     private MortarScope buildScope(History.Entry entry) {
         String name = scopeNameTracker.get(entry);
         return MortarFactory.createScope(rootScope, entry.screen, name);
-    }
-
-    private void destroyScope(History.Entry entry) {
-        findScope(entry).destroy();
     }
 
     private MortarScope findScope(History.Entry entry) {

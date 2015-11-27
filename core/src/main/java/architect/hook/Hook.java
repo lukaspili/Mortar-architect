@@ -1,6 +1,8 @@
-package architect.adapter;
+package architect.hook;
 
+import android.content.Context;
 import android.support.v4.util.SimpleArrayMap;
+import android.view.View;
 
 import java.util.List;
 
@@ -15,6 +17,8 @@ public abstract class Hook {
     public abstract HistoryHook withHistoryHook();
 
     public abstract DispatcherHook withDispatcherHook();
+
+    public abstract PresenterHook withPresenterHook();
 
     public interface HistoryHook {
         void onAddEntry(History.Entry entry);
@@ -31,6 +35,13 @@ public abstract class Hook {
 
         void onEndDispatch(History.Entry enterEntry, History.Entry exitEntry, boolean forward, Processing processing);
 
-        void onRestore(SimpleArrayMap<String, List<History.Entry>> entries);
+        void onStartRestore(SimpleArrayMap<String, List<History.Entry>> servicesEntries, Processing processing);
+
+        void onEndRestore(Processing processing);
+    }
+
+    public interface PresenterHook {
+
+        Context getOverridedContext(View containerView, History.Entry entry, Processing processing);
     }
 }

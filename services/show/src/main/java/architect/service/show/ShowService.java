@@ -1,6 +1,7 @@
 package architect.service.show;
 
 import architect.Executor;
+import architect.Hooks;
 import architect.service.Delegate;
 import architect.service.Registration;
 import architect.service.commons.Transitions;
@@ -10,7 +11,7 @@ import architect.service.commons.Transitions;
  */
 public abstract class ShowService implements Registration<ShowController, ShowPresenter> {
 
-    public abstract void configureTransitions(Transitions<Transition> transitions);
+    public abstract void withTransitions(Transitions<Transition> transitions);
 
     @Override
     public ShowController createController(Executor executor) {
@@ -18,11 +19,11 @@ public abstract class ShowService implements Registration<ShowController, ShowPr
     }
 
     @Override
-    public ShowPresenter createPresenter() {
+    public ShowPresenter createPresenter(Hooks hooks) {
         Transitions<Transition> transitions = new Transitions<>();
-        configureTransitions(transitions);
+        withTransitions(transitions);
 
-        return new ShowPresenter(transitions);
+        return new ShowPresenter(hooks, transitions);
     }
 
     @Override

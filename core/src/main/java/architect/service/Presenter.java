@@ -3,8 +3,8 @@ package architect.service;
 import java.util.List;
 
 import architect.Callback;
-import architect.Processing;
 import architect.History;
+import architect.Processing;
 
 public abstract class Presenter<T> {
 
@@ -20,6 +20,8 @@ public abstract class Presenter<T> {
 
     public abstract void present(History.Entry enterEntry, History.Entry exitEntry, boolean forward, Processing env, Callback callback);
 
-    public abstract void restore(List<History.Entry> entries);
+    public abstract void restore(List<History.Entry> entries, Processing processing);
+
+
 
 }

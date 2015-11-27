@@ -8,6 +8,7 @@ import java.util.List;
 
 import architect.Callback;
 import architect.History;
+import architect.Hooks;
 import architect.Processing;
 import architect.service.commons.AbstractPresenter;
 import architect.service.commons.EntryExtras;
@@ -19,17 +20,16 @@ import architect.service.commons.Transitions;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
+public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transition> {
 
-    private final Transitions<Transition> transitions;
     private final SimpleArrayMap<History.Entry, Integer> entriesToViewIndexes;
 
-    public ShowPresenter(Transitions<Transition> transitions) {
-        this(transitions, new SimpleArrayMap<History.Entry, Integer>());
+    public ShowPresenter(Hooks hooks, Transitions<Transition> transitions) {
+        this(hooks, transitions, new SimpleArrayMap<History.Entry, Integer>());
     }
 
-    ShowPresenter(Transitions<Transition> transitions, SimpleArrayMap<History.Entry, Integer> entriesToViewIndexes) {
-        this.transitions = transitions;
+    ShowPresenter(Hooks hooks, Transitions<Transition> transitions, SimpleArrayMap<History.Entry, Integer> entriesToViewIndexes) {
+        super(hooks, transitions);
         this.entriesToViewIndexes = entriesToViewIndexes;
     }
 
@@ -40,20 +40,20 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
     }
 
     @Override
-    public void restore(List<History.Entry> entries) {
+    public void restore(final List<History.Entry> entries, Processing processing) {
         Preconditions.checkArgument(container.getChildCount() == 0, "Already some children while restoring");
         Preconditions.checkArgument(entriesToViewIndexes.isEmpty(), "Entries to view indexes must be empty on restore");
 
         History.Entry entry;
         for (int i = 0; i < entries.size(); ++i) {
             entry = entries.get(i);
-            container.addView(entry.screen.createView(container.getContext(), container));
+            container.addView(entry.screen.createView(getContext(container, entry, processing), container));
             entriesToViewIndexes.put(entry, i);
         }
     }
 
     @Override
-    public void present(final History.Entry enterEntry, History.Entry exitEntry, final boolean forward, Processing env, final Callback callback) {
+    public void present(final History.Entry enterEntry, History.Entry exitEntry, final boolean forward, Processing processing, final Callback callback) {
         container.willBeginTransition();
 
         final Callback presentationCallback = new PresentationCallback(sessionId) {
@@ -77,7 +77,7 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
         };
 
         if (forward) {
-            show(enterEntry, presentationCallback);
+            show(enterEntry, processing, presentationCallback);
         } else {
             hide(exitEntry, enterEntry == null, presentationCallback);
         }
@@ -93,8 +93,8 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView> {
         return view instanceof HandlesBack && ((HandlesBack) view).onBackPressed();
     }
 
-    private void show(History.Entry entry, Callback callback) {
-        View newView = entry.screen.createView(container.getContext(), container);
+    private void show(History.Entry entry, Processing processing, Callback callback) {
+        View newView = entry.screen.createView(getContext(container, entry, processing), container);
         container.addView(newView);
         entriesToViewIndexes.put(entry, container.getChildCount() - 1);
 

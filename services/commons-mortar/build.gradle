@@ -1,0 +1,20 @@
+buildscript {
+    dependencies {
+        classpath deps.android_gradle_plugin
+    }
+}
+
+apply plugin: 'com.android.library'
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+    }
+}
+
+dependencies {
+    compile project(':hook:mortar')
+}
