@@ -33,7 +33,8 @@ class MortarDispatcherHook implements Hook.DispatcherHook {
     @Override
     public void onEndDispatch(History.Entry enterEntry, History.Entry exitEntry, boolean forward, Processing processing) {
         if (scopingStrategies.get(exitEntry.service).destroyExitScope(forward)) {
-//            MortarProcessing.getScope(processing, exitEntry)
+            findScope(exitEntry).destroy();
+            scopeNameTracker.remove(exitEntry);
         }
         MortarProcessing.clear(processing);
     }

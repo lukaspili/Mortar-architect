@@ -25,6 +25,9 @@ public abstract class Hook {
 
         void onKillEntry(History.Entry entry);
 
+        /**
+         * @param entries the killed entries in descending order (first killed on top)
+         */
         void onKillEntries(List<History.Entry> entries);
 
         void onReplaceEntry(History.Entry entry);

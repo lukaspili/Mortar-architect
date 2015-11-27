@@ -30,7 +30,10 @@ class ScopeNameTracker {
         update(entry, false);
     }
 
-//    void remo
+    void remove(History.Entry entry) {
+        Preconditions.checkArgument(ids.containsKey(entry.screen), "Screen to remove not found");
+        ids.remove(entry.screen);
+    }
 
     private void update(History.Entry entry, boolean increment) {
         Class cls = entry.screen.getClass();
@@ -40,14 +43,7 @@ class ScopeNameTracker {
         if (increment) {
             Preconditions.checkArgument(!ids.containsKey(entry.screen), "Screen cannot be already tracked");
             ids.put(entry.screen, id);
-        } else {
-            Preconditions.checkArgument(ids.containsKey(entry.screen), "Screen must be tracked");
-            ids.remove(entry.screen);
         }
-
-        // should be useless now
-        //todo: decrement lastId but dont remove entry from ids
-        //todo: remove it only in the endDispatch, like in a clear() method
 
         Preconditions.checkArgument(newId >= 0, EXCEPTION_ID_BELOW_0);
         lastIds.put(cls, newId);
