@@ -16,5 +16,10 @@ android {
 }
 
 dependencies {
-    compile project(':hook:mortar')
+    compile project(':core')
+    compile project(':services:commons')
+
+    provided deps.support_v4
 }
+
+apply from: '../../mvn-publish-android.gradle'

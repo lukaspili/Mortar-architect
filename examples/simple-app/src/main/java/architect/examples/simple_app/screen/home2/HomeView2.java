@@ -4,16 +4,14 @@ import android.content.Context;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import architect.Architect;
 import architect.examples.simple_app.Architecture;
 import architect.examples.simple_app.MainActivity;
 import architect.examples.simple_app.R;
-import architect.service.show.ShowController;
+import architect.service.navigation.NavigationController;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -38,7 +36,7 @@ public class HomeView2 extends LinearLayout {
         return ((MainActivity) getContext()).getArchitect();
     }
 
-    private ShowController getShowController() {
+    private NavigationController getShowController() {
         return getArchitect().getService(Architecture.SHOW_SERVICE).getController();
     }
 }

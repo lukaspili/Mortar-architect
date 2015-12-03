@@ -12,8 +12,8 @@ import architect.examples.simple_app.transition.BottomSlideTransition;
 import architect.examples.simple_app.transition.TopSlideTransition;
 import architect.service.commons.FrameContainerView;
 import architect.service.commons.Transitions;
-import architect.service.show.ShowService;
 import architect.service.show.Transition;
+import architect.service.show.ShowService;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -38,8 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
         architect = Architect.create(new Parceler());
         architect.register(Architecture.SHOW_SERVICE, new ShowService() {
+
             @Override
-            public void configureTransitions(Transitions<Transition> transitions) {
+            public void withTransitions(Transitions<Transition> transitions) {
                 transitions.setDefault(new BottomSlideTransition());
                 transitions.add(Architecture.SHOW_SERVICE_TOP_TRANSITION, new TopSlideTransition());
             }

@@ -37,7 +37,6 @@ dependencies {
     compile project(':core')
     compile project(':hook:mortar')
     compile project(':services:show')
-    compile project(':services:show:show-mortar')
 
     compile deps.parceler_api
     apt deps.parceler

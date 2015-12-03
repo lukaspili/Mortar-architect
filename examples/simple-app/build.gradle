@@ -36,6 +36,7 @@ android {
 dependencies {
     compile project(':core')
     compile project(':services:show')
+    compile project(':services:navigation')
 
     compile deps.parceler_api
     apt deps.parceler
