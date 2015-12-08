@@ -56,11 +56,10 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, T
         });
 
 
-        if (forward) {
-            show(enterEntry, processing);
-        } else {
-            hide(exitEntry);
-        }
+        View exitView = container.getChildAt(0);
+        View newView = enterEntry.screen.createView(getContext(container, enterEntry, processing), container);
+        container.addView(newView, forward ? 1 : 0);
+        measureAndTransition(newView, exitView, forward, getTransition(enterEntry));
     }
 
     @Override
@@ -74,10 +73,7 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, T
     }
 
     private void show(History.Entry entry, boolean forward, Processing processing) {
-        View newView = entry.screen.createView(getContext(container, entry, processing), container);
-        container.addView(newView);
 
-        measureAndShow(newView, getTransition(entry));
     }
 
 //    private void hide(History.Entry exitEntry) {
@@ -133,40 +129,49 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, T
         return transitions.find(EntryExtras.from(entry).transition);
     }
 
-    private void measureAndShow(final View view, final Transition transition) {
-        int width = view.getWidth();
-        int height = view.getHeight();
+    private void measureAndTransition(final View enterView, final View exitView, final boolean forward, final Transition transition) {
+        int width = enterView.getWidth();
+        int height = enterView.getHeight();
 
         if (width > 0 && height > 0) {
-            onShowReady(view, transition);
+            onTransitionReady(enterView, exitView, forward, transition);
             return;
         }
 
-        view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        enterView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                final ViewTreeObserver observer = view.getViewTreeObserver();
+                final ViewTreeObserver observer = enterView.getViewTreeObserver();
                 if (observer.isAlive()) {
                     observer.removeOnPreDrawListener(this);
                 }
 
-                onShowReady(view, transition);
+                onTransitionReady(enterView, exitView, forward, transition);
                 return true;
             }
         });
     }
 
-    private void onShowReady(View view, Transition transition) {
+    private void onTransitionReady(final View enterView, final View exitView, boolean forward, Transition transition) {
         if (transition == null) {
             completePresentationCallback();
             return;
         }
 
-        transition.show(view, new Callback() {
-            @Override
-            public void onComplete() {
-                completePresentationCallback();
-            }
-        });
+        if (forward) {
+            transition.forward(enterView, exitView, new Callback() {
+                @Override
+                public void onComplete() {
+                    completePresentationCallback();
+                }
+            });
+        } else {
+            transition.backward(enterView, exitView, new Callback() {
+                @Override
+                public void onComplete() {
+                    completePresentationCallback();
+                }
+            });
+        }
     }
 }
