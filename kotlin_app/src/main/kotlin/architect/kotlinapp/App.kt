@@ -12,7 +12,7 @@ import mortar.MortarScope
  */
 @AutoComponent(superinterfaces = arrayOf(GlobalDependencies::class))
 @DaggerScope(App::class)
-class App : Application() {
+public class App : Application() {
 
     private var scope: MortarScope? = null
 

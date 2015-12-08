@@ -66,6 +66,9 @@ public class MainActivity : AppCompatActivity() {
                 layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             }
         }
+
+        // temp fix for Anko 0.8 bug
+        setContentView(containerView)
     }
 
     override fun onNewIntent(intent: Intent) {
