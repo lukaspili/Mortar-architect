@@ -1,6 +1,8 @@
 package architect.service.navigation;
 
+import android.os.Parcelable;
 import android.support.v4.util.SimpleArrayMap;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -30,11 +32,6 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, N
     }
 
     @Override
-    public void dropContainer(FrameContainerView container) {
-        super.dropContainer(container);
-    }
-
-    @Override
     public void restore(final List<History.Entry> entries, Processing processing) {
         Preconditions.checkArgument(container.getChildCount() == 0, "Already some children while restoring");
 
@@ -43,7 +40,7 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, N
     }
 
     @Override
-    public void present(final History.Entry enterEntry, History.Entry exitEntry, final boolean forward, Processing processing, final Callback callback) {
+    public void present(final History.Entry enterEntry, final History.Entry exitEntry, final boolean forward, final Processing processing, final Callback callback) {
         container.willBeginTransition();
 
         initPresentationCallback(new Callback() {
@@ -56,9 +53,18 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, N
         });
 
         View exitView = container.getChildAt(0);
-        View newView = enterEntry.screen.createView(getContext(container, enterEntry, processing), container);
-        container.addView(newView, forward ? 1 : 0);
-        measureAndTransition(newView, exitView, forward, getTransition(forward ? enterEntry : exitEntry));
+        View enterView = enterEntry.screen.createView(getContext(container, enterEntry, processing), container);
+
+        if (forward) {
+            SparseArray<Parcelable> viewState = new SparseArray<>();
+            exitView.saveHierarchyState(viewState);
+            exitEntry.viewState = viewState;
+        } else {
+            enterView.restoreHierarchyState(enterEntry.viewState);
+        }
+
+        container.addView(enterView, forward ? 1 : 0);
+        measureAndTransition(enterView, exitView, forward, getTransition(forward ? enterEntry : exitEntry));
     }
 
     @Override
