@@ -1,6 +1,9 @@
 package architect;
 
 import android.os.Bundle;
+import android.widget.AutoCompleteTextView;
+
+import java.util.List;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -30,24 +33,16 @@ public class Executor {
 //        dispatcher.dispatch(entries);
 //    }
 
-    public boolean popAnyService() {
-        return pop(null, null);
+    public boolean pop(Validator<List<History.Entry>> validator) {
+        return pop(validator, null);
     }
 
-    public boolean pop() {
-        return pop(null);
-    }
-
-    public boolean pop(Object result) {
-        return pop(service, result);
-    }
-
-    private boolean pop(String service, Object result) {
-        if (!history.canKill(service)) {
+    public boolean pop(Validator<List<History.Entry>> validator, Object result) {
+        if (!history.canKill(service, validator)) {
             return false;
         }
 
-        dispatcher.dispatch(history.kill(result, false));
+        dispatcher.dispatch(history.kill(service, result, false));
         return true;
     }
 

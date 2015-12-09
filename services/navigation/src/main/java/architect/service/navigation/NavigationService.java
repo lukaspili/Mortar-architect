@@ -11,7 +11,7 @@ import architect.service.commons.Transitions;
  */
 public abstract class NavigationService implements Registration<NavigationController, NavigationPresenter> {
 
-    public abstract void withTransitions(Transitions<Transition> transitions);
+    public abstract void registerTransitions(Transitions<NavigationTransition> transitions);
 
     @Override
     public NavigationController createController(Executor executor) {
@@ -20,8 +20,8 @@ public abstract class NavigationService implements Registration<NavigationContro
 
     @Override
     public NavigationPresenter createPresenter(Hooks hooks) {
-        Transitions<Transition> transitions = new Transitions<>();
-        withTransitions(transitions);
+        Transitions<NavigationTransition> transitions = new Transitions<>();
+        registerTransitions(transitions);
 
         return new NavigationPresenter(hooks, transitions);
     }

@@ -7,7 +7,7 @@ import architect.Callback;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public interface Transition<T_Enter extends View, T_Exit extends View> {
+public interface NavigationTransition<T_Enter extends View, T_Exit extends View> {
 
     int DIRECTION_FORWARD = 1;
     int DIRECTION_BACKWARD = 2;

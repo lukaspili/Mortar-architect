@@ -7,7 +7,5 @@ public abstract class Delegate {
 
     protected Service service;
 
-    public boolean onBackPressed() {
-        return service.getController().pop();
-    }
+    public abstract boolean onBackPressed();
 }

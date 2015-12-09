@@ -76,11 +76,10 @@ public class ArchitectDelegate {
     }
 
     public boolean onBackPressed() {
-        Service service = architect.getTopService();
-        if (service == null) {
-            return false;
+        if (architect.services.handlesOnBackPressed()) {
+            return true;
         }
 
-        return service.getDelegate().onBackPressed();
+        return false;
     }
 }

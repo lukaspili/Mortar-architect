@@ -1,5 +1,15 @@
-<architect.service.commons.FrameContainerView
-    android:id="@+id/container_view"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <architect.service.commons.FrameContainerView
+        android:id="@+id/navigation_container_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <architect.service.commons.FrameContainerView
+        android:id="@+id/show_container_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</FrameLayout>

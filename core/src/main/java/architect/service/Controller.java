@@ -12,8 +12,4 @@ public abstract class Controller {
     public Controller(Executor executor) {
         this.executor = executor;
     }
-
-    public final boolean pop() {
-        return executor.popAnyService();
-    }
 }

@@ -19,13 +19,13 @@ import architect.service.commons.Transitions;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class NavigationPresenter extends AbstractPresenter<FrameContainerView, Transition> {
+public class NavigationPresenter extends AbstractPresenter<FrameContainerView, NavigationTransition> {
 
-    public NavigationPresenter(Hooks hooks, Transitions<Transition> transitions) {
+    public NavigationPresenter(Hooks hooks, Transitions<NavigationTransition> transitions) {
         this(hooks, transitions, new SimpleArrayMap<History.Entry, Integer>());
     }
 
-    NavigationPresenter(Hooks hooks, Transitions<Transition> transitions, SimpleArrayMap<History.Entry, Integer> entriesToViewIndexes) {
+    NavigationPresenter(Hooks hooks, Transitions<NavigationTransition> transitions, SimpleArrayMap<History.Entry, Integer> entriesToViewIndexes) {
         super(hooks, transitions);
     }
 
@@ -55,11 +55,10 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, T
             }
         });
 
-
         View exitView = container.getChildAt(0);
         View newView = enterEntry.screen.createView(getContext(container, enterEntry, processing), container);
         container.addView(newView, forward ? 1 : 0);
-        measureAndTransition(newView, exitView, forward, getTransition(enterEntry));
+        measureAndTransition(newView, exitView, forward, getTransition(forward ? enterEntry : exitEntry));
     }
 
     @Override
@@ -72,10 +71,10 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, T
         return view instanceof HandlesBack && ((HandlesBack) view).onBackPressed();
     }
 
-    private void show(History.Entry entry, boolean forward, Processing processing) {
-
-    }
-
+//    private void show(History.Entry entry, boolean forward, Processing processing) {
+//
+//    }
+//
 //    private void hide(History.Entry exitEntry) {
 //        Transition transition = getTransition(exitEntry);
 //        if (transition == null) {
@@ -125,11 +124,11 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, T
 //        }
 //    }
 
-    private Transition getTransition(History.Entry entry) {
+    private NavigationTransition getTransition(History.Entry entry) {
         return transitions.find(EntryExtras.from(entry).transition);
     }
 
-    private void measureAndTransition(final View enterView, final View exitView, final boolean forward, final Transition transition) {
+    private void measureAndTransition(final View enterView, final View exitView, final boolean forward, final NavigationTransition transition) {
         int width = enterView.getWidth();
         int height = enterView.getHeight();
 
@@ -152,7 +151,7 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, T
         });
     }
 
-    private void onTransitionReady(final View enterView, final View exitView, boolean forward, Transition transition) {
+    private void onTransitionReady(final View enterView, final View exitView, boolean forward, NavigationTransition transition) {
         if (transition == null) {
             completePresentationCallback();
             return;

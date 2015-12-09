@@ -16,12 +16,10 @@ public class Architect {
     final Attachments attachments;
     final Hooks hooks;
 
-//    private MortarScope scope;
-
     public static Architect create(ScreenParceler parceler) {
-        Services services = new Services();
         Hooks hooks = new Hooks();
         History history = new History(parceler, hooks);
+        Services services = new Services(history);
         return new Architect(new ArchitectDelegate(), history, new Dispatcher(services, history, hooks), services, new Attachments(services), hooks);
     }
 
@@ -37,8 +35,7 @@ public class Architect {
     }
 
     public void register(String name, Registration registration) {
-        Executor executor = new Executor(name, history, dispatcher);
-        services.register(name, registration.createController(executor), registration.createPresenter(hooks), registration.createDelegate());
+        services.register(name, registration.createController(new Executor(name, history, dispatcher)), registration.createPresenter(hooks), registration.createDelegate());
     }
 
     public void addHook(Hook hook) {
@@ -49,14 +46,14 @@ public class Architect {
         return services.get(name);
     }
 
-    public Service getTopService() {
-        History.Entry entry = history.getTopDispatched();
-        if (entry == null) {
-            return null;
-        }
-
-        return services.get(entry.service);
-    }
+//    public Service getTopService() {
+//        History.Entry entry = history.getTopDispatched();
+//        if (entry == null) {
+//            return null;
+//        }
+//
+//        return services.get(entry.service);
+//    }
 
     public ArchitectDelegate delegate() {
         return delegate;

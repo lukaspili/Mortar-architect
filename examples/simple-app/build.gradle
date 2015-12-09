@@ -37,6 +37,7 @@ dependencies {
     compile project(':core')
     compile project(':services:show')
     compile project(':services:navigation')
+    compile project(':services:navigation-commons')
 
     compile deps.parceler_api
     apt deps.parceler

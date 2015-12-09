@@ -59,7 +59,7 @@ class Dispatcher {
         Preconditions.checkArgument(!dispatching, "Activate dispatcher while dispatching");
         Preconditions.checkArgument(entries.isEmpty(), "Dispatcher stack must be empty");
 
-        final SimpleArrayMap<String, List<History.Entry>> servicesEntries = history.getEntriesByServices();
+        final SimpleArrayMap<String, List<History.Entry>> servicesEntries = services.findServicesInHistory();
 
         final Processing processing = new Processing();
         hooks.hookDispather(new Hooks.HookOn<Hook.DispatcherHook>() {

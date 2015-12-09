@@ -19,15 +19,15 @@ import architect.service.commons.Transitions;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transition> {
+public class ShowPresenter extends AbstractPresenter<FrameContainerView, ShowTransition> {
 
     private final SimpleArrayMap<History.Entry, Integer> entriesToViewIndexes;
 
-    public ShowPresenter(Hooks hooks, Transitions<Transition> transitions) {
+    public ShowPresenter(Hooks hooks, Transitions<ShowTransition> transitions) {
         this(hooks, transitions, new SimpleArrayMap<History.Entry, Integer>());
     }
 
-    ShowPresenter(Hooks hooks, Transitions<Transition> transitions, SimpleArrayMap<History.Entry, Integer> entriesToViewIndexes) {
+    ShowPresenter(Hooks hooks, Transitions<ShowTransition> transitions, SimpleArrayMap<History.Entry, Integer> entriesToViewIndexes) {
         super(hooks, transitions);
         this.entriesToViewIndexes = entriesToViewIndexes;
     }
@@ -104,7 +104,7 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
 
         entriesToViewIndexes.clear();
 
-        Transition transition = getTransition(exitEntry);
+        ShowTransition transition = getTransition(exitEntry);
         if (transition == null) {
             completePresentationCallback();
             return;
@@ -119,8 +119,8 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
     }
 
     private void hideAll() {
-        SimpleArrayMap<View, Transition> viewsTransitions = new SimpleArrayMap<>(entriesToViewIndexes.size());
-        Transition transition;
+        SimpleArrayMap<View, ShowTransition> viewsTransitions = new SimpleArrayMap<>(entriesToViewIndexes.size());
+        ShowTransition transition;
         for (int i = entriesToViewIndexes.size() - 1; i >= 0; i--) {
             transition = getTransition(entriesToViewIndexes.keyAt(i));
             if (transition != null) {
@@ -152,11 +152,11 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
         }
     }
 
-    private Transition getTransition(History.Entry entry) {
+    private ShowTransition getTransition(History.Entry entry) {
         return transitions.find(EntryExtras.from(entry).transition);
     }
 
-    private void measureAndShow(final View view, final Transition transition) {
+    private void measureAndShow(final View view, final ShowTransition transition) {
         int width = view.getWidth();
         int height = view.getHeight();
 
@@ -179,7 +179,7 @@ public class ShowPresenter extends AbstractPresenter<FrameContainerView, Transit
         });
     }
 
-    private void onShowReady(View view, Transition transition) {
+    private void onShowReady(View view, ShowTransition transition) {
         if (transition == null) {
             completePresentationCallback();
             return;

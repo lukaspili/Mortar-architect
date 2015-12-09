@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_orange_dark"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/popup1_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="20dp"
+                android:textSize="25sp"/>
+
+            <Button
+                android:id="@+id/popup1_new_popup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New popup 1"/>
+
+            <Button
+                android:id="@+id/popup1_new_popup_custom_transition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New popup 1 with custom transition"/>
+
+            <Button
+                android:id="@+id/popup1_new_popup2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New popup 2"/>
+
+            <Button
+                android:id="@+id/popup1_hide_with_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hide with result"/>
+
+            <Button
+                android:id="@+id/popup1_hide_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hide all popups"/>
+
+            <EditText
+                android:id="@+id/popup1_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -11,7 +11,7 @@ import architect.service.commons.Transitions;
  */
 public abstract class ShowService implements Registration<ShowController, ShowPresenter> {
 
-    public abstract void withTransitions(Transitions<Transition> transitions);
+    public abstract void registerTransitions(Transitions<ShowTransition> transitions);
 
     @Override
     public ShowController createController(Executor executor) {
@@ -20,8 +20,8 @@ public abstract class ShowService implements Registration<ShowController, ShowPr
 
     @Override
     public ShowPresenter createPresenter(Hooks hooks) {
-        Transitions<Transition> transitions = new Transitions<>();
-        withTransitions(transitions);
+        Transitions<ShowTransition> transitions = new Transitions<>();
+        registerTransitions(transitions);
 
         return new ShowPresenter(hooks, transitions);
     }

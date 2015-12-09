@@ -13,6 +13,6 @@ public class ShowDelegate extends Delegate {
             return true;
         }
 
-        return super.onBackPressed();
+        return service.<ShowController>getController().hide();
     }
 }

@@ -7,7 +7,7 @@ import architect.Callback;
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public interface Transition {
+public interface ShowTransition {
 
     void show(View view, Callback callback);
 

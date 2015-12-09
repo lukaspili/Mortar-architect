@@ -8,12 +8,12 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import architect.Callback;
-import architect.service.show.Transition;
+import architect.service.show.ShowTransition;
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
-public class BottomSlideTransition implements Transition {
+public class BottomSlideTransition implements ShowTransition {
 
     @Override
     public void show(View view, Callback callback) {
@@ -27,7 +27,7 @@ public class BottomSlideTransition implements Transition {
 
     private void perform(View view, boolean forward, final Callback callback) {
         AnimatorSet set = new AnimatorSet();
-        set.setDuration(3000);
+        set.setDuration(300);
         set.setInterpolator(new AccelerateDecelerateInterpolator());
         set.addListener(new AnimatorListenerAdapter() {
             @Override

@@ -13,6 +13,6 @@ public class NavigationDelegate extends Delegate {
             return true;
         }
 
-        return super.onBackPressed();
+        return service.<NavigationController>getController().pop();
     }
 }

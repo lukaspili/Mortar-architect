@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/home_toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="#2196F3"/>
@@ -25,37 +25,37 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/home_go_home_button"
+                android:id="@+id/home_new_home"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Home view"/>
+                android:text="Push new home view"/>
 
             <Button
-                android:id="@+id/home_go_home_custom_transition_button"
+                android:id="@+id/home_new_home_with_custom_transition"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Home view with custom transition"/>
+                android:text="Push new home view with custom transition"/>
 
             <Button
-                android:id="@+id/home_go_home2_button"
+                android:id="@+id/home_new_popup1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Home 2 View"/>
+                android:text="Show new popup 1"/>
 
             <Button
-                android:id="@+id/home_hide_result_button"
+                android:id="@+id/home_back_with_result"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hide with result to previous"/>
+                android:text="Back with result"/>
 
             <Button
-                android:id="@+id/home_hideall_button"
+                android:id="@+id/home_back_root"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hide All"/>
+                android:text="Back to root"/>
 
             <EditText
-                android:id="@+id/home_edit_text"
+                android:id="@+id/home_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"

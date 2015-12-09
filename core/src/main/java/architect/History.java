@@ -10,6 +10,7 @@ import java.util.List;
 
 import architect.hook.Hook;
 import architect.behavior.ReceivesResult;
+import architect.service.Service;
 
 /**
  * Architect history
@@ -70,23 +71,20 @@ public class History {
         return historyBundle;
     }
 
-    boolean isEmpty() {
-        return entries.isEmpty();
-    }
-
-    boolean canReplace() {
-        return entries.size() > 0;
-    }
+//    boolean isEmpty() {
+//        return entries.isEmpty();
+//    }
+//
+//    boolean canReplace() {
+//        return entries.size() > 0;
+//    }
+//
 
     /**
-     * At least 2 alive entries
+     * At least 1 entry
      */
-    boolean canKill(String service) {
-        if (service != null) {
-            return filterByDescending(service, false).size() > 1;
-        }
-
-        return entries.size() > 1;
+    boolean canKill(String service, Validator<List<Entry>> validator) {
+        return validator.isValid(entries(service));
     }
 
     /**
@@ -112,20 +110,29 @@ public class History {
      * @param forReplace if the entry is killed during a replace
      * @return the top killed entry
      */
-    Entry kill(Object result, final boolean forReplace) {
-        final Entry killed = entries.remove(entries.size() - 1);
+    Entry kill(String service, Object result, final boolean forReplace) {
+        Entry killed = null;
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            if (entries.get(i).service.equals(service)) {
+                killed = entries.remove(i);
+                break;
+            }
+        }
+
+        Preconditions.checkNotNull(killed, "No entry to kill");
 
         if (!entries.isEmpty()) {
             setResult(result);
         }
 
+        final Entry finalKilled = killed;
         hooks.hookHistory(new Hooks.HookOn<Hook.HistoryHook>() {
             @Override
             public void hook(Hook.HistoryHook on) {
                 if (forReplace) {
-                    on.onReplaceEntry(killed);
+                    on.onReplaceEntry(finalKilled);
                 } else {
-                    on.onKillEntry(killed);
+                    on.onKillEntry(finalKilled);
                 }
             }
         });
@@ -168,13 +175,12 @@ public class History {
      * @return the killed entries, in the historical order
      */
     List<Entry> killAll(String service) {
-        // all entries, in reverse order
-//        final List<Entry> killed = new ArrayList<>(entries.size());
-//        for (int i = entries.size() - 1; i >= 0; i--) {
-//            killed.add(entries.remove(i));
-//        }
-
-        final List<Entry> killed = filterByDescending(service, true);
+        final List<Entry> killed = new ArrayList<>();
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            if (entries.get(i).service.equals(service)) {
+                killed.add(entries.remove(i));
+            }
+        }
 
         hooks.hookHistory(new Hooks.HookOn<Hook.HistoryHook>() {
             @Override
@@ -185,6 +191,37 @@ public class History {
 
         return killed;
     }
+
+    List<Entry> entries() {
+        List<Entry> list = new ArrayList<>(entries.size());
+        for (int i = 0; i < entries.size(); i++) {
+            list.add(entries.get(i));
+        }
+
+        return list;
+    }
+
+    List<Entry> entries(String service) {
+        List<Entry> list = new ArrayList<>();
+        Entry entry;
+        for (int i = 0; i < entries.size(); i++) {
+            entry = entries.get(i);
+            if (entry.service.equals(service)) {
+                list.add(entry);
+            }
+        }
+
+        return list;
+    }
+
+//    List<Entry> entriesDescending() {
+//        List<Entry> list = new ArrayList<>(entries.size());
+//        for (int i = entries.size() - 1; i >= 0; i--) {
+//            list.add(entries.get(i));
+//        }
+//
+//        return list;
+//    }
 
     /**
      * Set the result, or null if no result (result = null)
@@ -197,13 +234,13 @@ public class History {
         }
     }
 
-    private List<Entry> filterByDescending(String service, boolean kill) {
+    private List<Entry> filterByDescending(String service, boolean killAll) {
         List<Entry> filtered = new ArrayList<>();
         Entry entry;
         for (int i = entries.size() - 1; i >= 0; i--) {
             entry = entries.get(i);
             if (entry.service.equals(service)) {
-                if (kill) {
+                if (killAll) {
                     entries.remove(i);
                 }
                 filtered.add(entry);
@@ -277,24 +314,6 @@ public class History {
         }
 
         return null;
-    }
-
-    SimpleArrayMap<String, List<Entry>> getEntriesByServices() {
-        final SimpleArrayMap<String, List<Entry>> servicesEntries = new SimpleArrayMap<>();
-        History.Entry entry;
-        List<History.Entry> list;
-        for (int i = 0; i < entries.size(); i++) {
-            entry = entries.get(i);
-            if (servicesEntries.containsKey(entry.service)) {
-                list = servicesEntries.get(entry.service);
-            } else {
-                list = new ArrayList<>();
-                servicesEntries.put(entry.service, list);
-            }
-            list.add(entry);
-        }
-
-        return servicesEntries;
     }
 
 //    Entry getTop() {
@@ -393,4 +412,6 @@ public class History {
 //    private interface Filter {
 //        boolean filter(Entry entry);
 //    }
+
+
 }

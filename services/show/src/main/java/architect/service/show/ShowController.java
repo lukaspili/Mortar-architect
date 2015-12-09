@@ -1,7 +1,11 @@
 package architect.service.show;
 
+import java.util.List;
+
 import architect.Executor;
+import architect.History;
 import architect.Screen;
+import architect.Validator;
 import architect.service.Controller;
 import architect.service.commons.EntryExtras;
 
@@ -9,6 +13,13 @@ import architect.service.commons.EntryExtras;
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
  */
 public class ShowController extends Controller {
+
+    private static final Validator<List<History.Entry>> canKillValidator = new Validator<List<History.Entry>>() {
+        @Override
+        public boolean isValid(List<History.Entry> entries) {
+            return !entries.isEmpty();
+        }
+    };
 
     public ShowController(Executor executor) {
         super(executor);
@@ -27,11 +38,11 @@ public class ShowController extends Controller {
     }
 
     public boolean hide() {
-        return executor.pop();
+        return executor.pop(canKillValidator);
     }
 
     public boolean hide(Object result) {
-        return executor.pop(result);
+        return executor.pop(canKillValidator, result);
     }
 
     public void hideAll() {

@@ -2,15 +2,14 @@ package architect.examples.simple_app.screen.home;
 
 import android.content.Context;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import architect.Architect;
+import architect.examples.simple_app.Architector;
 import architect.examples.simple_app.Architecture;
-import architect.examples.simple_app.MainActivity;
 import architect.examples.simple_app.R;
-import architect.examples.simple_app.screen.home2.HomeScreen2;
-import architect.service.show.ShowController;
+import architect.examples.simple_app.screen.popup1.Popup1Screen;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -22,52 +21,44 @@ public class HomeView extends LinearLayout {
 
     private static int count = 0;
 
-    @Bind(R.id.toolbar)
+    @Bind(R.id.home_toolbar)
     public Toolbar toolbar;
 
     public HomeView(Context context, String name, String result) {
         super(context);
 
-        View view = View.inflate(context, R.layout.home_view, this);
+        View view = View.inflate(context, R.layout.screen_home, this);
         ButterKnife.bind(view);
 
-        String title = "Home: " + name;
         if (result != null) {
-            title = title + " + res= " + result;
+            Log.d(getClass().getName(), "Got result: " + result);
         }
-        toolbar.setTitle(title);
+
+        toolbar.setTitle(name);
     }
 
-    private Architect getArchitect() {
-        return ((MainActivity) getContext()).getArchitect();
+    @OnClick(R.id.home_new_home)
+    void homeClick() {
+        Architector.getNavigationController(this).push(new HomeScreen("New home " + ++count));
     }
 
-    private ShowController getShowController() {
-        return getArchitect().getService(Architecture.SHOW_SERVICE).getController();
+    @OnClick(R.id.home_new_home_with_custom_transition)
+    void homeWithCustomTransitionClick() {
+        Architector.getNavigationController(this).push(new HomeScreen("New home " + ++count), Architecture.NAVIGATION_SERVICE_LATERAL_TRANSITION);
     }
 
-    @OnClick(R.id.home_go_home_button)
-    void goHomeClick() {
-        getShowController().show(new HomeScreen("Next home " + ++count));
+    @OnClick(R.id.home_new_popup1)
+    void popup1Click() {
+        Architector.getShowController(this).show(new Popup1Screen("New popup from home"));
     }
 
-    @OnClick(R.id.home_go_home_custom_transition_button)
-    void goHomeCustomTransitionClick() {
-        getShowController().show(new HomeScreen("Next home " + ++count), Architecture.SHOW_SERVICE_TOP_TRANSITION);
+    @OnClick(R.id.home_back_with_result)
+    void backWithResultClick() {
+        Architector.getNavigationController(this).pop("This a result from home");
     }
 
-    @OnClick(R.id.home_go_home2_button)
-    void goHome2Click() {
-        getShowController().show(new HomeScreen2());
-    }
-
-    @OnClick(R.id.home_hide_result_button)
-    void hideWithResultClick() {
-        getShowController().hide("This is a result");
-    }
-
-    @OnClick(R.id.home_hideall_button)
-    void hideAllClick() {
-        getShowController().hideAll();
+    @OnClick(R.id.home_back_root)
+    void backToRootClick() {
+        Architector.getNavigationController(this).popToRoot();
     }
 }
