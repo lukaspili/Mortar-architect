@@ -77,59 +77,6 @@ public class NavigationPresenter extends AbstractPresenter<FrameContainerView, N
         return view instanceof HandlesBack && ((HandlesBack) view).onBackPressed();
     }
 
-//    private void show(History.Entry entry, boolean forward, Processing processing) {
-//
-//    }
-//
-//    private void hide(History.Entry exitEntry) {
-//        Transition transition = getTransition(exitEntry);
-//        if (transition == null) {
-//            completePresentationCallback();
-//            return;
-//        }
-//
-//        transition.hide(container.getChildAt(container.getChildCount() - 1), new Callback() {
-//            @Override
-//            public void onComplete() {
-//                completePresentationCallback();
-//            }
-//        });
-//    }
-
-//    private void hideAll() {
-//        SimpleArrayMap<View, Transition> viewsTransitions = new SimpleArrayMap<>(entriesToViewIndexes.size());
-//        Transition transition;
-//        for (int i = entriesToViewIndexes.size() - 1; i >= 0; i--) {
-//            transition = getTransition(entriesToViewIndexes.keyAt(i));
-//            if (transition != null) {
-//                viewsTransitions.put(container.getChildAt(entriesToViewIndexes.valueAt(i)), transition);
-//            }
-//
-//            entriesToViewIndexes.removeAt(i);
-//        }
-//
-//        if (viewsTransitions.isEmpty()) {
-//            completePresentationCallback();
-//            return;
-//        }
-//
-//        final int total = viewsTransitions.size();
-//        final Callback singleCallback = new Callback() {
-//            private int count = 0;
-//
-//            @Override
-//            public void onComplete() {
-//                if (++count == total) {
-//                    completePresentationCallback();
-//                }
-//            }
-//        };
-//
-//        for (int i = 0; i < viewsTransitions.size(); i++) {
-//            viewsTransitions.valueAt(i).hide(viewsTransitions.keyAt(i), singleCallback);
-//        }
-//    }
-
     private NavigationTransition getTransition(History.Entry entry) {
         return transitions.find(EntryExtras.from(entry).transition);
     }
