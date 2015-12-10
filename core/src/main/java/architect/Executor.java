@@ -46,6 +46,15 @@ public class Executor {
         return true;
     }
 
+    public boolean popUntil(Validator<List<History.Entry>> validator, int index) {
+        if (!history.canKill(service, validator)) {
+            return false;
+        }
+
+        dispatcher.dispatch(history.killUntil(service, index));
+        return true;
+    }
+
     public void clear() {
         dispatcher.dispatch(history.killAll(service));
     }

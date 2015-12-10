@@ -169,6 +169,30 @@ public class History {
         return killed;
     }
 
+    List<Entry> killUntil(String service, int index) {
+        final List<Entry> serviceEntries = entries(service);
+        final List<Entry> killed = new ArrayList<>(serviceEntries.size() - index);
+        Entry entry;
+        for (int i = serviceEntries.size() - 1; i >= 0; i--) {
+            if (i == index) {
+                break;
+            }
+
+            entry = serviceEntries.remove(i);
+            entries.remove(entry);
+            killed.add(entry);
+        }
+
+        hooks.hookHistory(new Hooks.HookOn<Hook.HistoryHook>() {
+            @Override
+            public void hook(Hook.HistoryHook on) {
+                on.onKillEntries(killed);
+            }
+        });
+
+        return killed;
+    }
+
     /**
      * Kill all
      *

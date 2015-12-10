@@ -46,6 +46,6 @@ public class NavigationController extends Controller {
     }
 
     public void popToRoot() {
-
+        executor.popUntil(canKillValidator, 0);
     }
 }
