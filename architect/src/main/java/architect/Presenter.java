@@ -49,7 +49,7 @@ class Presenter {
 
     void attach(NavigatorView view) {
         Preconditions.checkNotNull(view, "Cannot attach null navigator view");
-        Preconditions.checkNull(this.view, "Current navigator view not null, did you forget to detach the previous view?");
+//        Preconditions.checkNull(this.view, "Current navigator view not null, did you forget to detach the previous view?");
         Preconditions.checkArgument(!active, "Navigator view must be inactive before attaching");
         Preconditions.checkNull(dispatchingCallback, "Dispatching callback must be null before attaching");
 
