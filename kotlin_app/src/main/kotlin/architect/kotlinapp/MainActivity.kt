@@ -27,7 +27,7 @@ import org.jetbrains.anko.UI
 @AutoComponent(dependencies = arrayOf(App::class), superinterfaces = arrayOf(GlobalDependencies::class))
 @AutoInjector
 @DaggerScope(MainActivity::class)
-public class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private var scope: MortarScope? = null
     private var navigator: Navigator? = null

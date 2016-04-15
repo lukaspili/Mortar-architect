@@ -6,7 +6,7 @@ import architect.kotlinapp.mvp.home.drawer.HomeDrawerPresenter
 import architect.robot.*
 import autodagger.AutoComponent
 import mortar.ViewPresenter
-import org.parceler.Parcel
+import nz.bradcampbell.paperparcel.PaperParcel
 
 /**
  * @author Lukasz Piliszczuk - lukasz.pili@gmail.com
@@ -24,14 +24,8 @@ class HomePresenter(@field:NavigationParam val navParam1: String,
                     @field:NavigationResult val navResult: String?,
                     @field:ScreenData val state: HomePresenter.State) : ViewPresenter<HomeView>() {
 
-//    @NavigationParam
-    private lateinit var yo: String
-
-//    @NavigationParam
-    private var foo: String? = null
-
-    @Parcel(parcelsIndex = false)
-    class State {
+    @PaperParcel
+    data class State(val toto: Int = 0) {
 
     }
 }

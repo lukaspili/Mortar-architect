@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.0.0-beta-3594'
+    ext.kotlin_version = '1.0.0'
     repositories {
         mavenCentral()
     }
@@ -73,8 +73,8 @@ dependencies {
     kapt deps.dagger2_compiler
     provided deps.javax_annotation_jsr250
 
-    compile deps.parceler_api
-    kapt deps.parceler
+    compile deps.paperparcel
+    kapt deps.paperparcel_compiler
 
     compile deps.mortar
 
@@ -86,7 +86,7 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    def anko_version = '0.8'
+    def anko_version = '0.8.3'
     compile "org.jetbrains.anko:anko-sdk15:$anko_version"
     compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
     compile "org.jetbrains.anko:anko-design:$anko_version"

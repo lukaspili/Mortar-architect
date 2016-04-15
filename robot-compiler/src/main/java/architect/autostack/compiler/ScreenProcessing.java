@@ -148,8 +148,12 @@ public class ScreenProcessing extends AbstractProcessing<ScreenSpec, Void> {
             List<FieldSpec> allFields = new ArrayList<>();
 
             if (extractor.getNavigationResultElement() != null) {
-                spec.setNavigationResultSpec(FieldSpec.builder(TypeName.get(extractor.getNavigationResultElement().asType()), extractor.getNavigationResultElement().getSimpleName().toString()).build());
+                spec.setNavigationResultSpec(FieldSpec
+                        .builder(TypeName.get(extractor.getNavigationResultElement().asType()), extractor.getNavigationResultElement().getSimpleName().toString())
+                        .addAnnotation(ClassName.get("android.support.annotation", "Nullable")) // for paper parcel
+                        .build());
                 allFields.add(spec.getNavigationResultSpec());
+
             }
 
             if (extractor.getNavigationParamsElements() != null && !extractor.getNavigationParamsElements().isEmpty()) {

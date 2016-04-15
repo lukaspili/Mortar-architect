@@ -125,6 +125,12 @@ class Dispatcher {
 //        active = true;
     }
 
+    void clearIfActive() {
+        if (active) {
+            desactivate();
+        }
+    }
+
     void desactivate() {
         Preconditions.checkArgument(active, "Dispatcher already desactivated");
         active = false;

@@ -48,8 +48,8 @@ dependencies {
     apt deps.dagger2_compiler
     provided deps.javax_annotation_jsr250
 
-    compile deps.parceler_api
-    apt deps.parceler
+    compile deps.paperparcel
+    apt deps.paperparcel_compiler
 
     compile deps.mortar
     compile deps.appcompat_v7

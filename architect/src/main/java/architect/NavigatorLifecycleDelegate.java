@@ -39,7 +39,10 @@ public class NavigatorLifecycleDelegate {
             }
         }
 
+        navigator.presenter.clearIfAlreadyAttached();
         navigator.presenter.attach(containerView);
+
+        navigator.dispatcher.clearIfActive();
         navigator.dispatcher.activate();
     }
 

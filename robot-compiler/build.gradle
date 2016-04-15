@@ -12,7 +12,7 @@ dependencies {
     compile deps.autodagger2
     compile deps.autodagger2_compiler_utils
     compile deps.mortar
-    compile deps.parceler_api
+    compile deps.paperparcel
 }
 
 apply from: '../mvn-publish.gradle'

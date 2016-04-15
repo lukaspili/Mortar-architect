@@ -13,6 +13,7 @@ import architect.robot.AutoScreen;
 import architect.robot.ScreenData;
 import autodagger.AutoComponent;
 import mortar.ViewPresenter;
+import nz.bradcampbell.paperparcel.PaperParcel;
 import timber.log.Timber;
 
 /**
@@ -39,18 +40,13 @@ public class BannerPresenter extends ViewPresenter<BannerView> {
         Timber.d("Clicked on banner!");
     }
 
-    @Parcel(parcelsIndex = false)
+    @PaperParcel
     public static class BannerState {
 
         int random;
 
         public BannerState() {
             this.random = new Random().nextInt(100);
-        }
-
-        @ParcelConstructor
-        public BannerState(int random) {
-            this.random = random;
         }
     }
 }
