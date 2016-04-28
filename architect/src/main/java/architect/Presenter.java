@@ -234,7 +234,7 @@ class Presenter {
         // find transition
         final ViewTransition transition;
         if (view.hasCurrentView()) {
-            transition = transitions.find(enterDispatchEntry.entry.transition);
+            transition = transitions.find(forward ? enterDispatchEntry.entry.transition : exitEntry.transition);
         } else {
             transition = null;
         }
