@@ -298,6 +298,10 @@ class Dispatcher {
     private void destroyDead(History.Entry entry) {
         Logger.d("Remove dead entry: %s", entry.scopeName);
         navigator.history.remove(entry);
+
+        // remove as well from dispatching entry, just in case
+        entries.remove(entry);
+
         if (navigator.getScope() != null) {
             MortarScope scope = navigator.getScope().findChild(entry.scopeName);
             if (scope != null) {
