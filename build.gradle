@@ -9,8 +9,8 @@ ext.deps = [
         flow_navigation              : 'com.github.lukaspili:flow-navigation:0.2-SNAPSHOT',
         flow_navigation_mortar       : 'com.github.lukaspili:flow-navigation-mortar-common:0.2-SNAPSHOT',
         flow_navigation_flow         : 'com.github.lukaspili:flow-navigation-flow-common:0.2-SNAPSHOT',
-        dagger2                      : 'com.google.dagger:dagger:2.1-SNAPSHOT',
-        dagger2_compiler             : 'com.google.dagger:dagger-compiler:2.1-SNAPSHOT',
+        dagger2                      : 'com.google.dagger:dagger:2.1',
+        dagger2_compiler             : 'com.google.dagger:dagger-compiler:2.1',
         javax_annotation_jsr250      : 'javax.annotation:jsr250-api:1.0',
         javax_inject                 : 'javax.inject:javax.inject:1',
         mortar                       : 'com.squareup.mortar:mortar:0.17',
@@ -20,7 +20,7 @@ ext.deps = [
         autodagger2_compiler_utils   : 'com.github.lukaspili.autodagger2:autodagger2-compiler-utils:1.1',
         parcelablepls                : 'com.hannesdorfmann.parcelableplease:annotation:1.0.1',
         parcelablepls_compiler       : 'com.hannesdorfmann.parcelableplease:processor:1.0.1',
-        processor_workflow           : 'com.github.lukaspili.processor-workflow:processor-workflow:1.0.2-SNAPSHOT',
+        processor_workflow           : 'com.github.lukaspili.processor-workflow:processor-workflow:1.0.3',
         parceler                     : 'org.parceler:parceler:1.0.1',
         parceler_api                 : 'org.parceler:parceler-api:1.0.1'
 ]
