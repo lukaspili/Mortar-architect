@@ -41,6 +41,14 @@ public class NavigatorLifecycleDelegate {
             }
         }
 
+        // It is possible for onDestroy to not be called when the activity is destroyed, even when
+        // the rest of the app is not killed by the OS. This check ensures that if this circumstance
+        // has arisen, the method that would have been triggered by onDestroy is triggered here
+        // before the containerView is attached to the presenter and the dispatcher is activated.
+        if (navigator.presenter.hasView()) {
+            this.onDestroy();
+        }
+
         navigator.presenter.attach(containerView);
         navigator.dispatcher.activate();
     }

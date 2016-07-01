@@ -284,4 +284,8 @@ class Presenter {
 
         void onPresentationFinished(int sessionId);
     }
+
+    boolean hasView() {
+        return this.view != null;
+    }
 }
