@@ -1,3 +1,10 @@
+# DISCONTINUED
+
+ * Most recent branch: 1.0_dev3.x
+ * Most recent artifact: 1.0-dev3.8-SNAPSHOT (stable and used in production in several apps)
+ * Documentation is not up-to-date, you need to check the demo project in the 1.0_dev3.x branch
+
+
 # Mortar Architect
 
 Mortar Architect helps building modern Android apps, implementing the MVP pattern with [Mortar](https://github.com/square/mortar).
