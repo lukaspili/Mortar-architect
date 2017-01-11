@@ -26,6 +26,8 @@ public abstract class ModalTransition<T extends View> implements ViewTransition<
 
     @Override
     public void transition(final T enterView, final View exitView, ViewTransitionDirection direction, AnimatorSet set) {
+        config.configure(set);
+
         if (hideExitView()) {
             if (direction == ViewTransitionDirection.FORWARD) {
                 set.addListener(new AnimatorListenerAdapter() {
